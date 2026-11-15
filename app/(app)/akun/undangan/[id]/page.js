@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { requireInvitation } from "lib/auth";
 import { query, one } from "lib/db";
@@ -9,7 +8,8 @@ import Shell from "../../../_components/Shell";
 import ConfigEditor from "../../../_components/ConfigEditor";
 import GuestTable from "../../../_components/GuestTable";
 import RsvpBoard from "../../../_components/RsvpBoard";
-import TabNav from "../../../_components/TabNav";
+import { TabProvider, TabNav, TabPanel, TabLink } from "../../../_components/TabNav";
+import { TabSkeleton } from "../../../_components/Skeletons";
 import LinkSettings from "../../../_components/LinkSettings";
 import { ActionForm, Submit, CopyButton } from "../../../_components/ui";
 import { saveWaMessage, addGuests } from "../../../actions";
@@ -58,15 +58,19 @@ export default async function InvitationPage({ params, searchParams }) {
         <a href={url} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
       </div>
 
-      <TabNav tabs={TABS} current={tab} counts={{ rsvp: rsvpCount }} />
-
-      {/* key per tab: header & tab langsung tampil, isi tab menyusul (streaming) */}
-      <Suspense key={tab} fallback={<TabSkeleton />}>
-        {tab === "data" && <DataTab inv={inv} url={url} />}
-        {tab === "link" && <LinkTab inv={inv} base={base} />}
-        {tab === "tamu" && <GuestsTab inv={inv} url={url} />}
-        {tab === "rsvp" && <RsvpTab inv={inv} />}
-      </Suspense>
+      <TabProvider current={tab}>
+        <TabNav tabs={TABS} counts={{ rsvp: rsvpCount }} />
+        {/* klik tab → skeleton langsung (TabPanel); header & tab dari server tampil duluan,
+            isi tab menyusul lewat Suspense dengan skeleton yang sama */}
+        <TabPanel>
+          <Suspense key={tab} fallback={<TabSkeleton tab={tab} />}>
+            {tab === "data" && <DataTab inv={inv} url={url} />}
+            {tab === "link" && <LinkTab inv={inv} base={base} />}
+            {tab === "tamu" && <GuestsTab inv={inv} url={url} />}
+            {tab === "rsvp" && <RsvpTab inv={inv} />}
+          </Suspense>
+        </TabPanel>
+      </TabProvider>
     </Shell>
   );
 }
@@ -95,20 +99,6 @@ async function DataTab({ inv, url }) {
 // ---------------------------------------------------------------- tab: link
 function LinkTab({ inv, base }) {
   return <LinkSettings id={inv.id} title={inv.title} slug={inv.slug} sub={base.sub} root={ROOT_DOMAIN} origin={base.origin} />;
-}
-
-function TabSkeleton() {
-  return (
-    <div className="tab-skel" aria-busy="true" aria-label="Memuat…">
-      <div className="card">
-        <i className="skel" style={{ width: "34%", height: 18 }} />
-        <i className="skel" style={{ width: "62%" }} />
-        <i className="skel" style={{ height: 42, marginTop: 12 }} />
-        <i className="skel" style={{ height: 42 }} />
-        <i className="skel" style={{ width: "28%", height: 40, marginTop: 6 }} />
-      </div>
-    </div>
-  );
 }
 
 // ---------------------------------------------------------------- tab: tamu
@@ -194,7 +184,7 @@ async function RsvpTab({ inv }) {
       {rsvpOff && (
         <div className="banner">
           <span>RSVP sedang <b>dimatikan</b> — tamu tidak bisa mengisi konfirmasi kehadiran.</span>
-          <Link href="?tab=data" className="btn-mini">Nyalakan di Data Undangan</Link>
+          <TabLink tab="data" className="btn-mini">Nyalakan di Data Undangan</TabLink>
         </div>
       )}
 

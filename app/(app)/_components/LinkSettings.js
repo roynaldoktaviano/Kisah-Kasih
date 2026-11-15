@@ -1,8 +1,8 @@
 "use client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ActionForm, Submit, CopyButton } from "./ui";
 import { saveSettings } from "../actions";
+import { TabLink } from "./TabNav";
 
 // Bersihkan slug sambil mengetik (versi longgar dari cleanSlug di server:
 // tanda minus di akhir dibiarkan supaya user bisa lanjut mengetik).
@@ -119,9 +119,9 @@ export default function LinkSettings({ id, title: savedTitle, slug: savedSlug, s
             <code className="copy-code">{labelOf(savedSlug)}?untuk=Budi</code>
             <CopyButton text={personal} />
           </div>
-          <Link href="?tab=tamu" scroll={false} className="side-link">
+          <TabLink tab="tamu" className="side-link">
             Buat otomatis untuk semua tamu →
-          </Link>
+          </TabLink>
         </section>
       </aside>
     </div>

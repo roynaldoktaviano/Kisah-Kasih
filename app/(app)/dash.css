@@ -229,12 +229,31 @@ body:has(.dash), body:has(.auth) { background: #fff; }
   animation: tab-load 1s ease-in-out infinite; }
 @keyframes tab-load { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
 
-/* skeleton isi tab */
-.tab-skel .card { display: flex; flex-direction: column; gap: 10px; max-width: 680px; }
-.skel { display: block; height: 12px; width: 100%; border-radius: 6px; background: linear-gradient(90deg, #f2f2f2 25%, #e9e9e9 50%, #f2f2f2 75%);
-  background-size: 200% 100%; animation: skel 1.2s linear infinite; }
+/* skeleton loading (tab & halaman) */
+.skel { display: block; flex: none; max-width: 100%; height: 12px; width: 100%; border-radius: 6px;
+  background: linear-gradient(90deg, #f1f1f1 25%, #e7e7e7 50%, #f1f1f1 75%); background-size: 200% 100%; animation: skel 1.3s linear infinite; }
+.tab-skel { animation: skel-in .2s ease; }
+@keyframes skel-in { from { opacity: 0; } to { opacity: 1; } }
+.sk-card { display: flex; flex-direction: column; gap: 18px; }
+.sk-head { display: flex; flex-direction: column; gap: 8px; }
+.sk-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sk-head-row .sk-head { flex: 1; }
+.sk-divider { padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.sk-field { display: flex; flex-direction: column; gap: 8px; }
+.sk-rows { display: flex; flex-direction: column; }
+.sk-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+.sk-row-text { flex: 1; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.sk-phone { position: sticky; top: 76px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.sk-stats .stat-hero { background: #fff; border-color: var(--border); }
+.sk-stats > div { gap: 10px; }
+.sk-nav { display: flex; align-items: center; gap: 18px; }
+.sk-title { display: flex; flex-direction: column; gap: 10px; }
+.sk-inline { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.sk-tabs { gap: 28px; padding: 14px 14px 13px; }
+@media (max-width: 1060px) { .sk-phone { display: none; } }
+@media (max-width: 600px) { .sk-btn { width: 100% !important; } }
 @keyframes skel { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-@media (prefers-reduced-motion: reduce) { .skel, .tabs-dash.is-loading::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .skel, .tab-skel, .tabs-dash.is-loading::after { animation: none; } }
 
 /* ---------------- tab link & judul */
 .link-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
