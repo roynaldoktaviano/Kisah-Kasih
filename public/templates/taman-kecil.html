@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f6b58">
+<title>Taman Kecil Kami · Undangan Pernikahan</title>
+<meta name="description" content="Masuk ke taman kecil kami dan ketuk benda yang berkilau untuk membuka undangannya.">
+<meta property="og:title" content="Kamu diundang ke taman kecil kami 🌿">
+<meta property="og:description" content="Ketuk benda yang berkilau untuk membuka undangan pernikahan kami.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&family=Kalam:wght@400;700&family=Nunito+Sans:wght@400;600;700&family=Parisienne&display=swap" rel="stylesheet">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+:root{
+  --ink:#2f3b2c; --ink-2:#56644f; --ink-3:#8e9a86;
+  --sage:#9dbb95; --sage-2:#e3eddc; --sage-3:#f3f7ef; --sage-d:#4f6b58;
+  --terra:#c96d47; --terra-2:#f6dccd; --gold:#d9b25f;
+  --cream:#fbf7ee; --paper:#fffdf7;
+  --serif:"Fraunces", Georgia, serif;
+  --body:"Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --hand:"Kalam", "Comic Sans MS", cursive;
+  --script:"Parisienne", "Brush Script MT", cursive;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; height:100%; }
+body{ background:linear-gradient(180deg, #e8f0e2, #c9dcc0); color:var(--ink); font-family:var(--body); overflow:hidden; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent; }
+button, input, textarea{ font:inherit; color:inherit; }
+button{ cursor:pointer; border:0; background:none; padding:0; touch-action:manipulation; }
+a{ color:inherit; }
+[hidden]{ display:none !important; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible{ outline:2.5px solid var(--terra); outline-offset:3px; }
+.i{ width:18px; height:18px; flex:none; }
+
+/* ============ tata letak: mobile penuh; desktop = taman kiri + banner kanan ============ */
+.app{ position:relative; width:100%; max-width:430px; height:100vh; height:100dvh; margin:0 auto; overflow:hidden; background:#a9c99a; isolation:isolate; }
+.banner{ display:none; }
+@media (min-width:900px){
+  body{ display:flex; background:#3d5445; }
+  .app{ flex:none; width:430px; margin:0; box-shadow:1px 0 0 rgba(255,255,255,.25), 24px 0 60px rgba(30,45,30,.35); z-index:2; }
+  .banner{ display:block; }
+}
+
+/* ============ banner kanan (desktop) ============ */
+.banner{ position:relative; flex:1; height:100vh; height:100dvh; overflow:hidden; color:var(--ink); }
+.bn-land{ position:absolute; inset:0; width:100%; height:100%; }
+.bn-bg{ position:absolute; inset:0; }
+.bn-bg.photo{ inset:-4%; background-size:cover; background-position:center; animation:kenburns 26s ease-in-out infinite alternate; }
+@keyframes kenburns{ from{ transform:scale(1.08) translate(1%, -1%); } to{ transform:scale(1) translate(-1%, 1%); } }
+.bn-shade{ position:absolute; inset:0; background:radial-gradient(ellipse 46% 40% at 50% 46%, rgba(255,253,247,.72), rgba(255,253,247,0) 75%); }
+.bn-bg.photo ~ .bn-shade{ background:linear-gradient(90deg, rgba(47,59,44,.78), rgba(47,59,44,.42) 55%, rgba(47,59,44,.7)), linear-gradient(0deg, rgba(47,59,44,.9), transparent 55%); }
+.bn-bg.photo ~ .bn-inner{ color:#fff; }
+.bn-bg.photo ~ .bn-inner .bn-names, .bn-bg.photo ~ .bn-inner .bn-eyebrow, .bn-bg.photo ~ .bn-inner .bn-date, .bn-bg.photo ~ .bn-inner .bn-guest{ color:#fff; }
+.bn-inner{ position:absolute; inset:40px 0 70px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px 48px; }
+.bn-art{ width:min(210px, 21vh); height:auto; margin-bottom:10px; animation:bnUp 1.2s var(--ease) .2s both; }
+.bn-eyebrow{ margin:0 0 4px; font:italic 500 clamp(18px, 1.6vw, 24px) var(--serif); color:var(--ink-2); animation:bnUp 1.1s var(--ease) .4s both; }
+.bn-names{ margin:0; font:400 clamp(76px, 8.2vw, 148px)/1.05 var(--script); color:var(--sage-d); display:flex; align-items:baseline; justify-content:center; flex-wrap:wrap; gap:0 .22em; }
+.bn-names span{ animation:bnUp 1.3s var(--ease) both; }
+.bn-names span:first-child{ animation-delay:.55s; } .bn-names span:last-child{ animation-delay:1.05s; }
+.bn-names em{ font-style:normal; font-size:.55em; color:var(--terra); animation:bnPop 1s cubic-bezier(.3,1.6,.5,1) .85s both; }
+@keyframes bnUp{ from{ opacity:0; transform:translateY(36px); filter:blur(8px); } }
+@keyframes bnPop{ from{ opacity:0; transform:scale(.3) rotate(-20deg); } }
+.bn-date{ margin:18px 0 0; font:700 14px var(--body); letter-spacing:.3em; text-transform:uppercase; color:var(--ink); animation:bnUp 1.1s var(--ease) 1.4s both; }
+.bn-guest{ margin:14px 0 0; font-size:16px; color:var(--ink-2); animation:bnUp 1.1s var(--ease) 1.6s both; }
+.bn-guest b{ color:var(--ink); }
+.bn-hint{ margin:24px 0 0; display:inline-flex; align-items:center; gap:8px; padding:8px 18px; border-radius:999px; border:1.8px solid var(--ink); background:var(--paper); font:17px var(--hand); color:var(--ink); box-shadow:0 3px 0 var(--ink); animation:bnUp 1.1s var(--ease) 1.8s both; }
+.bn-ticker{ position:absolute; left:0; right:0; bottom:0; height:56px; display:flex; align-items:center; overflow:hidden; background:var(--sage-d); }
+.bn-ticker-run{ display:flex; white-space:nowrap; font:700 12px var(--body); letter-spacing:.3em; text-transform:uppercase; color:#f3f7ef; animation:marq 40s linear infinite; }
+.bn-ticker-run span{ padding-right:48px; }
+@keyframes marq{ to{ transform:translateX(-50%); } }
+
+/* ============ taman ============ */
+.scene{ position:absolute; inset:0; width:100%; height:100%; display:block; transition:filter 1.1s ease, transform 1.6s var(--ease); }
+.app.closed .scene{ filter:blur(5px) saturate(.8) brightness(.92); transform:scale(1.1); }
+.hs, .egg{ cursor:pointer; outline:none; }
+.hs .art{ transform-box:fill-box; transform-origin:50% 60%; transition:transform .35s var(--ease);
+  filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 6px rgba(255,251,225,.95));
+  animation:glow 2.4s ease-in-out infinite; }
+.hs:nth-of-type(2n) .art{ animation-delay:-1.2s; }
+@keyframes glow{ 50%{ filter:drop-shadow(0 0 1px rgba(255,255,255,.5)) drop-shadow(0 0 2px rgba(255,251,225,.3)); } }
+.app.closed .hs .art{ animation:none; filter:none; }
+.hs:hover .art, .hs:focus-visible .art{ transform:scale(1.05); }
+.hs.tap .art{ animation:tap .45s var(--ease); }
+@keyframes tap{ 40%{ transform:scale(.92); } 75%{ transform:scale(1.06); } }
+.lbl{ animation:sway 3.6s ease-in-out infinite; transform-box:fill-box; transform-origin:0% 50%; }
+.hs:nth-of-type(3n) .lbl{ animation-delay:-1.2s; } .hs:nth-of-type(3n+1) .lbl{ animation-delay:-2.4s; }
+@keyframes sway{ 50%{ transform:rotate(-2.5deg); } }
+.lbl path{ fill:#fffaf0; stroke:#2f3b2c; stroke-width:1.5; stroke-linejoin:round; }
+.lbl text{ font-family:var(--hand); font-weight:700; font-size:14px; fill:#2f3b2c; text-anchor:middle; dominant-baseline:central; }
+.hs:focus-visible .lbl path{ stroke:var(--terra); stroke-width:2.6; }
+.spark{ animation:spark 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+@keyframes spark{ 0%,100%{ opacity:0; transform:scale(.3) rotate(0); } 50%{ opacity:1; transform:scale(1) rotate(45deg); } }
+.app.closed .spark{ display:none; }
+.hit{ fill:transparent; }
+.float{ animation:float 5s ease-in-out infinite; }
+@keyframes float{ 50%{ transform:translateY(-7px); } }
+.float2{ animation:float 7s ease-in-out infinite -2s; }
+.cloud{ animation:drift 60s linear infinite; }
+.cloud.c2{ animation-duration:85s; animation-delay:-40s; }
+@keyframes drift{ from{ transform:translateX(-160px); } to{ transform:translateX(320px); } }
+.floaty{ transform-box:fill-box; transform-origin:center; animation:floaty 3s ease-in-out infinite; }
+@keyframes floaty{ 50%{ transform:translateY(-5px) scale(1.08); } }
+.wag{ transform-box:fill-box; transform-origin:0% 50%; animation:wag .5s ease-in-out infinite alternate; }
+@keyframes wag{ to{ transform:rotate(18deg); } }
+.breath{ transform-box:fill-box; transform-origin:50% 100%; animation:breath 3s ease-in-out infinite; }
+@keyframes breath{ 50%{ transform:scaleY(1.05); } }
+.zzz{ animation:zzz 3s ease-in-out infinite; }
+@keyframes zzz{ 0%{ opacity:0; transform:translate(0,0); } 30%{ opacity:1; } 100%{ opacity:0; transform:translate(-6px,-14px); } }
+.flap{ transform-box:fill-box; transform-origin:50% 50%; animation:flap .22s ease-in-out infinite alternate; }
+@keyframes flap{ to{ transform:scaleX(.25); } }
+.bfly{ animation:bfly 14s ease-in-out infinite; }
+.bfly.b2{ animation-duration:17s; animation-delay:-6s; }
+@keyframes bfly{ 0%,100%{ transform:translate(0,0); } 25%{ transform:translate(40px,-30px); } 50%{ transform:translate(90px,10px); } 75%{ transform:translate(30px,35px); } }
+.petal{ animation:petal linear infinite; transform-box:fill-box; transform-origin:center; }
+@keyframes petal{ from{ transform:translate(0,-80px) rotate(0); opacity:0; } 8%{ opacity:.9; } 90%{ opacity:.8; } to{ transform:translate(var(--dx),960px) rotate(600deg); opacity:0; } }
+.egg:focus-visible > *{ filter:drop-shadow(0 0 3px #fff); }
+/* mode gambar ilustrasi */
+.app.img-mode{ background:#2f3b2c; }
+.app.img-mode::before{ content:""; position:absolute; inset:-40px; z-index:-1; background:var(--latar) center / cover no-repeat; filter:blur(26px) brightness(.85); }
+.ring{ fill:rgba(255,251,225,.1); stroke:#fffbe6; animation:ringp 2.4s ease-in-out infinite; }
+@keyframes ringp{ 50%{ stroke-opacity:.3; fill-opacity:.02; } }
+.atur .ring{ stroke:#ff5a36; stroke-dasharray:12 8; animation:none; }
+
+/* ============ tombol atas ============ */
+.tb{ position:absolute; z-index:5; width:44px; height:44px; border-radius:14px; background:var(--paper); color:var(--ink); display:grid; place-items:center; border:1.8px solid var(--ink); box-shadow:0 3px 0 var(--ink), 0 8px 18px rgba(30,45,30,.22); transition:opacity .5s, transform .15s, box-shadow .15s; }
+.tb:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--ink); }
+.tb .i{ width:21px; height:21px; }
+#b-info{ top:calc(14px + env(safe-area-inset-top)); left:14px; }
+.tb-r{ position:absolute; z-index:5; right:14px; top:calc(14px + env(safe-area-inset-top)); display:flex; flex-direction:column; gap:12px; transition:opacity .5s; }
+.tb-r .tb{ position:relative; }
+#b-music.on{ background:var(--sage-2); }
+#b-music.on::after{ content:""; position:absolute; top:-4px; right:-4px; width:10px; height:10px; border-radius:50%; background:var(--terra); border:1.5px solid var(--ink); animation:beat 1s ease-in-out infinite; }
+@keyframes beat{ 50%{ transform:scale(1.35); } }
+#b-music:not(.on) .i{ opacity:.45; }
+.app.closed .tb, .app.closed .wish, .app.closed .tb-r{ opacity:0; pointer-events:none; }
+
+/* ============ ucapan ============ */
+.wish{ position:absolute; z-index:5; left:12px; bottom:calc(12px + env(safe-area-inset-bottom)); width:min(268px, calc(100% - 118px)); transition:opacity .5s; }
+.wcard{ position:relative; display:block; width:100%; text-align:left; background:var(--paper); border:1.8px solid var(--ink); border-radius:6px 16px 16px 16px; padding:10px 12px 9px; margin-bottom:8px; box-shadow:0 3px 0 var(--ink), 0 10px 18px rgba(30,45,30,.25); transition:opacity .35s, transform .35s; }
+.wcard::before{ content:""; position:absolute; top:-8px; left:22px; width:50px; height:14px; rotate:-4deg; background:rgba(217,178,95,.78); }
+.wcard.swap{ opacity:0; transform:translateY(8px); }
+.wn{ display:inline-block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:700 12px var(--body); color:var(--sage-d); margin-bottom:2px; }
+.wn::before{ content:"🌿 "; }
+.wm{ margin:0; font-size:12.5px; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.wbtns{ display:flex; gap:6px; }
+.wbtns button{ height:32px; min-width:32px; border-radius:10px; background:var(--sage-d); color:#f3f7ef; border:1.8px solid var(--ink); display:grid; place-items:center; font:600 12.5px var(--body); padding:0 10px; box-shadow:0 2px 0 var(--ink); white-space:nowrap; }
+.wbtns button .i{ width:17px; height:17px; }
+.wish.min .wcard{ display:none; }
+
+/* ============ sampul ============ */
+.cover{ position:absolute; inset:0; z-index:10; display:flex; align-items:center; justify-content:center; padding:24px; transition:opacity .7s, visibility .7s; }
+.cover.gone{ opacity:0; visibility:hidden; }
+.cv{ position:relative; width:100%; max-width:320px; background:var(--paper); border:2px solid var(--ink); border-radius:170px 170px 22px 22px; text-align:center; padding:34px 22px 24px; box-shadow:0 5px 0 var(--ink), 0 26px 60px rgba(30,45,30,.4); animation:cvin .9s var(--ease) both .25s; }
+.cv::before{ content:""; position:absolute; inset:8px; border:1.4px dashed var(--sage); border-radius:162px 162px 16px 16px; pointer-events:none; }
+@keyframes cvin{ from{ opacity:0; transform:translateY(24px) scale(.94); } }
+.cv-art{ width:150px; height:auto; display:block; margin:0 auto 4px; }
+.cv-k{ font:italic 500 15px var(--serif); color:var(--ink-2); margin:0; }
+.cv-n{ font:400 42px/1.15 var(--script); margin:4px 0 4px; color:var(--sage-d); white-space:nowrap; }
+.cv-n span{ font-size:.62em; color:var(--terra); }
+.cv-d{ font:700 11px var(--body); letter-spacing:.22em; text-transform:uppercase; color:var(--ink-2); margin:0; }
+.cv-to{ margin:16px 0 18px; padding:10px 12px; background:var(--sage-3); border-radius:14px; }
+.cv-to span{ font-size:12px; color:var(--ink-2); }
+.cv-to b{ display:block; font:700 19px/1.3 var(--serif); margin-top:2px; word-break:break-word; }
+
+/* ============ tombol umum ============ */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:0 20px; border-radius:14px; border:1.8px solid var(--ink); background:var(--sage-2); font:700 14.5px var(--body); text-decoration:none; color:var(--ink); box-shadow:0 3px 0 var(--ink); transition:transform .15s, box-shadow .15s, background .2s; }
+.btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--ink); }
+.btn.solid{ background:var(--sage-d); color:#f3f7ef; }
+.btn.block{ display:flex; width:100%; }
+.btn.sm{ min-height:36px; padding:0 14px; font-size:13px; flex:none; }
+.btn.ok{ background:var(--terra-2); color:var(--ink); }
+
+/* ============ toast & efek ============ */
+.toast{ position:absolute; z-index:30; left:50%; top:calc(72px + env(safe-area-inset-top)); width:max-content; max-width:calc(100% - 130px); background:var(--paper); border:1.8px solid var(--ink); border-radius:14px; padding:6px 14px; font:16px/1.3 var(--hand); text-align:center; box-shadow:0 3px 0 var(--ink); opacity:0; transform:translate(-50%,-8px); transition:opacity .35s, transform .35s; pointer-events:none; }
+.toast.on{ opacity:1; transform:translate(-50%,0); }
+.fx{ position:absolute; z-index:8; pointer-events:none; font-size:20px; animation:fx 1.2s ease-out forwards; }
+@keyframes fx{ to{ opacity:0; transform:translate(var(--x), var(--y)) scale(1.3) rotate(var(--r)); } }
+
+/* ============ kartu pop-up ============ */
+.ov{ position:absolute; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom)); }
+.ov-bg{ position:absolute; inset:0; background:rgba(35,48,35,.45); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); opacity:0; transition:opacity .3s; }
+.ov.open .ov-bg{ opacity:1; }
+.win{ position:relative; width:100%; max-width:384px; max-height:min(86dvh, 780px); display:flex; flex-direction:column; background:var(--paper); border:2px solid var(--ink); border-radius:22px; overflow:hidden; box-shadow:0 5px 0 var(--ink), 0 24px 60px rgba(20,30,20,.4); transform:scale(.12) rotate(-6deg); opacity:0; transition:transform .5s var(--ease), opacity .25s; }
+.ov.open .win{ transform:none; opacity:1; }
+.win-h{ position:relative; display:flex; align-items:center; justify-content:center; gap:8px; padding:16px 52px 16px; background:var(--sage-d); color:#f3f7ef; border-bottom:2px solid var(--ink); }
+.win-h::after{ content:""; position:absolute; left:0; right:0; bottom:-10px; height:8px; background:radial-gradient(circle at 8px 0, var(--sage-d) 6.5px, transparent 7px) 0 0 / 16px 8px repeat-x; pointer-events:none; z-index:1; }
+.win-h .leaf{ width:20px; height:20px; color:#cfe0c6; }
+.win-h h2{ margin:0; font:600 21px/1.2 var(--serif); text-align:center; }
+.x{ position:absolute; right:10px; top:50%; translate:0 -50%; width:38px; height:38px; display:grid; place-items:center; border-radius:12px; color:#f3f7ef; }
+.x .i{ width:22px; height:22px; }
+.win-b{ overflow-y:auto; overscroll-behavior:contain; padding:24px 16px 24px; -webkit-overflow-scrolling:touch; }
+
+/* ============ isi ============ */
+.lead{ margin:0 0 18px; font-size:14.5px; line-height:1.65; color:var(--ink-2); text-align:center; }
+.kick{ margin:0 0 4px; font:italic 500 16px var(--serif); color:var(--terra); }
+.pcard{ border:1.8px solid var(--ink); border-radius:18px; overflow:hidden; background:var(--sage-3); box-shadow:0 3px 0 var(--ink); }
+.pcard .ph{ aspect-ratio:1/1.05; background:#eee; border-bottom:1.8px solid var(--ink); }
+.pcard .ph img, .pcard .ph svg{ width:100%; height:100%; object-fit:cover; display:block; }
+.pc-b{ padding:16px 16px 20px; text-align:center; }
+.pc-b h3{ margin:2px 0 6px; font:700 23px/1.2 var(--serif); }
+.par{ margin:0 0 14px; font-size:14.5px; line-height:1.55; color:var(--ink-2); }
+.pill{ display:inline-flex; align-items:center; gap:6px; padding:7px 20px; border:1.8px solid var(--ink); border-radius:14px; background:var(--terra-2); font:700 15px var(--body); color:var(--ink); text-decoration:none; }
+.amp{ text-align:center; font:46px/1.1 var(--script); color:var(--terra); margin:10px 0 6px; }
+.quote{ margin:20px 2px 0; padding:14px 16px; border-radius:16px; background:var(--sage-2); font:italic 500 15px/1.65 var(--serif); color:var(--ink-2); text-align:center; }
+
+.tl{ list-style:none; margin:0; padding:0 0 0 26px; position:relative; }
+.tl::before{ content:""; position:absolute; left:8px; top:8px; bottom:8px; border-left:2px dotted var(--sage-d); }
+.tl li{ position:relative; margin:0 0 18px; }
+.tl li::before{ content:"🌿"; position:absolute; left:-27px; top:0; font-size:15px; background:var(--paper); line-height:1.3; }
+.tl-y{ display:inline-block; font:700 12px var(--body); letter-spacing:.08em; background:var(--terra); color:#fff; border-radius:8px; padding:2px 10px; margin-bottom:7px; }
+.tl-c{ border:1.8px solid var(--ink); border-radius:16px; padding:13px 14px; background:var(--sage-3); }
+.tl-c img{ width:100%; border-radius:10px; margin-bottom:10px; display:block; border:1.5px solid var(--ink); }
+.tl-c h4{ margin:0 0 5px; font:700 17px/1.3 var(--serif); }
+.tl-c p{ margin:0; font-size:14.5px; line-height:1.6; color:var(--ink-2); }
+.end{ text-align:center; font:italic 500 15px/1.6 var(--serif); color:var(--sage-d); margin:4px 0 0; }
+
+.sd{ text-align:center; background:var(--sage-3); border:1.8px solid var(--ink); border-radius:18px; padding:16px 10px 18px; margin-bottom:16px; }
+.sd-d{ margin:0; font:700 12px var(--body); letter-spacing:.24em; text-transform:uppercase; color:var(--ink-2); }
+.sd-big{ margin:4px 0 14px; font:700 30px var(--serif); color:var(--sage-d); }
+.cd{ display:flex; justify-content:center; gap:7px; }
+.cd div{ width:62px; padding:8px 0 7px; background:var(--paper); border:1.8px solid var(--ink); border-radius:14px; box-shadow:0 3px 0 var(--ink); }
+.cd b{ display:block; font:700 22px/1.1 var(--serif); color:var(--terra); }
+.cd span{ font-size:11px; color:var(--ink-2); }
+.cd-done{ margin:0; font:italic 500 16px var(--serif); color:var(--sage-d); }
+.ev{ border:1.8px solid var(--ink); border-radius:18px; padding:18px 16px; margin-bottom:14px; text-align:center; background:var(--paper); box-shadow:0 3px 0 var(--ink); }
+.ev-ic{ width:48px; height:48px; margin:0 auto 8px; display:grid; place-items:center; border-radius:16px; background:var(--terra-2); border:1.8px solid var(--ink); rotate:-6deg; }
+.ev-ic .i{ width:24px; height:24px; }
+.ev h3{ margin:0 0 6px; font:700 21px var(--serif); }
+.ev-t{ margin:0 0 10px; font-size:14.5px; line-height:1.6; }
+.ev-p{ margin:0 0 15px; font-size:14px; line-height:1.6; color:var(--ink-2); }
+.ev-p b{ color:var(--ink); }
+.note{ font-size:13.5px; line-height:1.6; color:var(--ink-2); text-align:center; background:#fbf1dc; border:1.6px dashed var(--gold); border-radius:14px; padding:10px 12px; margin:0 0 14px; }
+
+.dc-art{ display:block; width:100%; max-width:230px; height:auto; margin:-4px auto 8px; }
+.sw{ display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin:0 0 18px; }
+.sw div{ display:flex; flex-direction:column; align-items:center; gap:7px; }
+.sw span{ width:42px; height:42px; border-radius:14px; border:1.8px solid var(--ink); box-shadow:0 3px 0 var(--ink); rotate:-5deg; }
+.sw div:nth-child(2n) span{ rotate:5deg; }
+.sw small{ font-size:12px; color:var(--ink-2); }
+.dc-l{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.dc-l div{ border:1.8px solid var(--ink); border-radius:14px; padding:11px 12px; background:var(--sage-3); }
+.dc-l b{ font:700 15px var(--serif); }
+.dc-l p{ margin:4px 0 0; font-size:13.5px; line-height:1.5; color:var(--ink-2); }
+
+.gal{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.g{ aspect-ratio:3/4; border:1.8px solid var(--ink); border-radius:16px; overflow:hidden; display:block; padding:0; background:var(--sage-2); }
+.g:first-child{ grid-column:1/-1; aspect-ratio:4/3; }
+.g img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s var(--ease); }
+.g:hover img{ transform:scale(1.04); }
+.g.empty{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:var(--sage-d); font:16px var(--hand); }
+.g.empty:nth-child(3n+2){ background:var(--terra-2); color:var(--terra); }
+.g.empty:nth-child(3n){ background:#f7ecd2; color:#9a7a33; }
+.g.empty .i{ width:30px; height:30px; }
+
+.f{ display:block; margin:0 0 15px; }
+.f > span{ display:block; font:700 12px var(--body); letter-spacing:.08em; text-transform:uppercase; color:var(--ink-2); margin:0 0 7px; }
+.f input, .f textarea{ width:100%; border:1.8px solid var(--ink); border-radius:14px; background:#fff; padding:11px 13px; font-size:16px; line-height:1.45; outline:none; resize:vertical; }
+.f input:focus, .f textarea:focus{ box-shadow:0 0 0 3px var(--sage-2); }
+.seg{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.seg button{ min-height:46px; border:1.8px solid var(--ink); border-radius:14px; background:#fff; font-size:14px; font-weight:600; padding:4px 8px; transition:background .2s, box-shadow .2s, color .2s; }
+.seg button[aria-pressed="true"]{ background:var(--sage-d); color:#f3f7ef; box-shadow:0 3px 0 var(--ink); }
+.cnt{ display:flex; align-items:center; gap:16px; }
+.cnt button{ width:44px; height:44px; border-radius:14px; border:1.8px solid var(--ink); background:var(--sage-2); font-size:22px; line-height:1; }
+.cnt button:disabled{ opacity:.35; cursor:default; }
+.cnt output{ font:700 24px var(--serif); min-width:26px; text-align:center; }
+.err{ color:#b3261e; font-size:13.5px; margin:0 0 10px; }
+.err:empty{ display:none; }
+.thx{ text-align:center; padding:6px 0 0; }
+.thx-ic{ width:64px; height:64px; margin:0 auto; border-radius:20px; display:grid; place-items:center; background:var(--terra-2); border:1.8px solid var(--ink); color:var(--terra); rotate:-6deg; }
+.thx-ic .i{ width:30px; height:30px; }
+.thx h3{ font:700 23px var(--serif); margin:14px 0 6px; }
+.thx p{ color:var(--ink-2); font-size:14.5px; line-height:1.6; margin:0; }
+.col{ display:flex; flex-direction:column; gap:12px; margin-top:20px; }
+
+.gift-art{ display:block; width:150px; height:auto; margin:0 auto 4px; overflow:visible; }
+.gift-art .lid{ transform-box:fill-box; transform-origin:0% 100%; transition:transform .8s var(--ease); }
+.gift-art.open .lid{ transform:translate(-4px,-24px) rotate(-14deg); }
+.gift-art .spk{ opacity:0; transform-box:fill-box; transform-origin:center; transition:opacity .4s .35s, transform .7s .35s var(--ease); transform:scale(.3); }
+.gift-art.open .spk{ opacity:1; transform:none; }
+.bank{ display:flex; align-items:center; justify-content:space-between; gap:12px; border:1.8px solid var(--ink); border-radius:18px; padding:14px 14px 14px 16px; margin-bottom:12px; background:var(--sage-3); box-shadow:0 3px 0 var(--ink); }
+.bank > div{ min-width:0; }
+.bk{ margin:0; font:700 15px var(--serif); color:var(--sage-d); }
+.no{ margin:4px 0 2px; font:700 19px/1.25 var(--body); letter-spacing:.05em; }
+.an{ margin:0; font-size:13px; color:var(--ink-2); line-height:1.5; }
+
+.wl{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.wi{ border:1.8px solid var(--ink); border-radius:6px 16px 16px 16px; padding:10px 12px; background:var(--paper); }
+.wi.me{ background:var(--sage-3); }
+.wi p{ margin:2px 0 0; font-size:14px; line-height:1.55; }
+.menu{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:18px; }
+.mi{ display:flex; flex-direction:column; align-items:flex-start; gap:1px; text-align:left; border:1.8px solid var(--ink); border-radius:14px; padding:10px 12px; background:var(--sage-3); font:700 14.5px var(--body); }
+.mi em{ font-style:normal; font-size:20px; line-height:1.3; }
+.mi small{ font:400 12px/1.35 var(--body); color:var(--ink-2); }
+.tips{ margin:0; padding:0; list-style:none; font-size:13.5px; color:var(--ink-2); line-height:1.5; }
+.tips li{ display:flex; gap:10px; align-items:center; margin-bottom:8px; }
+.tips i{ flex:none; width:32px; height:32px; border-radius:10px; border:1.6px solid var(--ink); display:grid; place-items:center; background:#fff; color:var(--ink); font-style:normal; }
+.tips i .i{ width:16px; height:16px; }
+.qr{ width:224px; height:224px; margin:2px auto 16px; padding:12px; border:1.8px solid var(--ink); border-radius:18px; background:#fff; display:grid; place-items:center; box-shadow:0 4px 0 var(--ink); }
+.qr img{ width:100%; height:auto; display:block; image-rendering:pixelated; }
+.qr p{ margin:0; font-size:13px; color:var(--ink-2); text-align:center; }
+.qr-n{ text-align:center; font:700 21px var(--serif); margin:0 0 4px; word-break:break-word; }
+
+/* ============ lightbox ============ */
+.lb{ position:absolute; inset:0; z-index:40; background:rgba(25,34,25,.94); display:flex; align-items:center; justify-content:center; touch-action:pan-y; }
+.lb img{ max-width:92%; max-height:80%; border-radius:14px; border:3px solid #fff; display:block; }
+.lb button{ position:absolute; width:48px; height:48px; display:grid; place-items:center; color:#fff; border-radius:14px; background:rgba(255,255,255,.12); }
+.lb button .i{ width:24px; height:24px; }
+.lb .lb-x{ top:calc(14px + env(safe-area-inset-top)); right:14px; }
+.lb .lb-p{ left:10px; top:50%; translate:0 -50%; } .lb .lb-n{ right:10px; top:50%; translate:0 -50%; }
+.lb .lb-c{ position:absolute; bottom:calc(18px + env(safe-area-inset-bottom)); left:0; right:0; text-align:center; color:#fff; font:16px var(--hand); }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  .hs .art{ animation:none; }
+  .petal, .spark{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="app closed" id="app">
+  <svg class="scene" id="scene" viewBox="5 15 380 810" preserveAspectRatio="xMidYMid meet" aria-label="Taman pernikahan. Ketuk benda yang berkilau untuk membuka bagian undangan."></svg>
+
+  <button class="tb" id="b-info" type="button" aria-label="Cara membuka undangan"></button>
+  <div class="tb-r">
+    <button class="tb on" id="b-music" type="button" aria-label="Musik: nyala" aria-pressed="true"></button>
+    <button class="tb" id="b-power" type="button" aria-label="Tutup undangan, kembali ke sampul"></button>
+    <button class="tb" id="b-qr" type="button" aria-label="QR check-in tamu"></button>
+  </div>
+
+  <div class="wish" id="wish">
+    <button class="wcard" id="wcard" type="button" aria-label="Ucapan berikutnya"><span class="wn"></span><p class="wm"></p></button>
+    <div class="wbtns">
+      <button type="button" id="w-add" aria-label="Tulis ucapan"></button>
+      <button type="button" id="w-all" aria-label="Lihat semua ucapan"></button>
+      <button type="button" id="w-hide" aria-pressed="false">Sembunyikan Ucapan</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <section class="cover" id="cover" aria-label="Sampul undangan">
+    <div class="cv">
+      <svg class="cv-art" id="cv-art" viewBox="-70 -60 140 96" aria-hidden="true"></svg>
+      <p class="cv-k">The Wedding of</p>
+      <h1 class="cv-n" id="cv-n"></h1>
+      <p class="cv-d" id="cv-d"></p>
+      <div class="cv-to"><span>Kepada Yth. Bapak/Ibu/Saudara/i</span><b id="cv-guest"></b></div>
+      <button class="btn solid block" id="open" type="button"></button>
+    </div>
+  </section>
+
+  <div class="ov" id="ov" hidden>
+    <div class="ov-bg" data-close></div>
+    <section class="win" id="win" role="dialog" aria-modal="true" aria-labelledby="win-t">
+      <header class="win-h"><span class="leaf" id="win-leaf" aria-hidden="true"></span><h2 id="win-t"></h2><button class="x" type="button" data-close aria-label="Tutup"></button></header>
+      <div class="win-b" id="win-b"></div>
+    </section>
+  </div>
+
+  <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Foto">
+    <img id="lb-img" alt="">
+    <button class="lb-x" type="button" id="lb-x" aria-label="Tutup foto"></button>
+    <button class="lb-p" type="button" id="lb-p" aria-label="Foto sebelumnya"></button>
+    <button class="lb-n" type="button" id="lb-n" aria-label="Foto berikutnya"></button>
+    <p class="lb-c" id="lb-c"></p>
+  </div>
+</div>
+
+<!-- banner kanan, hanya tampil di desktop -->
+<aside class="banner" aria-hidden="true">
+  <svg class="bn-land" id="bn-land" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice"></svg>
+  <div class="bn-bg" id="bn-bg"></div>
+  <div class="bn-shade"></div>
+  <div class="bn-inner">
+    <svg class="bn-art" id="bn-art" viewBox="-70 -60 140 96"></svg>
+    <p class="bn-eyebrow">The Wedding of</p>
+    <h2 class="bn-names"><span id="bn-n1"></span><em>&amp;</em><span id="bn-n2"></span></h2>
+    <p class="bn-date" id="bn-date"></p>
+    <p class="bn-guest" id="bn-guest"></p>
+    <p class="bn-hint">✨ ketuk benda yang berkilau di taman sebelah kiri</p>
+  </div>
+  <div class="bn-ticker"><div class="bn-ticker-run" id="bn-ticker"></div></div>
+</aside>
+
+<audio id="bgm" loop preload="none"></audio>
+
+<script>
+/* =========================================================
+   ✏️  UBAH DATA UNDANGAN DI SINI
+   Kirim link personal: undangan-taman.html?untuk=Budi
+   ========================================================= */
+const CONFIG = {
+  // --- mempelai (foto: misal "nadia.jpg", "" = pakai ilustrasi) ---
+  wanita: { panggilan: "Nadia", lengkap: "Nadia Larasati", ortu: "Putri dari Bapak Bambang Wijaya dan Ibu Rina Lestari", instagram: "", foto: "" },
+  pria:   { panggilan: "Arga",  lengkap: "Arga Pratama",   ortu: "Putra dari Bapak Hendra Pratama dan Ibu Wulan Sari",   instagram: "", foto: "" },
+  salam: "Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberi doa restu di hari bahagia kami.",
+  kutipan: "“Cinta tumbuh pelan-pelan, seperti taman. Hari ini, kami ingin merayakan mekarnya bersamamu.”",
+
+  // --- acara (ikon: "cincin" / "pesta"), lokasi = nomor urut di daftar lokasi ---
+  acara: [
+    { nama: "Akad Nikah", mulai: "2027-02-14T08:00", selesai: "10:00", lokasi: 0, ikon: "cincin" },
+    { nama: "Resepsi",    mulai: "2027-02-14T11:00", selesai: "14:00", lokasi: 0, ikon: "pesta" }
+  ],
+  zona: "WIB",
+  lokasi: [
+    { tempat: "Taman Kebun Seruni", alamat: "Jl. Seruni Raya No. 5, Lembang, Bandung Barat", linkMaps: "" }
+  ],
+  catatanAcara: "Acara di area taman terbuka. Sepatu flat/hak tebal lebih nyaman di rumput, ya!",
+
+  // --- kisah cinta (foto opsional) ---
+  kisah: [
+    { tahun: "2019", judul: "Pertama Bertemu",     cerita: "Kelas berkebun akhir pekan. Satu pot tanaman cabai yang nggak pernah berbuah, tapi justru jadi awal obrolan panjang kami.", foto: "" },
+    { tahun: "2021", judul: "Tumbuh Bersama",      cerita: "Dua kota, ratusan video call, dan banyak tiket kereta. Kami belajar bahwa sabar itu juga bentuk sayang.", foto: "" },
+    { tahun: "2025", judul: "Lamaran",             cerita: "Di bawah pohon besar di sore yang cerah, sebuah cincin kecil dan satu pertanyaan besar. Jawabannya: iya.", foto: "" },
+    { tahun: "2027", judul: "Hari Bahagia",        cerita: "Babak baru dimulai, dan kami ingin kamu ada di halaman pertamanya.", foto: "" }
+  ],
+
+  // --- dress code ---
+  dressCode: {
+    catatan: "Biar fotonya serasi dengan taman, yuk datang dengan nuansa warna berikut:",
+    warna: [["#9dbb95", "Sage"], ["#f2d0b8", "Peach"], ["#f3e7cf", "Krem"], ["#c96d47", "Terakota"]],
+    pria: "Kemeja atau batik lengan panjang, celana bahan.",
+    wanita: "Dress, kebaya modern, atau atasan & rok panjang.",
+    hindari: "Mohon tidak memakai warna putih polos, ya."
+  },
+
+  fotoBanner: "",                     // foto latar banner kanan (desktop), misal "kami.jpg". "" = ilustrasi taman
+
+  // --- ILUSTRASI GAMBAR (opsional) ---
+  // Isi "latar" dengan gambar ilustrasi utuh (lukisan/ilustrasi digital, potret, misal 1080 x 2340 px)
+  // maka gambar vektor diganti gambar ini, dan benda-benda yang bisa diketuk ditandai bingkai berkilau.
+  // Posisi tiap benda: [x, y, lebar, tinggi] dalam piksel gambar.
+  // Cara cari posisinya: buka undangan-taman.html?atur=1 lalu ketuk gambar → koordinatnya muncul.
+  ilustrasi: {
+    latar: "",                        // misal "taman.jpg". "" = pakai ilustrasi vektor bawaan
+    lebar: 1080, tinggi: 2340,        // ukuran asli gambar (piksel)
+    titik: {
+      story:   [ 80,   90, 330, 470],
+      dress:   [720,  780, 290, 380],
+      about:   [ 40,  930, 320, 540],
+      venue:   [790, 1200, 260, 330],
+      gallery: [130, 1580, 220, 300],
+      rsvp:    [690, 1650, 300, 270],
+      gift:    [820, 1980, 240, 250]
+    }
+  },
+
+  // --- galeri (6 foto, misal "foto1.jpg"; "" = kotak kosong) ---
+  galeri: ["", "", "", "", "", ""],
+
+  // --- kado ([] untuk menyembunyikan rekening; alamatKado "" untuk menyembunyikan alamat) ---
+  teksHadiah: "Doa restu kalian adalah hadiah terindah. Namun jika ingin memberi tanda kasih, bisa melalui:",
+  hadiah: [
+    { bank: "BCA",     nomor: "1234567890", atasNama: "Nadia Larasati" },
+    { bank: "Mandiri", nomor: "0987654321", atasNama: "Arga Pratama" }
+  ],
+  alamatKado: "Nadia Larasati — Jl. Kenanga No. 12, Coblong, Bandung 40132",
+
+  // --- ucapan contoh yang tampil di bawah (ucapan tamu tersimpan di perangkatnya) ---
+  ucapanContoh: [
+    { nama: "Daniel",  pesan: "Selamat Nadia & Arga! Semoga cinta kalian terus tumbuh subur kayak taman ini 🌱" },
+    { nama: "Rika",    pesan: "Akhirnyaaa! Bahagia selalu ya kalian berdua, sampai kakek-nenek 🥂" },
+    { nama: "Om Budi", pesan: "Selamat menempuh hidup baru. Semoga sakinah, mawaddah, warahmah." },
+    { nama: "Tasya",   pesan: "Nggak sabar lihat kalian di bawah gapura bunga! See you di hari H 💐" }
+  ],
+  namaAnjing: "Kopi",
+
+  // --- tamu & RSVP ---
+  tamuDefault: "Tamu Undangan",
+  batasRsvp: "7 Februari 2027",
+  maksTamu: 4,
+  waNumber: "",                       // nomor WA untuk RSVP, format 628xxxxxxxxx. Kosong = tombol WA disembunyikan
+  musik: ""                           // file musik, misal "lagu.mp3". Kosong = musik kotak musik bawaan
+};
+
+/* ========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const pad = n => String(n).padStart(2, "0");
+const store = {
+  get(k, d){ try { const v = localStorage.getItem("tm-" + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v){ try { localStorage.setItem("tm-" + k, JSON.stringify(v)); } catch (e) {} }
+};
+const GUEST = (() => {
+  try { const q = new URLSearchParams(location.search); return (q.get("untuk") || q.get("to") || "").trim().slice(0, 40) || CONFIG.tamuDefault; }
+  catch (e) { return CONFIG.tamuDefault; }
+})();
+const W = CONFIG.wanita, P = CONFIG.pria, COUPLE = `${W.panggilan} & ${P.panggilan}`;
+const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const OFFSET = { WIB:"+07:00", WITA:"+08:00", WIT:"+09:00" }[CONFIG.zona] || "+07:00";
+const EVENTS = CONFIG.acara.map(a => {
+  const [d, t] = a.mulai.split("T");
+  const [y, m, dd] = d.split("-").map(Number);
+  const wd = new Date(Date.UTC(y, m - 1, dd)).getUTCDay();
+  const s = new Date(`${a.mulai}:00${OFFSET}`);
+  const e = a.selesai ? new Date(`${d}T${a.selesai}:00${OFFSET}`) : new Date(s.getTime() + 3 * 36e5);
+  return { ...a, s, e, y, m, d:dd, wd, tanggal:`${HARI[wd]}, ${dd} ${BULAN[m - 1]} ${y}`, jam:`${t.replace(":", ".")} – ${a.selesai ? a.selesai.replace(":", ".") : "selesai"} ${CONFIG.zona}` };
+});
+const E0 = EVENTS[0];
+const START = new Date(Math.min(...EVENTS.map(e => e.s)));
+const END = new Date(Math.max(...EVENTS.map(e => e.e)));
+const waBase = CONFIG.waNumber.replace(/\D/g, "");
+const waLink = text => `https://wa.me/${waBase}?text=${encodeURIComponent(text)}`;
+const mapsUrl = l => l.linkMaps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([l.tempat, l.alamat].filter(Boolean).join(", "))}`;
+const stamp = d => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+
+/* --- ikon garis --- */
+const IC = {
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.2"/>',
+  head:'<path d="M4 15.5V12a8 8 0 0 1 16 0v3.5"/><rect x="3" y="14" width="4.6" height="6.6" rx="1.6"/><rect x="16.4" y="14" width="4.6" height="6.6" rx="1.6"/>',
+  power:'<path d="M12 3.5v8"/><path d="M6.7 6.8a7.5 7.5 0 1 0 10.6 0"/>',
+  qr:'<rect x="3.5" y="3.5" width="6" height="6" rx="1"/><rect x="14.5" y="3.5" width="6" height="6" rx="1"/><rect x="3.5" y="14.5" width="6" height="6" rx="1"/><path d="M14.5 14.5h2.6v2.6M20.5 14.5v.1M14.5 20.5h.1M17.6 20.5h2.9v-2.9"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  pin:'<path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/>',
+  cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  ig:'<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.3 6.7h.01"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  up:'<path d="M6 15l6-6 6 6"/>',
+  left:'<path d="M15 6l-6 6 6 6"/>',
+  right:'<path d="M9 6l6 6-6 6"/>',
+  ring:'<circle cx="12" cy="14.5" r="6"/><path d="M9.6 5.6L12 3l2.4 2.6L12 8.2z"/>',
+  glass:'<path d="M7 3h10l-1 7a4 4 0 0 1-8 0z"/><path d="M12 14v6M8.5 20.5h7"/>',
+  heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  photo:'<rect x="3.5" y="5" width="17" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 15.5l-4.5-4.5-8.5 8"/>',
+  mail:'<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/>',
+  wa:'<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/><path d="M9 9.4c0 3 2.6 5.6 5.6 5.6l1.1-1.4-2-1-1 .8a4 4 0 0 1-2.1-2.1l.8-1-1-2z"/>',
+  gate:'<path d="M5 20.5V11a7 7 0 0 1 14 0v9.5"/><path d="M3 20.5h18M9 20.5v-6a3 3 0 0 1 6 0v6"/>',
+  leaf:'<path d="M5 19C5 10 10 5 20 4c-1 10-6 15-15 15z"/><path d="M5 19c3-4 6-7 10-10"/>'
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+/* ================= ILUSTRASI ================= */
+const L = "#2f3b2c";   // warna garis
+let seed = 11;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+function chibi(kind){
+  const f = kind === "f";
+  const back = f ? `<path d="M3 -27 q32 6 30 62 q-9 7 -18 2 q7 -38 -12 -58z" fill="#fff" fill-opacity=".8" stroke="${L}" stroke-width=".9"/><circle cx="0" cy="-25" r="9" fill="#5a3a26" stroke="${L}" stroke-width="1.2"/>` : "";
+  const body = f
+    ? `<path d="M-20 64 q0-34 20-38 q20 4 20 38z" fill="#fffaf3" stroke="${L}" stroke-width="1.5"/><path d="M-9 30 q4.5 5 9 0 q4.5 5 9 0" fill="none" stroke="#9dbb95" stroke-width="1.6"/><path d="M-12 44 h24" stroke="#9dbb95" stroke-width="3"/>`
+    : `<path d="M-20 64 q0-34 20-38 q20 4 20 38z" fill="#4f6b58" stroke="${L}" stroke-width="1.5"/><path d="M-6 27 l6 14 l6-14z" fill="#fff"/><path d="M-5.5 29 l5.5 3 l-5.5 3z M5.5 29 l-5.5 3 l5.5 3z" fill="#c96d47"/><circle cx="12" cy="36" r="3" fill="#f2d0b8" stroke="${L}" stroke-width=".7"/>`;
+  const neck = `<rect x="-4" y="18" width="8" height="10" fill="#f3c8a8"/>`;
+  const head = `<circle r="22" fill="#f8d6bb" stroke="${L}" stroke-width="1.5"/>`;
+  const hair = f
+    ? `<path d="M-22 3 q-3-27 22-27 q25 0 22 27 q-5-14-22-15 q-17 1-22 15z" fill="#5a3a26" stroke="${L}" stroke-width="1.2"/><g stroke="${L}" stroke-width=".7"><circle cx="-12" cy="-19" r="2.8" fill="#fff"/><circle cx="-5" cy="-23" r="2.8" fill="#f2d0b8"/><circle cx="5" cy="-23" r="2.8" fill="#fff"/><circle cx="12" cy="-19" r="2.8" fill="#f2d0b8"/></g><ellipse cx="-16" cy="-15" rx="2" ry="3.5" fill="#9dbb95" transform="rotate(-40 -16 -15)"/><ellipse cx="16" cy="-15" rx="2" ry="3.5" fill="#9dbb95" transform="rotate(40 16 -15)"/>`
+    : `<path d="M-22 -1 q-1-25 23-25 q22 0 21 24 q-7-10-21-11 q-14 1-23 12z" fill="#3e2a1e" stroke="${L}" stroke-width="1.2"/>`;
+  const face = `<g fill="none" stroke="${L}" stroke-width="1.7" stroke-linecap="round"><path d="M-11 4 q3-3.5 6 0"/><path d="M5 4 q3-3.5 6 0"/><path d="M-3 11 q3 3 6 0"/></g><circle cx="-13" cy="10" r="3.6" fill="#f4a796" opacity=".7"/><circle cx="13" cy="10" r="3.6" fill="#f4a796" opacity=".7"/>`;
+  return back + body + neck + head + hair + face;
+}
+const heartPath = (x, y, s = 1, fill = "#e98a73", sw = 1.3) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0 9 C-9 3 -12 -5 -6 -9 C-3 -11 0 -9 0 -6 C0 -9 3 -11 6 -9 C12 -5 9 3 0 9Z" fill="${fill}" stroke="${L}" stroke-width="${sw / s}"/>`;
+const leafEl = (x, y, r, a, c = "#7fa77a") => `<ellipse cx="${x}" cy="${y}" rx="${r * .55}" ry="${r * 1.1}" fill="${c}" stroke="${L}" stroke-width=".7" transform="rotate(${a} ${x} ${y})"/>`;
+const flower = (x, y, r, c) => `<g stroke="${L}" stroke-width=".7"><circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/><circle cx="${x}" cy="${y}" r="${r * .35}" fill="#e3b64f"/></g>`;
+const FLOWER_COLS = ["#fffaf3", "#f2d0b8", "#f7e2a8", "#f6c9c2", "#fffaf3"];
+function portrait(kind){
+  const bg = kind === "f" ? "#f6dccd" : "#e3eddc", dot = kind === "f" ? "#efc4ad" : "#c7dabe";
+  let deco = ""; for (let i = 0; i < 9; i++) deco += leafEl(-52 + (i % 3) * 52 + (i > 2 && i < 6 ? 26 : 0), -40 + Math.floor(i / 3) * 40, 5, i * 40, dot);
+  return `<svg viewBox="-60 -50 120 126" aria-hidden="true"><rect x="-60" y="-50" width="120" height="126" fill="${bg}"/>${deco}<g transform="translate(0 10) scale(1.08)">${chibi(kind)}</g>${heartPath(kind === "f" ? -38 : 38, -26, .8)}</svg>`;
+}
+function balloon(x, y, s, c1, c2, kids){
+  const sw = v => (v / s).toFixed(2);
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <path d="M-10 40 L-11 58 M10 40 L11 58" stroke="${L}" stroke-width="${sw(1)}"/>
+    ${kids ? `<g stroke="${L}" stroke-width=".9"><circle cx="-5" cy="54" r="5" fill="#f8d6bb"/><path d="M-10 53 q0-6 5-6 q5 0 5 5 q-3-2-10 1z" fill="#3e2a1e"/><circle cx="5" cy="54" r="5" fill="#f8d6bb"/><path d="M0 54 q-1-7 5-7 q6 0 5 7 q-2-4-10 0z" fill="#5a3a26"/><circle cx="5" cy="47.5" r="1.6" fill="#fff"/></g>` : ""}
+    <path d="M0 -70 C-46 -70 -52 -14 -25 20 L-10 40 H10 L25 20 C52 -14 46 -70 0 -70Z" fill="${c1}" stroke="${L}" stroke-width="${sw(1.6)}"/>
+    <path d="M0 -70 C-16 -70 -24 -14 -13 20 L-6 40 H6 L13 20 C24 -14 16 -70 0 -70Z" fill="${c2}" stroke="${L}" stroke-width="${sw(1.2)}"/>
+    <path d="M-38 -24 Q0 -14 38 -24 M-25 20 Q0 28 25 20" fill="none" stroke="${L}" stroke-width="${sw(1.1)}"/>
+    ${heartPath(0, -38, .9, c1, 1.1 / s)}
+    <rect x="-13" y="56" width="26" height="18" rx="3" fill="#c8955f" stroke="${L}" stroke-width="${sw(1.4)}"/>
+    <path d="M-13 62 H13 M-13 68 H13" stroke="#a87545" stroke-width="${sw(1)}"/></g>`;
+}
+function suitArt(x){
+  return `<path d="M${x} 362 v-5 q0-5 4-5 q4 0 4 4" fill="none" stroke="${L}" stroke-width="1.8"/>
+  <path d="M${x - 17} 372 l-6 6 l-1 58 h7z M${x + 17} 372 l6 6 l1 58 h-7z" fill="#445e4d" stroke="${L}" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M${x - 17} 372 l17-6 l17 6 l3 72 h-40z" fill="#4f6b58" stroke="${L}" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M${x - 7} 367 l7 27 l7 -27z" fill="#fff" stroke="${L}" stroke-width="1"/>
+  <path d="M${x - 7} 367 l-3 12 l10 15 M${x + 7} 367 l3 12 l-10 15" fill="none" stroke="#6e8c78" stroke-width="1.3"/>
+  <path d="M${x - 6} 370 l6 3 l-6 3z M${x + 6} 370 l-6 3 l6 3z" fill="#c96d47"/>
+  <path d="M${x + 8} 386 h7 l-1 3.5 h-6z" fill="#e3b64f"/>
+  <circle cx="${x}" cy="406" r="1.6" fill="#e9dcc2"/><circle cx="${x}" cy="418" r="1.6" fill="#e9dcc2"/>
+  <path d="M${x - 17} 362 l17-10 l17 10" fill="none" stroke="${L}" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M${x - 12} 444 h24 l-1 96 h-10 l-1 -70 l-1 70 h-10z" fill="#3d5445" stroke="${L}" stroke-width="1.5" stroke-linejoin="round"/>`;
+}
+function dressArt(x){
+  return `<path d="M${x} 362 v-5 q0-5 4-5 q4 0 4 4" fill="none" stroke="${L}" stroke-width="1.8"/>
+  <path d="M${x - 14} 372 l14-10 l14 10" fill="none" stroke="${L}" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M${x - 8} 372 v6 M${x + 8} 372 v6" stroke="${L}" stroke-width="1.4"/>
+  <path d="M${x - 12} 405 h24 q16 70 26 136 q-38 8 -76 0 q10 -66 26 -136z" fill="#fffaf5" stroke="${L}" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M${x - 4} 410 q-8 60 -16 128 M${x + 4} 410 q8 60 16 128 M${x} 412 v128" fill="none" stroke="#e6e0d2" stroke-width="1.3"/>
+  <path d="M${x - 10} 377 h20 l2 26 h-24z" fill="#fffaf5" stroke="${L}" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M${x - 10} 378 q5 5 10 0 q5 5 10 0" fill="none" stroke="#9dbb95" stroke-width="1.3"/>
+  <rect x="${x - 13}" y="400" width="26" height="6" rx="1.5" fill="#9dbb95" stroke="${L}" stroke-width="1.1"/>
+  ${flower(x + 9, 403, 3.4, "#f2d0b8")}`;
+}
+function giftArt(){
+  return `<g class="spk" fill="#f7e2a8" stroke="${L}" stroke-width="1"><path d="M8 30 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/><path d="M96 18 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4z"/><path d="M108 58 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z"/></g>
+  <ellipse cx="60" cy="122" rx="44" ry="6" fill="#000" opacity=".12"/>
+  <rect x="26" y="70" width="68" height="50" rx="5" fill="#9dbb95" stroke="${L}" stroke-width="2"/>
+  <g fill="#fff" opacity=".55">${leafEl(38, 86, 4, 30, "#fff")}${leafEl(82, 106, 4, -30, "#fff")}${leafEl(42, 108, 3, 60, "#fff")}${leafEl(84, 82, 3, -60, "#fff")}</g>
+  <rect x="55" y="70" width="10" height="50" fill="#f2d0b8" stroke="${L}" stroke-width="1.2"/>
+  <g class="lid"><rect x="20" y="58" width="80" height="16" rx="4" fill="#b6cfae" stroke="${L}" stroke-width="2"/><rect x="55" y="58" width="10" height="16" fill="#f2d0b8" stroke="${L}" stroke-width="1.2"/>
+  <path d="M60 58 c-6 -14 -26 -18 -24 -6 c1 6 14 8 24 6z M60 58 c6 -14 26 -18 24 -6 c-1 6 -14 8 -24 6z" fill="#c96d47" stroke="${L}" stroke-width="1.5"/><circle cx="60" cy="57" r="4" fill="#e98a73" stroke="${L}" stroke-width="1.2"/></g>`;
+}
+function cloud(x, y, s, cls = ""){
+  return `<g class="cloud ${cls}"><path transform="translate(${x} ${y}) scale(${s})" d="M0 0 q2 -14 16 -12 q6 -14 22 -8 q14 -6 20 8 q14 0 12 12z" fill="#fff" opacity=".92"/></g>`;
+}
+// label: tag kayu dengan tali
+const lbl = (x, y, w, t) => `<g transform="translate(${x} ${y})"><g class="lbl"><path d="M${-w / 2 + 9} -12.5 H${w / 2 - 4} a4 4 0 0 1 4 4 V8.5 a4 4 0 0 1 -4 4 H${-w / 2 + 9} L${-w / 2} 0Z"/><circle cx="${-w / 2 + 7.5}" cy="0" r="2.2" fill="#9dbb95" stroke="${L}" stroke-width=".9"/><text x="4" y="1">${esc(t)}</text></g></g>`;
+const sparks = (pts) => pts.map(([x, y, d]) => `<path class="spark" style="animation-delay:${d}s" d="M${x} ${y - 5} L${x + 1.4} ${y - 1.4} L${x + 5} ${y} L${x + 1.4} ${y + 1.4} L${x} ${y + 5} L${x - 1.4} ${y + 1.4} L${x - 5} ${y} L${x - 1.4} ${y - 1.4}Z" fill="#fff6c9" stroke="${L}" stroke-width=".6" pointer-events="none"/>`).join("");
+const hs = (id, aria, art, hit, label, sp) => `<g class="hs" data-open="${id}" role="button" tabindex="0" aria-label="${aria}"><rect class="hit" ${hit}/><g class="art">${art}</g>${label}${sparks(sp)}</g>`;
+const ovalPhoto = (p, kind, cx, id) => p.foto
+  ? `<image href="${esc(p.foto)}" x="${cx - 15}" y="381" width="30" height="42" preserveAspectRatio="xMidYMid slice" clip-path="url(#${id})"/>`
+  : `<g clip-path="url(#${id})"><rect x="${cx - 16}" y="378" width="32" height="48" fill="${kind === "f" ? "#f6dccd" : "#e3eddc"}"/><g transform="translate(${cx} 406) scale(.5)">${chibi(kind)}</g></g>`;
+
+function landscape(w, groundY, opts = {}){
+  // langit, matahari, bukit, pagar (dipakai di taman & banner)
+  const k = w / 380, X0 = opts.x0 ?? -700, X1 = opts.x1 ?? 1090;
+  let fence = "";
+  for (let x = X0; x < X1; x += 20 * k) fence += `<path d="M${x.toFixed(1)} ${groundY + 46 * k} V${groundY + 8 * k} l${4 * k} ${-6 * k} l${4 * k} ${6 * k} V${groundY + 46 * k}Z" fill="#fbf7ee" stroke="${L}" stroke-width="${k}"/>`;
+  let trees = "";
+  (opts.trees || []).forEach(([x, y, r]) => { trees += `<g stroke="${L}" stroke-width="${.8 * k}"><circle cx="${x}" cy="${y}" r="${r}" fill="#8fb787"/><circle cx="${x - r * .55}" cy="${y + r * .25}" r="${r * .7}" fill="#8fb787"/><circle cx="${x + r * .55}" cy="${y + r * .3}" r="${r * .65}" fill="#86b07e"/></g>`; });
+  return `
+    <rect x="${X0}" y="-800" width="${X1 - X0}" height="${groundY + 900}" fill="url(#gSky${opts.id || ""})"/>
+    <circle cx="${opts.sunX}" cy="${opts.sunY}" r="${92 * k}" fill="#fff4d6" opacity=".35"/><circle cx="${opts.sunX}" cy="${opts.sunY}" r="${48 * k}" fill="#fff1c9"/>
+    ${opts.clouds || ""}
+    <path d="M${X0} ${groundY - 50 * k} Q${X0 + 300 * k} ${groundY - 100 * k} ${X0 + 600 * k} ${groundY - 60 * k} T ${X0 + 1200 * k} ${groundY - 70 * k} T ${X0 + 1800 * k} ${groundY - 55 * k} T ${X0 + 2400 * k} ${groundY - 65 * k} V${groundY + 60 * k} H${X0}Z" fill="#c6dcb9"/>
+    ${trees}
+    <path d="M${X0} ${groundY - 10 * k} Q${X0 + 400 * k} ${groundY - 50 * k} ${X0 + 760 * k} ${groundY - 15 * k} Q${X0 + 900 * k} ${groundY - 40 * k} ${X0 + 1030 * k} ${groundY - 20 * k} Q${X0 + 1300 * k} ${groundY - 50 * k} ${X0 + 2400 * k} ${groundY - 10 * k} V${groundY + 60 * k} H${X0}Z" fill="#a9c99a"/>
+    <rect x="${X0}" y="${groundY + 14 * k}" width="${X1 - X0}" height="${3 * k}" fill="#fbf7ee" stroke="${L}" stroke-width="${.8 * k}"/>
+    <rect x="${X0}" y="${groundY + 30 * k}" width="${X1 - X0}" height="${3 * k}" fill="#fbf7ee" stroke="${L}" stroke-width="${.8 * k}"/>
+    ${fence}
+    <rect x="${X0}" y="${groundY + 40 * k}" width="${X1 - X0}" height="2000" fill="url(#gGrass${opts.id || ""})"/>
+    <rect x="${X0}" y="${groundY + 40 * k}" width="${X1 - X0}" height="2000" fill="url(#pTuft${opts.id || ""})"/>`;
+}
+const DEFS = (id = "") => `
+  <linearGradient id="gSky${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fc8df"/><stop offset=".62" stop-color="#cfe6e6"/><stop offset=".86" stop-color="#fbe5c9"/><stop offset="1" stop-color="#fad7b4"/></linearGradient>
+  <linearGradient id="gGrass${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b3d29d"/><stop offset=".35" stop-color="#9fc58c"/><stop offset="1" stop-color="#86b276"/></linearGradient>
+  <pattern id="pTuft${id}" width="46" height="34" patternUnits="userSpaceOnUse"><path d="M6 22 l3 -8 l2 8 M10 22 l4 -6 M30 9 l2 -6 l2 6 M33 9 l3 -4" fill="none" stroke="#7fa96f" stroke-width="1.2" stroke-linecap="round"/></pattern>`;
+
+const ATUR = (() => { try { return new URLSearchParams(location.search).has("atur"); } catch (e) { return false; } })();
+const IMG = CONFIG.ilustrasi && CONFIG.ilustrasi.latar ? CONFIG.ilustrasi : null;
+function buildImageScene(I){
+  const sv = $("#scene"), s = I.lebar / 380;
+  const NAMES = { about:["About Us", 86], story:["Love Story", 92], venue:["Date & Venue", 104], dress:["Dress Code", 96], gallery:["Gallery", 78], rsvp:["RSVP", 64], gift:["Gift", 60] };
+  sv.setAttribute("viewBox", `0 0 ${I.lebar} ${I.tinggi}`);
+  sv.setAttribute("aria-label", "Ilustrasi undangan. Ketuk benda yang berkilau untuk membuka bagian undangan.");
+  app.classList.add("img-mode"); app.style.setProperty("--latar", `url("${encodeURI(I.latar)}")`);
+  if (ATUR) app.classList.add("atur");
+  let out = `<image href="${esc(I.latar)}" x="0" y="0" width="${I.lebar}" height="${I.tinggi}" preserveAspectRatio="none"/>`;
+  Object.entries(I.titik || {}).forEach(([id, box], i) => {
+    if (!NAMES[id] || !Array.isArray(box)) return;
+    const [x, y, w, h] = box, [label, lw] = NAMES[id], sc = (px, py, d) => `<g transform="translate(${px} ${py}) scale(${s})">${sparks([[0, 0, d]])}</g>`;
+    out += `<g class="hs" data-open="${id}" role="button" tabindex="0" aria-label="${label}">
+      <g class="art"><rect class="ring" x="${x}" y="${y}" width="${w}" height="${h}" rx="${18 * s}" style="stroke-width:${2.5 * s}px"/></g>
+      <g transform="translate(${x + w / 2} ${y + h + 16 * s}) scale(${s})">${lbl(0, 0, lw, label)}</g>
+      ${ATUR ? `<text x="${x + 8 * s}" y="${y + 16 * s}" font-size="${12 * s}" font-family="Nunito Sans, sans-serif" font-weight="700" fill="#ff5a36">${id}</text>` : ""}
+      ${sc(x, y, -i * .3)}${sc(x + w, y + h * .6, -1.3 - i * .2)}</g>`;
+  });
+  sv.innerHTML = out;
+}
+
+function buildScene(){
+  if (IMG) return buildImageScene(IMG);
+  seed = 11;
+  // gapura bunga
+  const archPts = [];
+  for (let a = 180; a >= 0; a -= 10) archPts.push([195 + 70 * Math.cos(a * Math.PI / 180), 320 - 70 * Math.sin(a * Math.PI / 180)]);
+  for (let y = 336; y <= 488; y += 19){ archPts.push([125, y]); archPts.push([265, y]); }
+  let archFl = "";
+  archPts.forEach(([x, y], i) => {
+    const big = y < 330 || i % 3 === 0;
+    archFl += leafEl(x - 6 + rnd() * 3, y + 3, 4.6, -50 + rnd() * 30) + leafEl(x + 6 - rnd() * 3, y + 2, 4.6, 50 - rnd() * 30);
+    if (big || rnd() > .35) archFl += flower(x + (rnd() - .5) * 4, y + (rnd() - .5) * 4, big ? 5.5 + rnd() * 2 : 4.2, FLOWER_COLS[(i * 7) % FLOWER_COLS.length]);
+  });
+  // bunga liar di rumput
+  let wild = "";
+  for (let i = 0; i < 46; i++){ const x = -40 + rnd() * 470, y = 560 + rnd() * 280, c = FLOWER_COLS[i % FLOWER_COLS.length]; wild += `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${c}" stroke="${L}" stroke-width=".5"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r=".9" fill="#e3b64f"/></g>`; }
+  // kelopak jatuh
+  let petals = "";
+  for (let i = 0; i < 10; i++) petals += `<ellipse class="petal" style="--dx:${(rnd() * 120 - 40).toFixed(0)}px;animation-duration:${(14 + rnd() * 10).toFixed(1)}s;animation-delay:${(-rnd() * 20).toFixed(1)}s" cx="${(rnd() * 380).toFixed(0)}" cy="0" rx="3.2" ry="1.9" fill="${i % 2 ? "#f6c9c2" : "#fffaf3"}" stroke="${L}" stroke-width=".4" pointer-events="none"/>`;
+
+  $("#scene").innerHTML = `
+  <defs>${DEFS()}
+    <pattern id="pCheck" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#fbf7ee"/><rect width="9" height="9" fill="#b6cfae"/><rect x="9" y="9" width="9" height="9" fill="#b6cfae"/></pattern>
+    <radialGradient id="gWarm" cx="195" cy="300" r="420" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff4d6" stop-opacity=".35"/><stop offset=".6" stop-color="#fff4d6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gVig" cx="195" cy="420" r="640" gradientUnits="userSpaceOnUse"><stop offset=".5" stop-color="#2f3b2c" stop-opacity="0"/><stop offset="1" stop-color="#2f3b2c" stop-opacity=".38"/></radialGradient>
+    <clipPath id="cOL"><ellipse cx="46" cy="402" rx="15" ry="21"/></clipPath>
+    <clipPath id="cOR"><ellipse cx="90" cy="402" rx="15" ry="21"/></clipPath>
+  </defs>
+
+  ${landscape(380, 500, { sunX:195, sunY:290, trees:[[-10, 452, 20], [36, 460, 14], [300, 452, 16], [404, 446, 22]],
+      clouds: cloud(20, 270, 1.1) + cloud(240, 300, .8, "c2") + cloud(-120, 180, .9, "c2") })}
+  ${balloon(258, 196, .32, "#9dbb95", "#fbf7ee", false).replace("<g ", '<g class="float2" ')}
+
+  <!-- jalan setapak -->
+  <path d="M168 540 L222 540 Q258 690 312 900 L78 900 Q132 690 168 540Z" fill="#efe2c4" stroke="#cdb487" stroke-width="1.5"/>
+  <g fill="#e2cfa6" stroke="#c4a877" stroke-width="1"><ellipse cx="195" cy="566" rx="14" ry="5"/><ellipse cx="190" cy="604" rx="18" ry="6"/><ellipse cx="200" cy="676" rx="22" ry="7"/><ellipse cx="192" cy="740" rx="26" ry="8"/><ellipse cx="202" cy="812" rx="30" ry="9"/></g>
+  ${wild}
+
+  <!-- pohon kanan -->
+  <path d="M358 548 Q364 420 354 300 L374 300 Q382 420 384 548Z" fill="#9a7354" stroke="${L}" stroke-width="1.8"/>
+  <g stroke="${L}" stroke-width="1.6"><circle cx="372" cy="188" r="60" fill="#7fa77a"/><circle cx="318" cy="226" r="44" fill="#86b07e"/><circle cx="342" cy="150" r="40" fill="#7fa77a"/><circle cx="405" cy="242" r="46" fill="#77a072"/><circle cx="350" cy="258" r="40" fill="#86b07e"/></g>
+  <g fill="#a3c79a"><circle cx="330" cy="140" r="12"/><circle cx="306" cy="214" r="10"/><circle cx="356" cy="238" r="9"/><circle cx="378" cy="160" r="14"/></g>
+  <g>${flower(300, 250, 4, "#f6c9c2")}${flower(332, 176, 4, "#fffaf3")}${flower(372, 222, 4, "#f7e2a8")}${flower(350, 120, 3.6, "#f6c9c2")}</g>
+  <path d="M358 314 Q320 298 258 290" fill="none" stroke="${L}" stroke-width="9" stroke-linecap="round"/>
+  <path d="M358 314 Q320 298 258 290" fill="none" stroke="#9a7354" stroke-width="6" stroke-linecap="round"/>
+  ${leafEl(266, 286, 5, -70)}${leafEl(290, 290, 4.6, 60)}
+
+  <!-- semak kiri -->
+  <g stroke="${L}" stroke-width="1.4"><circle cx="0" cy="520" r="32" fill="#7fa77a"/><circle cx="34" cy="532" r="24" fill="#86b07e"/></g>
+  ${flower(8, 506, 4, "#fffaf3")}${flower(36, 524, 3.6, "#f2d0b8")}
+
+  <!-- LOVE STORY: balon udara -->
+  ${hs("story", "Love Story — kisah kami", `<g class="float">${balloon(85, 118, 1, "#c96d47", "#fbf7ee", true)}</g>`,
+    `x="30" y="44" width="110" height="160"`, lbl(88, 214, 92, "Love Story"), [[140, 64, 0], [30, 150, -1.1]])}
+
+  <!-- DRESS CODE: baju tergantung di dahan -->
+  ${hs("dress", "Dress Code", `<g transform="translate(276 290) scale(.56) translate(0 -352)">${suitArt(0)}</g><g transform="translate(316 296) scale(.56) translate(0 -352)">${dressArt(0)}</g>`,
+    `x="254" y="284" width="96" height="124"`, lbl(298, 268, 96, "Dress Code"), [[256, 330, -.6], [346, 360, -1.7]])}
+
+  <!-- ABOUT US: kuda-kuda foto -->
+  ${hs("about", "About Us — tentang kami", `
+      <path d="M38 516 L60 338 M102 516 L80 338 M70 344 L72 506" stroke="${L}" stroke-width="7" stroke-linecap="round"/>
+      <path d="M38 516 L60 338 M102 516 L80 338 M70 344 L72 506" stroke="#b08a63" stroke-width="4" stroke-linecap="round"/>
+      <rect x="20" y="358" width="96" height="90" rx="5" fill="#fbf7ee" stroke="${L}" stroke-width="2"/>
+      <text x="68" y="373" text-anchor="middle" font-family="Kalam, cursive" font-weight="700" font-size="9.5" fill="#4f6b58">hello, it's us!</text>
+      ${ovalPhoto(W, "f", 46, "cOL")}${ovalPhoto(P, "m", 90, "cOR")}
+      <ellipse cx="46" cy="402" rx="15" ry="21" fill="none" stroke="#d9b25f" stroke-width="3"/><ellipse cx="46" cy="402" rx="16.6" ry="22.6" fill="none" stroke="${L}" stroke-width="1"/>
+      <ellipse cx="90" cy="402" rx="15" ry="21" fill="none" stroke="#d9b25f" stroke-width="3"/><ellipse cx="90" cy="402" rx="16.6" ry="22.6" fill="none" stroke="${L}" stroke-width="1"/>
+      ${heartPath(68, 432, .5)}${leafEl(28, 440, 4, 40)}${leafEl(108, 440, 4, -40)}
+      <rect x="16" y="448" width="104" height="7" rx="2" fill="#b08a63" stroke="${L}" stroke-width="1.5"/>`,
+    `x="16" y="334" width="106" height="184"`, lbl(70, 532, 86, "About Us"), [[16, 352, -.3], [122, 420, -1.4]])}
+
+  <!-- gapura & pengantin -->
+  <path d="M125 545 V320 A70 70 0 0 1 265 320 V545" fill="none" stroke="${L}" stroke-width="11"/>
+  <path d="M125 545 V320 A70 70 0 0 1 265 320 V545" fill="none" stroke="#fbf7ee" stroke-width="7"/>
+  <path d="M136 290 Q156 360 132 440 M254 290 Q234 360 258 440" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="7" stroke-linecap="round"/>
+  ${archFl}
+  <path d="M175 264 V282 M215 264 V282" stroke="${L}" stroke-width="1"/>
+  <rect x="165" y="280" width="60" height="19" rx="4" fill="#fbf7ee" stroke="${L}" stroke-width="1.5"/>
+  <text x="195" y="294" text-anchor="middle" font-family="Parisienne, cursive" font-size="14" fill="#4f6b58">${esc(W.panggilan[0])} &amp; ${esc(P.panggilan[0])}</text>
+  <g class="egg" data-egg="couple" role="button" tabindex="0" aria-label="${esc(COUPLE)}">
+    <ellipse cx="195" cy="540" rx="52" ry="6" fill="#2f3b2c" opacity=".14"/>
+    <g transform="translate(175 474)">${chibi("m")}</g>
+    <g transform="translate(215 474)">${chibi("f")}</g>
+    <g stroke="${L}" stroke-width=".9">${leafEl(204, 520, 4, -40)}${leafEl(214, 522, 4, 40)}<circle cx="205" cy="512" r="4.4" fill="#f2d0b8"/><circle cx="212" cy="508" r="4.4" fill="#fffaf3"/><circle cx="213" cy="516" r="4" fill="#f6c9c2"/><circle cx="219" cy="511" r="3.8" fill="#f7e2a8"/></g>
+    <g class="floaty">${heartPath(195, 416, 1.1)}</g>
+  </g>
+
+  <!-- DATE & VENUE: papan penunjuk -->
+  ${hs("venue", "Date & Venue — waktu dan tempat", `
+      <rect x="330" y="440" width="11" height="128" rx="2" fill="#b08a63" stroke="${L}" stroke-width="1.6"/>
+      <path d="M298 448 H374 a3 3 0 0 1 3 3 V472 a3 3 0 0 1 -3 3 H298 L286 461.5Z" fill="#ead2a2" stroke="${L}" stroke-width="1.6" stroke-linejoin="round"/>
+      <text x="332" y="466" text-anchor="middle" font-family="Fraunces, serif" font-weight="700" font-size="11.5" fill="${L}">${pad(E0.d)}.${pad(E0.m)}.${E0.y}</text>
+      <path d="M292 484 H366 L378 497.5 L366 511 H292 a3 3 0 0 1 -3 -3 V487 a3 3 0 0 1 3 -3Z" fill="#f4e4c1" stroke="${L}" stroke-width="1.6" stroke-linejoin="round"/>
+      <text x="324" y="502" text-anchor="middle" font-family="Fraunces, serif" font-weight="700" font-size="10.5" letter-spacing="1.6" fill="${L}">VENUE</text>
+      ${heartPath(360, 497.5, .38)}
+      <g fill="#8a6a50"><circle cx="335.5" cy="461" r="1.3"/><circle cx="335.5" cy="497" r="1.3"/></g>
+      ${leafEl(326, 564, 4.5, -30)}${leafEl(346, 564, 4.5, 30)}${flower(320, 560, 3.4, "#fffaf3")}`,
+    `x="284" y="436" width="100" height="134"`, lbl(334, 424, 104, "Date & Venue"), [[290, 470, -.9], [380, 530, -.2]])}
+
+  <!-- piknik (hiasan) -->
+  <path d="M70 714 L262 700 L292 792 L58 808Z" fill="url(#pCheck)" stroke="${L}" stroke-width="1.6" stroke-linejoin="round"/>
+  <g transform="translate(96 716)"><path d="M4 18 Q20 -10 36 18" fill="none" stroke="${L}" stroke-width="4"/><path d="M4 18 Q20 -10 36 18" fill="none" stroke="#c8955f" stroke-width="2.2"/>
+    <path d="M0 18 H40 L36 40 H4Z" fill="#c8955f" stroke="${L}" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 26 H38 M3 33 H37" stroke="#a87545" stroke-width="1"/>
+    ${flower(12, 16, 4, "#f6c9c2")}${flower(22, 13, 4, "#fffaf3")}${flower(31, 16, 3.6, "#f7e2a8")}</g>
+
+  <!-- GALLERY: kamera di tripod -->
+  ${hs("gallery", "Gallery — galeri foto", `
+      <path d="M80 618 L54 660 M80 618 L106 660 M80 618 V662" stroke="${L}" stroke-width="6" stroke-linecap="round"/>
+      <path d="M80 618 L54 660 M80 618 L106 660 M80 618 V662" stroke="#8a6a50" stroke-width="3" stroke-linecap="round"/>
+      <rect x="64" y="575" width="24" height="11" rx="2.5" fill="#efe4cc" stroke="${L}" stroke-width="1.6"/>
+      <rect x="52" y="584" width="56" height="34" rx="6" fill="#efe4cc" stroke="${L}" stroke-width="1.8"/>
+      <rect x="52" y="597" width="56" height="13" fill="#c96d47" stroke="${L}" stroke-width="1.2"/>
+      <rect x="95" y="579" width="9" height="6" rx="1.5" fill="#d9b25f" stroke="${L}"/>
+      <circle cx="80" cy="602" r="12" fill="#4b5b4a" stroke="${L}" stroke-width="1.6"/><circle cx="80" cy="602" r="7" fill="#26302a"/><circle cx="77" cy="599" r="2.2" fill="#fff" opacity=".85"/>`,
+    `x="48" y="570" width="64" height="94"`, lbl(82, 676, 78, "Gallery"), [[46, 578, -.5], [116, 620, -1.6]])}
+
+  <!-- anjing tidur -->
+  <g class="egg" data-egg="dog" role="button" tabindex="0" aria-label="Anjing ${esc(CONFIG.namaAnjing)}">
+    <rect class="hit" x="156" y="606" width="80" height="54"/>
+    <ellipse cx="198" cy="656" rx="32" ry="5" fill="#2f3b2c" opacity=".15"/>
+    <ellipse class="wag" cx="226" cy="636" rx="7" ry="5.5" fill="#fffaf0" stroke="${L}" stroke-width="1.3"/>
+    <g class="breath"><ellipse cx="202" cy="642" rx="25" ry="12.5" fill="#e8a46b" stroke="${L}" stroke-width="1.5"/><path d="M184 649 q18 8 36 0" fill="#fffaf0"/></g>
+    <ellipse cx="186" cy="653" rx="5" ry="3.4" fill="#fffaf0" stroke="${L}" stroke-width="1.1"/><ellipse cx="214" cy="653" rx="5" ry="3.4" fill="#fffaf0" stroke="${L}" stroke-width="1.1"/>
+    <path d="M168 626 l-5 -14 l11 7z" fill="#e8a46b" stroke="${L}" stroke-width="1.3" stroke-linejoin="round"/><path d="M181 623 l4 -14 l5 13z" fill="#e8a46b" stroke="${L}" stroke-width="1.3" stroke-linejoin="round"/>
+    <circle cx="177" cy="634" r="12.5" fill="#e8a46b" stroke="${L}" stroke-width="1.5"/>
+    <path d="M177 622 q-3 8 0 14 q3 -6 0 -14z" fill="#fffaf0"/>
+    <ellipse cx="173" cy="640" rx="7.5" ry="5" fill="#fffaf0" stroke="${L}" stroke-width=".9"/>
+    <path d="M168 632 q2.4 2 4.8 0 M178 632 q2.4 2 4.8 0" stroke="${L}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="168.5" cy="638.5" rx="2.2" ry="1.6" fill="${L}"/>
+    <circle cx="165" cy="636" r="2" fill="#f4a796" opacity=".8"/><circle cx="186" cy="636" r="2" fill="#f4a796" opacity=".8"/>
+    <text class="zzz" x="160" y="616" font-family="Kalam, cursive" font-size="12" fill="#fffaf0">z</text>
+    <text class="zzz" style="animation-delay:-1.5s" x="154" y="606" font-family="Kalam, cursive" font-size="9" fill="#fffaf0">z</text>
+  </g>
+
+  <!-- RSVP: kotak pos -->
+  ${hs("rsvp", "RSVP — konfirmasi kehadiran", `
+      <rect x="291" y="620" width="9" height="44" rx="1.5" fill="#b08a63" stroke="${L}" stroke-width="1.5"/>
+      ${leafEl(287, 660, 4.5, -30)}${leafEl(304, 660, 4.5, 30)}
+      <path d="M262 622 V604 Q262 586 280 586 H310 Q328 586 328 604 V622Z" fill="#c96d47" stroke="${L}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M284 588 V622" stroke="${L}" stroke-width="1.2"/>
+      <text x="306" y="609" text-anchor="middle" font-family="Kalam, cursive" font-weight="700" font-size="9" fill="#fbf7ee">mail</text>
+      <rect x="326" y="574" width="3" height="30" fill="${L}"/><path d="M329 574 h16 l-4 5 l4 5 h-16z" fill="#e3b64f" stroke="${L}" stroke-width="1.1" stroke-linejoin="round"/>
+      <g transform="translate(248 594) rotate(-16)"><rect width="23" height="16" rx="1.5" fill="#fffaf0" stroke="${L}" stroke-width="1.2"/><path d="M0 0 l11.5 8.5 l11.5 -8.5" fill="none" stroke="${L}" stroke-width="1"/><circle cx="11.5" cy="9.5" r="2.8" fill="#e98a73" stroke="${L}" stroke-width=".7"/></g>`,
+    `x="244" y="570" width="104" height="96"`, lbl(296, 676, 64, "RSVP"), [[256, 580, -1], [350, 610, -.4]])}
+
+  <!-- GIFT -->
+  ${hs("gift", "Gift — kirim hadiah", `<g transform="translate(276 664)">${giftArt().replace('class="spk"', 'class="spk" opacity="0"')}</g>`,
+    `x="292" y="704" width="88" height="84"`, lbl(338, 803, 60, "Gift"), [[290, 716, -.8], [384, 740, -1.9]])}
+
+  <!-- kupu-kupu -->
+  <g class="bfly" pointer-events="none"><g transform="translate(140 236)"><g class="flap"><ellipse cx="-4" cy="-2" rx="4.5" ry="3.4" fill="#f2d0b8" stroke="${L}" stroke-width=".7"/><ellipse cx="4" cy="-2" rx="4.5" ry="3.4" fill="#f2d0b8" stroke="${L}" stroke-width=".7"/><ellipse cx="-3" cy="2.5" rx="3" ry="2.4" fill="#f7e2a8" stroke="${L}" stroke-width=".6"/><ellipse cx="3" cy="2.5" rx="3" ry="2.4" fill="#f7e2a8" stroke="${L}" stroke-width=".6"/></g><path d="M0 -4 v8" stroke="${L}" stroke-width="1.2"/></g></g>
+  <g class="bfly b2" pointer-events="none"><g transform="translate(120 560)"><g class="flap"><ellipse cx="-3.6" cy="-1.6" rx="3.8" ry="2.8" fill="#fffaf3" stroke="${L}" stroke-width=".7"/><ellipse cx="3.6" cy="-1.6" rx="3.8" ry="2.8" fill="#fffaf3" stroke="${L}" stroke-width=".7"/><ellipse cx="-2.6" cy="2" rx="2.4" ry="2" fill="#b6cfae" stroke="${L}" stroke-width=".6"/><ellipse cx="2.6" cy="2" rx="2.4" ry="2" fill="#b6cfae" stroke="${L}" stroke-width=".6"/></g><path d="M0 -3.4 v7" stroke="${L}" stroke-width="1.1"/></g></g>
+
+  ${petals}
+  <rect x="-700" y="-800" width="1790" height="2500" fill="url(#gWarm)" pointer-events="none"/>
+  <rect x="-700" y="-800" width="1790" height="2500" fill="url(#gVig)" pointer-events="none"/>`;
+}
+
+function buildBanner(){
+  seed = 29;
+  let petals = "";
+  for (let i = 0; i < 18; i++) petals += `<ellipse class="petal" style="--dx:${(rnd() * 200 - 60).toFixed(0)}px;animation-duration:${(16 + rnd() * 12).toFixed(1)}s;animation-delay:${(-rnd() * 24).toFixed(1)}s" cx="${(rnd() * 1000).toFixed(0)}" cy="-20" rx="5" ry="3" fill="${i % 2 ? "#f6c9c2" : "#fffaf3"}" stroke="${L}" stroke-width=".5"/>`;
+  $("#bn-land").innerHTML = `<defs>${DEFS("B")}</defs>
+    ${landscape(600, 590, { id:"B", x0:-200, x1:1200, sunX:500, sunY:540,
+      trees:[[60, 500, 40], [150, 520, 28], [860, 505, 36], [950, 488, 46]],
+      clouds: cloud(80, 160, 2.4) + cloud(640, 110, 1.8, "c2") + cloud(380, 260, 1.4) })}
+    <g class="float">${balloon(150, 230, 1.5, "#c96d47", "#fbf7ee", true)}</g>
+    <g class="float2">${balloon(860, 190, 1.15, "#9dbb95", "#fbf7ee", false)}</g>
+    <g class="float">${balloon(330, 110, .5, "#e3b64f", "#fbf7ee", false)}</g>
+    ${petals}`;
+}
+
+/* ================= SUARA ================= */
+const AU = (() => {
+  let ctx = null, master = null, mus = null, timer = null, step = 0, nextT = 0;
+  let musicOn = store.get("music", true);
+  const bgm = $("#bgm");
+  function init(){
+    if (ctx){ if (ctx.state === "suspended" && !document.hidden) ctx.resume().catch(() => {}); return ctx; }
+    try {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      master = ctx.createGain(); master.gain.value = .8; master.connect(ctx.destination);
+      mus = ctx.createGain(); mus.gain.value = .7; mus.connect(master);
+    } catch (e) { ctx = null; }
+    return ctx;
+  }
+  const midi = n => 440 * Math.pow(2, (n - 69) / 12);
+  function pluck(f, t, d = 1.4, vol = .1, bus){
+    if (!init()) return;
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+    o.type = "sine"; o2.type = "triangle"; o.frequency.value = f; o2.frequency.value = f * 2; g2.gain.value = .1;
+    o.connect(g); o2.connect(g2); g2.connect(g);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    g.connect(bus || master); o.start(t); o2.start(t); o.stop(t + d + .05); o2.stop(t + d + .05);
+  }
+  function sweep(f1, f2, d, { type = "sine", vol = .08, at = 0 } = {}){
+    if (!init()) return; const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type;
+    o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + d + .03);
+  }
+  // melodi waltz 3/4 (G – Em – C – D)
+  const MEL = [67,71,74,0,79,0, 76,0,74,71,0,0, 72,76,79,0,76,0, 74,0,78,0,81,0,
+               79,0,78,79,83,0, 81,0,79,76,0,0, 76,0,79,0,72,74, 78,0,74,0,0,0];
+  const BASS = [43, 40, 48, 50, 43, 40, 48, 50], STEP = .26;
+  function sched(){
+    if (ctx.currentTime > nextT + .3) nextT = ctx.currentTime + .05;
+    while (nextT < ctx.currentTime + .3){
+      const i = step % MEL.length;
+      if (MEL[i]) pluck(midi(MEL[i]), nextT, 1.5, .05, mus);
+      if (i % 6 === 0){ const b = BASS[(i / 6) | 0]; pluck(midi(b), nextT, 2, .05, mus); pluck(midi(b + 7), nextT + STEP * 2, 1.2, .025, mus); pluck(midi(b + 12), nextT + STEP * 4, 1.2, .025, mus); }
+      nextT += STEP; step++;
+    }
+  }
+  function play(){
+    if (CONFIG.musik){ if (!bgm.getAttribute("src")) bgm.src = CONFIG.musik; bgm.volume = .55; bgm.play().catch(() => {}); return; }
+    if (!init() || timer) return; nextT = ctx.currentTime + .1; timer = setInterval(sched, 60);
+  }
+  function stop(){ if (CONFIG.musik){ bgm.pause(); return; } clearInterval(timer); timer = null; }
+  document.addEventListener("visibilitychange", () => {
+    if (!ctx) return;
+    if (document.hidden){ ctx.suspend && ctx.suspend(); if (CONFIG.musik) bgm.pause(); }
+    else { ctx.resume && ctx.resume(); if (CONFIG.musik && musicOn && opened) bgm.play().catch(() => {}); }
+  });
+  const now = () => (init() ? ctx.currentTime : 0);
+  return {
+    init,
+    get musicOn(){ return musicOn; },
+    setMusic(on, remember = true){ musicOn = on; if (remember) store.set("music", on); on ? play() : stop(); },
+    stopAll(){ stop(); },
+    pop(){ sweep(480, 820, .13, { vol:.07 }); },
+    close(){ sweep(720, 400, .1, { vol:.05 }); },
+    tap(){ sweep(850, 1150, .05, { vol:.04 }); },
+    chime(){ const t = now(); if (!ctx) return; [79, 83, 86, 91].forEach((n, i) => pluck(midi(n), t + i * .09, 1.2, .07)); },
+    sparkle(){ const t = now(); if (!ctx) return; [91, 95, 98, 103, 107].forEach((n, i) => pluck(midi(n), t + i * .07, .8, .05)); },
+    whoosh(){ sweep(300, 900, .35, { type:"triangle", vol:.05 }); },
+    woof(){
+      if (!init()) return;
+      [0, .22].forEach(a => {
+        const t = ctx.currentTime + a, o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+        o.type = "sawtooth"; o.frequency.setValueAtTime(330, t); o.frequency.exponentialRampToValueAtTime(170, t + .14);
+        f.type = "lowpass"; f.frequency.value = 900; f.Q.value = 4;
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.22, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .16);
+        o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + .2);
+      });
+    }
+  };
+})();
+
+/* ================= UI DASAR ================= */
+const app = $("#app");
+let opened = false;
+const toast = (() => { let tm; return (msg, ms = 2600) => { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tm); tm = setTimeout(() => t.classList.remove("on"), ms); }; })();
+function burst(x, y, items = ["🌸", "🍃", "✿"], n = 9){
+  if (reduceMotion) return;
+  const r = app.getBoundingClientRect();
+  for (let i = 0; i < n; i++){
+    const s = document.createElement("span"); s.className = "fx"; s.textContent = items[i % items.length];
+    const a = -Math.PI / 2 + (Math.random() - .5) * 2.2, d = 50 + Math.random() * 60;
+    s.style.cssText = `left:${x - r.left - 10}px;top:${y - r.top - 12}px;color:${["#c96d47", "#4f6b58", "#e98a73"][i % 3]};--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d).toFixed(0)}px;--r:${((Math.random() - .5) * 60).toFixed(0)}deg;animation-delay:${(i * .03).toFixed(2)}s`;
+    app.appendChild(s); setTimeout(() => s.remove(), 1500);
+  }
+}
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e){ const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (_){} ta.remove(); return ok; }
+}
+
+/* ================= ISI KARTU ================= */
+const HOTSPOTS = [
+  { id:"about",   label:"About Us",     emo:"🖼️", hint:"kenalan dengan kami" },
+  { id:"story",   label:"Love Story",   emo:"🎈", hint:"kisah kami" },
+  { id:"venue",   label:"Date & Venue", emo:"🪧", hint:"waktu & tempat" },
+  { id:"dress",   label:"Dress Code",   emo:"👗", hint:"warna pakaian" },
+  { id:"gallery", label:"Gallery",      emo:"📷", hint:"foto-foto kami" },
+  { id:"rsvp",    label:"RSVP",         emo:"📮", hint:"konfirmasi hadir" },
+  { id:"gift",    label:"Gift",         emo:"🎁", hint:"tanda kasih" }
+];
+let myRsvp = store.get("rsvp", null);
+let myWish = store.get("wish", null);
+const allWishes = () => (myWish ? [{ ...myWish, me:true }] : []).concat(CONFIG.ucapanContoh);
+let cdTimer = null;
+
+const SECTIONS = {
+  about:{ t:"Tentang Kami", r(){
+    const person = (p, kind, role) => `<article class="pcard">
+      <div class="ph">${p.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.lengkap)}" loading="lazy">` : portrait(kind)}</div>
+      <div class="pc-b"><p class="kick">${role}</p><h3>${esc(p.lengkap)}</h3><p class="par">${esc(p.ortu)}</p>
+      ${p.instagram ? `<a class="pill" href="https://instagram.com/${esc(p.instagram.replace(/^@/, ""))}" target="_blank" rel="noopener">${ic("ig")} @${esc(p.instagram.replace(/^@/, ""))}</a>` : `<span class="pill">${esc(p.panggilan)}</span>`}</div></article>`;
+    return `<p class="lead">${esc(CONFIG.salam)}</p>${person(W, "f", "The Bride")}<div class="amp">&amp;</div>${person(P, "m", "The Groom")}<blockquote class="quote">${esc(CONFIG.kutipan)}</blockquote>`;
+  }},
+  story:{ t:"Kisah Kami", r(){
+    return `<ol class="tl">${CONFIG.kisah.map(k => `<li><span class="tl-y">${esc(k.tahun)}</span><div class="tl-c">${k.foto ? `<img src="${esc(k.foto)}" alt="" loading="lazy">` : ""}<h4>${esc(k.judul)}</h4><p>${esc(k.cerita)}</p></div></li>`).join("")}</ol>
+      <p class="end">…dan bab selanjutnya, kami tulis bersama di hari bahagia nanti 🌿</p>`;
+  }},
+  venue:{ t:"Waktu & Tempat", r(){
+    const cal = "https://calendar.google.com/calendar/render?" + new URLSearchParams({ action:"TEMPLATE", text:`Pernikahan ${COUPLE}`, dates:`${stamp(START)}/${stamp(END)}`, location:[CONFIG.lokasi[0].tempat, CONFIG.lokasi[0].alamat].filter(Boolean).join(", ") });
+    return `<div class="sd"><p class="kick">Save the Date</p><p class="sd-d">${HARI[E0.wd]}</p><p class="sd-big">${pad(E0.d)} . ${pad(E0.m)} . ${E0.y}</p><div class="cd" id="cd"></div></div>
+      ${EVENTS.map(ev => { const l = CONFIG.lokasi[ev.lokasi || 0] || CONFIG.lokasi[0]; return `<article class="ev"><div class="ev-ic">${ic(ev.ikon === "cincin" ? "ring" : "glass")}</div><h3>${esc(ev.nama)}</h3>
+        <p class="ev-t">${esc(ev.tanggal)}<br>${esc(ev.jam)}</p><p class="ev-p"><b>${esc(l.tempat)}</b><br>${esc(l.alamat)}</p>
+        <a class="btn" href="${esc(mapsUrl(l))}" target="_blank" rel="noopener">${ic("pin")} Buka Google Maps</a></article>`; }).join("")}
+      ${CONFIG.catatanAcara ? `<p class="note">${esc(CONFIG.catatanAcara)}</p>` : ""}
+      <a class="btn solid block" href="${esc(cal)}" target="_blank" rel="noopener">${ic("cal")} Simpan ke Kalender</a>`;
+  }, after(){ clearInterval(cdTimer); cdTick(); cdTimer = setInterval(cdTick, 1000); }},
+  dress:{ t:"Dress Code", r(){
+    const D = CONFIG.dressCode;
+    return `<svg class="dc-art" viewBox="12 342 118 206" aria-hidden="true"><path d="M16 356 H126" stroke="#8a6a50" stroke-width="5" stroke-linecap="round"/>${suitArt(50)}${dressArt(94)}</svg>
+      <p class="lead">${esc(D.catatan)}</p>
+      <div class="sw">${D.warna.map(([c, n]) => `<div><span style="background:${esc(c)}"></span><small>${esc(n)}</small></div>`).join("")}</div>
+      <div class="dc-l"><div><b>Pria</b><p>${esc(D.pria)}</p></div><div><b>Wanita</b><p>${esc(D.wanita)}</p></div></div>
+      ${D.hindari ? `<p class="note">${esc(D.hindari)}</p>` : ""}`;
+  }},
+  gallery:{ t:"Galeri", r(){
+    return `<p class="lead">Potongan kecil perjalanan kami.</p><div class="gal">${CONFIG.galeri.map((src, i) => src
+      ? `<button class="g" type="button" data-photo="${i}" aria-label="Lihat foto ${i + 1}"><img src="${esc(src)}" alt="" loading="lazy"></button>`
+      : `<div class="g empty">${ic("photo")}<span>foto ${i + 1}</span></div>`).join("")}</div>`;
+  }},
+  rsvp:{ t:"RSVP & Ucapan", r(){
+    const s = myRsvp || {};
+    const name = s.name || (GUEST !== CONFIG.tamuDefault ? GUEST : "");
+    return `<p class="lead">Mohon konfirmasi kehadiranmu sebelum <b>${esc(CONFIG.batasRsvp)}</b>, ya.</p>
+      <form id="rsvp" novalidate>
+        <label class="f"><span>Nama</span><input id="r-name" maxlength="40" autocomplete="name" value="${esc(name)}"></label>
+        <div class="f"><span>Kehadiran</span><div class="seg" role="group" aria-label="Kehadiran"><button type="button" data-att="1">Hadir 🎉</button><button type="button" data-att="0">Maaf, berhalangan</button></div></div>
+        <div class="f" id="r-cnt-f"><span>Jumlah tamu</span><div class="cnt"><button type="button" id="r-minus" aria-label="Kurangi">−</button><output id="r-cnt">1</output><button type="button" id="r-plus" aria-label="Tambah">+</button></div></div>
+        <label class="f"><span>Ucapan &amp; doa</span><textarea id="r-msg" rows="3" maxlength="280" placeholder="Tulis ucapan untuk ${esc(COUPLE)}…">${esc(s.msg || "")}</textarea></label>
+        <p class="err" id="r-err" role="alert"></p>
+        <button class="btn solid block" type="submit">${ic("mail")} Kirim</button>
+      </form>`;
+  }, after(b, opts){
+    const R = { att: myRsvp ? !!myRsvp.att : true, n: myRsvp ? Math.min(CONFIG.maksTamu, Math.max(1, myRsvp.n | 0)) : 1 };
+    const paint = () => {
+      $$(".seg button", b).forEach(x => x.setAttribute("aria-pressed", String((x.dataset.att === "1") === R.att)));
+      $("#r-cnt-f", b).hidden = !R.att; $("#r-cnt", b).textContent = R.n;
+      $("#r-minus", b).disabled = R.n <= 1; $("#r-plus", b).disabled = R.n >= CONFIG.maksTamu;
+    };
+    paint();
+    $$(".seg button", b).forEach(x => x.addEventListener("click", () => { R.att = x.dataset.att === "1"; AU.tap(); paint(); }));
+    $("#r-minus", b).addEventListener("click", () => { R.n = Math.max(1, R.n - 1); AU.tap(); paint(); });
+    $("#r-plus", b).addEventListener("click", () => { R.n = Math.min(CONFIG.maksTamu, R.n + 1); AU.tap(); paint(); });
+    $("#rsvp", b).addEventListener("submit", e => {
+      e.preventDefault();
+      const name = $("#r-name", b).value.trim(), msg = $("#r-msg", b).value.trim();
+      if (!name){ $("#r-err", b).textContent = "Isi nama kamu dulu, ya."; $("#r-name", b).focus(); return; }
+      myRsvp = { name, att:R.att, n:R.n, msg }; store.set("rsvp", myRsvp);
+      if (msg){ myWish = { nama:name, pesan:msg }; store.set("wish", myWish); showWish(0); }
+      const wa = waBase ? waLink(R.att
+        ? `Halo ${COUPLE}! Saya ${name}, insyaAllah HADIR di pernikahan kalian (${E0.tanggal}) bersama ${R.n} orang.${msg ? `\n\n${msg}` : ""}`
+        : `Halo ${COUPLE}, saya ${name}. Mohon maaf belum bisa hadir.${msg ? `\n\n${msg}` : ""}`) : "";
+      b.innerHTML = `<div class="thx"><div class="thx-ic">${ic(R.att ? "heart" : "mail")}</div>
+        <h3>${R.att ? "Sampai jumpa di taman!" : "Terima kasih doanya"}</h3>
+        <p>${R.att ? `Kehadiran <b>${esc(name)}</b> (${R.n} orang) sudah kami catat. Sampai bertemu di ${esc(E0.tanggal)}!` : "Tidak apa-apa, doa darimu sudah sangat berarti bagi kami."}</p>
+        ${msg ? `<blockquote class="quote">“${esc(msg)}”</blockquote>` : ""}
+        <div class="col">${wa ? `<a class="btn solid block" href="${esc(wa)}" target="_blank" rel="noopener">${ic("wa")} Kirim lewat WhatsApp</a>` : ""}<button class="btn block" type="button" data-go="rsvp">Ubah jawaban</button></div></div>`;
+      const r = $(".thx-ic", b).getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2); AU.chime();
+    });
+    if (opts && opts.focusMsg) setTimeout(() => $("#r-msg", b).focus(), 480);
+  }},
+  gift:{ t:"Kirim Hadiah", r(){
+    const A = CONFIG.alamatKado;
+    return `<svg class="gift-art" id="gift-art" viewBox="0 0 120 130" aria-hidden="true">${giftArt()}</svg>
+      <p class="lead">${esc(CONFIG.teksHadiah)}</p>
+      ${CONFIG.hadiah.map(h => `<div class="bank"><div><p class="bk">${esc(h.bank)}</p><p class="no">${esc(h.nomor.replace(/(\d{4})(?=\d)/g, "$1 "))}</p><p class="an">a.n. ${esc(h.atasNama)}</p></div><button class="btn sm" type="button" data-copy="${esc(h.nomor)}">Salin</button></div>`).join("")}
+      ${A ? `<div class="bank"><div><p class="bk">Kirim kado ke</p><p class="an">${esc(A)}</p></div><button class="btn sm" type="button" data-copy="${esc(A)}">Salin</button></div>` : ""}`;
+  }, after(b){ setTimeout(() => { const g = $("#gift-art", b); if (g){ g.classList.add("open"); AU.sparkle(); } }, 380); }},
+  wishes:{ t:"Ucapan & Doa", r(){
+    return `<div class="wl">${allWishes().map(w => `<div class="wi${w.me ? " me" : ""}"><span class="wn">${esc(w.nama)}${w.me ? " (kamu)" : ""}</span><p>${esc(w.pesan)}</p></div>`).join("")}</div>
+      <button class="btn solid block" type="button" data-go="rsvp" data-focus-msg>${ic("plus")} Tulis ucapan</button>`;
+  }},
+  info:{ t:"Selamat Datang", r(){
+    return `<p class="lead">Halo, <b>${esc(GUEST)}</b>! Undangan ini adalah taman kecil kami. Ketuk benda yang <b>berkilau ✦</b> untuk membuka setiap bagian, atau langsung pilih di bawah ini:</p>
+      <div class="menu">${HOTSPOTS.map(h => `<button class="mi" type="button" data-go="${h.id}"><em aria-hidden="true">${h.emo}</em>${h.label}<small>${h.hint}</small></button>`).join("")}</div>
+      <ul class="tips"><li><i>${ic("head")}</i>Nyalakan / matikan musik</li><li><i>${ic("power")}</i>Tutup undangan, kembali ke sampul</li><li><i>${ic("qr")}</i>QR untuk check-in di lokasi acara</li><li><i aria-hidden="true">🐶</i>Psst… coba bangunkan ${esc(CONFIG.namaAnjing)} yang tidur di jalan setapak</li></ul>`;
+  }},
+  qr:{ t:"QR Check-in", r(){
+    return `<div class="qr" id="qr"><p>Memuat QR…</p></div><p class="qr-n">${esc(GUEST)}</p><p class="lead">Tunjukkan QR ini kepada penerima tamu saat tiba di lokasi.</p>`;
+  }, after(b){
+    const box = $("#qr", b), text = `${COUPLE} | ${GUEST} | ${E0.tanggal}`;
+    const draw = () => {
+      try {
+        if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+        const q = qrcode(0, "M"); q.addData(text); q.make(); box.innerHTML = q.createImgTag(6, 0, "QR check-in");
+      } catch (e){ box.innerHTML = "<p>QR gagal dibuat.</p>"; }
+    };
+    if (window.qrcode) draw();
+    else { let tries = 0; const iv = setInterval(() => { if (window.qrcode){ clearInterval(iv); draw(); } else if (++tries > 25){ clearInterval(iv); box.innerHTML = "<p>QR gagal dimuat. Cek koneksi internet, ya.</p>"; } }, 200); }
+  }}
+};
+
+function cdTick(){
+  const box = $("#cd"); if (!box){ clearInterval(cdTimer); return; }
+  let s = Math.max(0, Math.floor((START - Date.now()) / 1000));
+  if (s <= 0){ box.innerHTML = `<p class="cd-done">${Date.now() < END ? "Acara sedang berlangsung 🎉" : "Terima kasih sudah merayakan bersama kami 🌿"}</p>`; clearInterval(cdTimer); return; }
+  box.innerHTML = [[86400, "Hari"], [3600, "Jam"], [60, "Menit"], [1, "Detik"]].map(([u, n], i) => { const v = Math.floor(s / u); s -= v * u; return `<div><b>${i ? pad(v) : v}</b><span>${n}</span></div>`; }).join("");
+}
+
+/* ================= KARTU POP-UP ================= */
+const ov = $("#ov"), win = $("#win");
+let modalOpen = null, lastFocus = null, closeT = null;
+function openModal(id, from, opts){
+  const S = SECTIONS[id]; if (!S) return;
+  clearTimeout(closeT);
+  if (!modalOpen) lastFocus = document.activeElement;
+  $("#win-t").textContent = S.t;
+  const b = $("#win-b"); b.innerHTML = S.r(); b.scrollTop = 0;
+  ov.hidden = false; ov.classList.remove("open");
+  if (from){ const r = from.getBoundingClientRect(), a = app.getBoundingClientRect(); win.style.transformOrigin = `${r.left + r.width / 2 - a.left - win.offsetLeft}px ${r.top + r.height / 2 - a.top - win.offsetTop}px`; }
+  else win.style.transformOrigin = "50% 50%";
+  void win.offsetWidth;
+  requestAnimationFrame(() => ov.classList.add("open"));
+  modalOpen = id; AU.pop();
+  if (S.after) S.after(b, opts);
+  if (!(opts && opts.focusMsg)) setTimeout(() => $(".x", win).focus({ preventScroll:true }), 60);
+}
+function closeModal(){
+  if (!modalOpen) return;
+  modalOpen = null; clearInterval(cdTimer);
+  ov.classList.remove("open"); AU.close();
+  closeT = setTimeout(() => { ov.hidden = true; $("#win-b").innerHTML = ""; if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll:true }); }, reduceMotion ? 0 : 450);
+}
+ov.addEventListener("click", async e => {
+  if (e.target.closest("[data-close]")) return closeModal();
+  const go = e.target.closest("[data-go]");
+  if (go) return openModal(go.dataset.go, null, { focusMsg: go.hasAttribute("data-focus-msg") });
+  const ph = e.target.closest("[data-photo]");
+  if (ph) return openLb(+ph.dataset.photo);
+  const cp = e.target.closest("[data-copy]");
+  if (cp){
+    AU.tap();
+    if (await copyText(cp.dataset.copy)){ cp.textContent = "Tersalin ✓"; cp.classList.add("ok"); toast("Disalin ke clipboard 🌿", 1800); setTimeout(() => { cp.textContent = "Salin"; cp.classList.remove("ok"); }, 2000); }
+    else toast("Gagal menyalin, salin manual ya");
+  }
+});
+ov.addEventListener("keydown", e => {
+  if (e.key !== "Tab") return;
+  const f = $$('button:not([disabled]), a[href], input, textarea', win).filter(el => el.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+});
+
+/* ================= LIGHTBOX ================= */
+const PHOTOS = CONFIG.galeri.map((src, i) => ({ src, i })).filter(p => p.src);
+let lbI = -1;
+function openLb(orig){ lbI = PHOTOS.findIndex(p => p.i === orig); if (lbI < 0) return; paintLb(); $("#lb").hidden = false; $("#lb-x").focus({ preventScroll:true }); }
+function paintLb(){ $("#lb-img").src = PHOTOS[lbI].src; $("#lb-c").textContent = `${lbI + 1} / ${PHOTOS.length}`; $("#lb-p").hidden = $("#lb-n").hidden = PHOTOS.length < 2; }
+function stepLb(d){ lbI = (lbI + d + PHOTOS.length) % PHOTOS.length; paintLb(); AU.tap(); }
+function closeLb(){ $("#lb").hidden = true; lbI = -1; }
+$("#lb-x").addEventListener("click", closeLb);
+$("#lb-p").addEventListener("click", () => stepLb(-1));
+$("#lb-n").addEventListener("click", () => stepLb(1));
+$("#lb").addEventListener("click", e => { if (e.target.id === "lb") closeLb(); });
+let sx = null;
+$("#lb").addEventListener("pointerdown", e => { sx = e.clientX; });
+$("#lb").addEventListener("pointerup", e => { if (sx == null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 50 && PHOTOS.length > 1) stepLb(dx < 0 ? 1 : -1); });
+
+addEventListener("keydown", e => {
+  if (!$("#lb").hidden){
+    if (e.key === "Escape") closeLb(); else if (e.key === "ArrowLeft") stepLb(-1); else if (e.key === "ArrowRight") stepLb(1);
+    return;
+  }
+  if (e.key === "Escape" && modalOpen) closeModal();
+});
+
+/* ================= TAMAN ================= */
+const scene = $("#scene");
+function hit(h){
+  h.classList.remove("tap"); void h.getBoundingClientRect(); h.classList.add("tap");
+  if (h.dataset.open === "story") AU.whoosh(); else AU.tap();
+  setTimeout(() => openModal(h.dataset.open, h), reduceMotion ? 0 : 170);
+}
+const COUPLE_LINES = ["Psst… mereka lagi deg-degan 🤭", "Katanya: “jangan lupa datang ya!” 💐", "Calon pengantin sedang latihan senyum 😊", `${P.panggilan} lagi curi-curi pandang ke ${W.panggilan} 👀`];
+let coupleI = 0;
+const EGGS = {
+  couple(el, x, y){ burst(x, y); AU.chime(); toast(COUPLE_LINES[coupleI++ % COUPLE_LINES.length]); },
+  dog(el, x, y){ AU.woof(); burst(x, y, ["🐾", "🦴"], 5); toast(`Guk! ${CONFIG.namaAnjing} bangun sebentar… lalu tidur lagi 😴`); }
+};
+function onScene(target, x, y){
+  if (ATUR && x != null){
+    // mode atur: tampilkan koordinat titik yang diketuk (dalam piksel gambar / unit SVG)
+    const pt = scene.createSVGPoint(); pt.x = x; pt.y = y;
+    const p = pt.matrixTransform(scene.getScreenCTM().inverse());
+    toast(`x: ${Math.round(p.x)}, y: ${Math.round(p.y)}`, 6000); console.log("titik:", Math.round(p.x), Math.round(p.y));
+    return;
+  }
+  if (!opened) return;
+  const h = target.closest("[data-open]"); if (h) return hit(h);
+  const egg = target.closest("[data-egg]");
+  if (egg){ if (x == null){ const r = egg.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 3; } EGGS[egg.dataset.egg](egg, x, y); }
+}
+scene.addEventListener("click", e => onScene(e.target, e.clientX, e.clientY));
+scene.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); onScene(e.target); } });
+
+/* ================= UCAPAN BERJALAN ================= */
+let wI = 0, wTimer = null, wHidden = store.get("wish-hidden", false);
+function showWish(i, anim = true){
+  const list = allWishes(), card = $("#wcard");
+  if (!list.length){ card.hidden = true; return; }
+  wI = (i + list.length) % list.length; const w = list[wI];
+  const set = () => { $(".wn", card).textContent = w.nama + (w.me ? " (kamu)" : ""); $(".wm", card).textContent = w.pesan; };
+  if (!anim || reduceMotion){ set(); return; }
+  card.classList.add("swap"); setTimeout(() => { set(); card.classList.remove("swap"); }, 350);
+}
+function startTicker(){ clearInterval(wTimer); wTimer = setInterval(() => { if (!modalOpen && !wHidden && !document.hidden) showWish(wI + 1); }, 5200); }
+function paintWishHide(){ $("#wish").classList.toggle("min", wHidden); $("#w-hide").textContent = wHidden ? "Tampilkan Ucapan" : "Sembunyikan Ucapan"; $("#w-hide").setAttribute("aria-pressed", String(wHidden)); }
+$("#wcard").addEventListener("click", () => { AU.tap(); showWish(wI + 1); });
+$("#w-add").addEventListener("click", e => openModal("rsvp", e.currentTarget, { focusMsg:true }));
+$("#w-all").addEventListener("click", e => openModal("wishes", e.currentTarget));
+$("#w-hide").addEventListener("click", () => { wHidden = !wHidden; store.set("wish-hidden", wHidden); AU.tap(); paintWishHide(); });
+
+/* ================= TOMBOL ATAS ================= */
+function paintMusic(){ const b = $("#b-music"), on = AU.musicOn; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? "Musik: nyala (ketuk untuk mematikan)" : "Musik: mati (ketuk untuk menyalakan)"); }
+$("#b-info").addEventListener("click", e => openModal("info", e.currentTarget));
+$("#b-qr").addEventListener("click", e => openModal("qr", e.currentTarget));
+$("#b-music").addEventListener("click", () => { AU.init(); AU.setMusic(!AU.musicOn); paintMusic(); toast(AU.musicOn ? "Musik dinyalakan ♪" : "Musik dimatikan", 1600); });
+$("#b-power").addEventListener("click", () => {
+  closeModal(); AU.stopAll(); AU.close(); opened = false;
+  app.classList.add("closed"); $("#cover").classList.remove("gone");
+  setTimeout(() => $("#open").focus({ preventScroll:true }), 300);
+});
+
+/* ================= SAMPUL & BUKA ================= */
+function openInvite(){
+  if (opened) return; opened = true;
+  AU.init(); AU.chime();
+  if (AU.musicOn) AU.setMusic(true, false);
+  paintMusic();
+  app.classList.remove("closed"); $("#cover").classList.add("gone");
+  showWish(wI, false); startTicker();
+  setTimeout(() => toast("Ketuk benda yang berkilau ✨", 4200), reduceMotion ? 200 : 1300);
+  setTimeout(() => { const f = $(".hs", scene); if (f && document.activeElement === $("#open")) f.focus({ preventScroll:true }); }, 900);
+}
+$("#open").addEventListener("click", openInvite);
+
+/* ================= ISI AWAL ================= */
+(function fill(){
+  buildScene();
+  $("#b-info").innerHTML = ic("info"); $("#b-music").innerHTML = ic("head"); $("#b-power").innerHTML = ic("power"); $("#b-qr").innerHTML = ic("qr");
+  $(".x", win).innerHTML = ic("x"); $("#win-leaf").innerHTML = ic("leaf");
+  $("#w-add").innerHTML = ic("plus"); $("#w-all").innerHTML = ic("up");
+  $("#lb-x").innerHTML = ic("x"); $("#lb-p").innerHTML = ic("left"); $("#lb-n").innerHTML = ic("right");
+  $("#cv-n").innerHTML = `${esc(W.panggilan)} <span>&amp;</span> ${esc(P.panggilan)}`;
+  $("#cv-d").textContent = E0.tanggal;
+  $("#cv-guest").textContent = GUEST;
+  $("#open").innerHTML = `${ic("gate")} Masuk ke Taman Kami`;
+  const art = `${leafEl(-44, 24, 6, -40)}${leafEl(44, 24, 6, 40)}<g transform="translate(-24 -16) scale(.62)">${chibi("m")}</g><g transform="translate(24 -16) scale(.62)">${chibi("f")}</g>${heartPath(0, -50, .9)}`;
+  $("#cv-art").innerHTML = art;
+  document.title = `${COUPLE} · Undangan Pernikahan`;
+
+  // banner desktop
+  buildBanner();
+  if (CONFIG.fotoBanner){ const bg = $("#bn-bg"); bg.classList.add("photo"); bg.style.backgroundImage = `url("${encodeURI(CONFIG.fotoBanner)}")`; }
+  $("#bn-art").innerHTML = art;
+  $("#bn-n1").textContent = W.panggilan; $("#bn-n2").textContent = P.panggilan;
+  $("#bn-date").textContent = `${E0.tanggal} · ${CONFIG.lokasi[0].tempat}`;
+  $("#bn-guest").innerHTML = GUEST === CONFIG.tamuDefault ? "Dengan hormat mengundang Bapak/Ibu/Saudara/i" : `Kepada Yth. <b>${esc(GUEST)}</b>`;
+  const tick = [`🌿 ${COUPLE}`, E0.tanggal, ...EVENTS.map(e => `${e.nama} · ${e.jam}`), ...new Set(CONFIG.lokasi.map(l => l.tempat)), "Selamat menempuh hidup baru"].map(t => `<span>${esc(t)}</span>`).join("");
+  $("#bn-ticker").innerHTML = tick + tick;
+
+  paintWishHide(); paintMusic(); showWish(0, false);
+})();
+</script>
+</body>
+</html>

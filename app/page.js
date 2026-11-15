@@ -3,13 +3,11 @@ import Designs from "./components/Designs";
 import Events from "./components/Events";
 import Marquee from "./components/Marquee";
 import Nav from "./components/Nav";
-import {
-  WA_LINK, WA_DISPLAY, INSTAGRAM, INSTAGRAM_URL, EMAIL, EVENTS,
-} from "./data";
-
-// Isi dengan path foto di /public (mis. "/hero.jpg") jika ingin memakai foto.
-const HERO_IMAGE = "";
-const STORY_IMAGE = "";
+import Photo from "./components/Photo";
+import ScrollFx from "./components/ScrollFx";
+import HeroSlider from "./components/HeroSlider";
+import WhatsAppFloat from "./components/WhatsAppFloat";
+import { WA_LINK, WA_DISPLAY, INSTAGRAM, INSTAGRAM_URL, EMAIL, EVENTS, IMAGES, HERO_SLIDES } from "./data";
 
 const steps = [
   { time: "01", title: "Konsultasi", note: "Ceritakan jenis acara & konsepmu", side: "left" },
@@ -25,99 +23,100 @@ const features = [
   { title: "Musik Latar", text: "Lagu pilihan yang mengiringi tamu saat membuka undangan." },
 ];
 
+function Kicker({ children, light = false }) {
+  return <p className={`kicker ${light ? "light" : ""}`}>{children}</p>;
+}
+
 export default function Home() {
   return (
     <main id="top">
+      <ScrollFx />
       <Nav waLink={WA_LINK} />
 
-      {/* HERO */}
+      {/* ============ HERO ============ */}
       <section className="hero">
-        <div
-          className="hero-bg"
-          style={HERO_IMAGE ? { backgroundImage: `linear-gradient(rgba(20,28,16,.45),rgba(20,28,16,.55)), url(${HERO_IMAGE})` } : undefined}
-        >
-          <span className="orb o1" />
-          <span className="orb o2" />
-          <span className="orb o3" />
+        <div className="hero-media" data-speed="0.25">
+          <HeroSlider slides={HERO_SLIDES} />
         </div>
-        <div className="hero-inner">
+
+        <div className="hero-content">
           <p className="eyebrow rise" style={{ "--d": "0s" }}>Undangan Digital untuk Setiap Momen</p>
-          <img src="/logo-cream.png" alt="KISAHKASIH" className="hero-logo rise" style={{ "--d": ".15s" }} />
-          <p className="hero-sub rise" style={{ "--d": ".3s" }}>Setiap momen punya kisahnya</p>
-          <p className="hero-events rise" style={{ "--d": ".42s" }}>
-            {EVENTS.map((e, i) => (
-              <span key={e.id}>
-                {i > 0 && " "}
-                {i > 0 && <i>·</i>}
-                <b>{e.name}</b>
-              </span>
+          <h1 className="rise" style={{ "--d": ".12s" }}>
+            <img src="/logo-cream.png" alt="KISAHKASIH" className="hero-logo" />
+          </h1>
+          <p className="hero-sub rise" style={{ "--d": ".26s" }}>
+            Setiap momen punya <em>kisahnya</em>
+          </p>
+          <p className="hero-events rise" style={{ "--d": ".38s" }}>
+            {EVENTS.map((e) => (
+              <span key={e.id}>{e.name}</span>
             ))}
           </p>
-          <a href={WA_LINK} className="btn btn-light rise" style={{ "--d": ".56s" }} target="_blank" rel="noreferrer">
-            Buat Undanganmu
-          </a>
+          <div className="hero-actions rise" style={{ "--d": ".5s" }}>
+            <a href={WA_LINK} className="btn btn-primary" target="_blank" rel="noreferrer">
+              Buat Undanganmu
+            </a>
+            <a href="#design" className="btn btn-ghost">
+              Lihat Desain
+            </a>
+          </div>
         </div>
-        <span className="scroll-hint">scroll</span>
+
+        <a href="#cerita" className="scroll-hint">scroll</a>
       </section>
 
       <Marquee />
 
-      {/* STORY */}
-      <section className="cream story">
+      {/* ============ STORY ============ */}
+      <section className="section white story" id="cerita">
         <div className="story-grid">
-          <Reveal from="left" className="story-photo-wrap">
-            <div
-              className="story-photo"
-              style={STORY_IMAGE ? { backgroundImage: `url(${STORY_IMAGE})` } : undefined}
-            />
+          <Reveal from="mask" className="story-photo-wrap">
+            <span className="story-frame" aria-hidden="true" />
+            <Photo src={IMAGES.story} alt="Detail dekorasi acara" className="story-photo" />
           </Reveal>
           <div className="story-text">
             <Reveal>
-              <h2 className="display right">
-                Setiap momen berharga
-                <br />
-                layak dirayakan
-                <br />
-                dengan indah.
+              <Kicker>Tentang Kami</Kicker>
+              <h2 className="display">
+                Setiap momen berharga layak dirayakan <em className="gold-text">dengan indah.</em>
               </h2>
             </Reveal>
             <Reveal delay={150}>
               <p className="body">
-                Dari pernikahan hingga acara perusahaan, KISAHKASIH merangkai undangan
-                digital yang bukan sekadar informasi acara — tetapi cerita kalian,
-                dikemas hangat, elegan, dan siap dibagikan ke orang-orang tersayang.
+                Dari pernikahan hingga acara perusahaan, KISAHKASIH merangkai undangan digital yang
+                bukan sekadar informasi acara — tetapi cerita kalian, dikemas hangat, elegan, dan siap
+                dibagikan ke orang-orang tersayang.
               </p>
-              <p className="meta">
-                Desain personal
-                <br />
-                Siap dalam 2–3 hari
-                <br />
-                Revisi hingga puas
-              </p>
+            </Reveal>
+            <Reveal delay={260}>
+              <ul className="meta">
+                <li>Desain personal</li>
+                <li>Siap dalam 2–3 hari</li>
+                <li>Revisi hingga puas</li>
+              </ul>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* EVENTS */}
-      <section className="sand events" id="acara">
+      {/* ============ EVENTS ============ */}
+      <section className="section pearl events" id="acara">
         <Reveal>
-          <p className="kicker">Jenis Acara</p>
-          <h2 className="display center">Untuk setiap momen</h2>
-        </Reveal>
-        <Reveal delay={120}>
           <Events />
         </Reveal>
       </section>
 
-      {/* FEATURES */}
-      <section className="cream features">
-        <Reveal>
-          <h2 className="display center">Yang ada di undanganmu</h2>
+      {/* ============ FEATURES ============ */}
+      <section className="section white features">
+        <Reveal className="section-head">
+          <Kicker>Fitur</Kicker>
+          <h2 className="display center">
+            Yang ada di <em className="gold-text">undanganmu</em>
+          </h2>
         </Reveal>
         <div className="feature-grid">
           {features.map((f, i) => (
-            <Reveal key={f.title} delay={i * 90}>
+            <Reveal key={f.title} delay={i * 100} from="zoom">
               <div className="feature">
                 <span className="feature-num">0{i + 1}</span>
                 <h3>{f.title}</h3>
@@ -128,86 +127,79 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PROCESS */}
-      <section className="green process" id="cara-kerja">
-        <Reveal>
-          <h2 className="display center light">Cara Kerja</h2>
+      {/* ============ PROCESS ============ */}
+      <section className="section pearl process" id="cara-kerja">
+        <Reveal className="section-head">
+          <Kicker>Proses</Kicker>
+          <h2 className="display center">
+            Cara <em className="gold-text">Kerja</em>
+          </h2>
         </Reveal>
-        <div className="timeline">
-          <span className="timeline-line" />
+        <Reveal from="none" className="timeline">
+          <span className="timeline-line" aria-hidden="true" />
           {steps.map((s, i) => (
-            <Reveal key={s.time} delay={i * 100} from={s.side === "left" ? "left" : "right"} className={`tl-item ${s.side}`}>
-              <div className="tl-card">
-                <span className="tl-time">{s.time}</span>
-                <h3>{s.title}</h3>
-                <small>{s.note}</small>
-              </div>
+            <Reveal key={s.time} delay={200 + i * 160} from={s.side} className={`tl-item ${s.side}`}>
+              <span className="tl-time">{s.time}</span>
+              <h3>{s.title}</h3>
+              <small>{s.note}</small>
             </Reveal>
           ))}
-        </div>
+        </Reveal>
       </section>
 
-      {/* DESIGNS */}
-      <section className="cream packages" id="design">
-        <Reveal>
-          <h2 className="display center">Desain Kami</h2>
+      {/* ============ DESIGNS ============ */}
+      <section className="section white packages" id="design">
+        <Reveal className="section-head">
+          <Kicker>Koleksi</Kicker>
+          <h2 className="display center">
+            Desain <em className="gold-text">Kami</em>
+          </h2>
         </Reveal>
         <Reveal delay={100}>
-          <Designs waLink={WA_LINK} />
+          <Designs />
         </Reveal>
       </section>
 
-      {/* FOOTER */}
+      {/* ============ CTA ============ */}
+      <section className="section cta">
+        <Reveal className="cta-inner">
+          <Kicker>Mulai sekarang</Kicker>
+          <h2 className="display center">
+            Siap menulis <em className="gold-text">kisahmu?</em>
+          </h2>
+          <p className="cta-lead">Ceritakan momenmu, biar kami yang merangkainya jadi undangan yang tak terlupakan.</p>
+          <a href={WA_LINK} className="btn btn-primary" target="_blank" rel="noreferrer">
+            Hubungi via WhatsApp
+          </a>
+        </Reveal>
+      </section>
+
+      {/* ============ FOOTER ============ */}
       <footer className="footer">
-        <div className="footer-glow" aria-hidden="true" />
         <div className="footer-inner">
-          <Reveal className="footer-cta">
-            <p className="kicker light">Mulai sekarang</p>
-            <h2 className="display light center">Siap menulis kisahmu?</h2>
-            <p className="footer-lead">
-              Ceritakan momenmu, biar kami yang merangkainya jadi undangan yang tak terlupakan.
-            </p>
-            <a href={WA_LINK} className="btn btn-gold" target="_blank" rel="noreferrer">
-              Hubungi via WhatsApp
+          <div className="footer-top">
+            <a href="#top" className="footer-brand" aria-label="KISAHKASIH — kembali ke atas">
+              <img src="/logo-gold.png" alt="KISAHKASIH" />
             </a>
-          </Reveal>
-
-          <div className="footer-cols">
-            <div>
-              <h4>KISAHKASIH</h4>
-              <p>
-                Studio undangan digital yang merangkai kisahmu menjadi pengalaman
-                yang indah dan personal.
-              </p>
-            </div>
-            <div>
-              <h4>Acara</h4>
-              <ul>
-                {EVENTS.map((e) => (
-                  <li key={e.id}>
-                    <a href="#design">{e.name}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4>Kontak</h4>
-              <ul>
-                <li><a href={WA_LINK} target="_blank" rel="noreferrer">{WA_DISPLAY}</a></li>
-                <li><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer">{INSTAGRAM}</a></li>
-                <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
-              </ul>
-            </div>
+            <nav className="footer-nav" aria-label="Footer">
+              <a href="#acara">Acara</a>
+              <a href="#design">Desain</a>
+              <a href="#cara-kerja">Cara Kerja</a>
+            </nav>
+            <ul className="footer-contact">
+              <li><a href={WA_LINK} target="_blank" rel="noreferrer">{WA_DISPLAY}</a></li>
+              <li><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer">{INSTAGRAM}</a></li>
+              <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+            </ul>
           </div>
-
-          <img src="/logo-cream.png" alt="KISAHKASIH" className="footer-wordmark" />
-
           <div className="footer-bar">
-            <span>© {new Date().getFullYear()} KISAHKASIH. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} KISAHKASIH · Undangan digital untuk setiap momen</span>
             <a href="#top">Kembali ke atas ↑</a>
           </div>
         </div>
       </footer>
+
+      <WhatsAppFloat href={WA_LINK} />
     </main>
   );
 }

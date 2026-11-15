@@ -5,7 +5,7 @@ export default function Nav({ waLink }) {
   const [solid, setSolid] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 60);
+    const onScroll = () => setSolid(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -14,7 +14,7 @@ export default function Nav({ waLink }) {
   return (
     <header className={`nav ${solid ? "solid" : ""}`}>
       <a href="#top" aria-label="KISAHKASIH">
-        <img src="/logo-cream.png" alt="KISAHKASIH" className="nav-logo" />
+        <img src={solid ? "/logo-gold.png" : "/logo-cream.png"} alt="KISAHKASIH" className="nav-logo" />
       </a>
       <nav className="nav-menu">
         <a href="#acara">Acara</a>

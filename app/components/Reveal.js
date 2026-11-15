@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-// from: "up" | "left" | "right" | "zoom"
+// from: "up" | "left" | "right" | "zoom" | "mask" | "none"
 export default function Reveal({ children, delay = 0, from = "up", className = "" }) {
   const ref = useRef(null);
   const [shown, setShown] = useState(false);
@@ -26,7 +26,7 @@ export default function Reveal({ children, delay = 0, from = "up", className = "
     <div
       ref={ref}
       className={`reveal from-${from} ${shown ? "is-shown" : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      style={{ "--delay": `${delay}ms` }}
     >
       {children}
     </div>
