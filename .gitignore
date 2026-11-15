@@ -5,3 +5,6 @@ out/
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+# database lokal (PGlite) untuk development
+.data/

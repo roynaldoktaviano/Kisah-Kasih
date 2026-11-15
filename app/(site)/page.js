@@ -1,13 +1,13 @@
-import Reveal from "./components/Reveal";
-import Designs from "./components/Designs";
-import Events from "./components/Events";
-import Marquee from "./components/Marquee";
-import Nav from "./components/Nav";
-import Photo from "./components/Photo";
-import ScrollFx from "./components/ScrollFx";
-import HeroSlider from "./components/HeroSlider";
-import WhatsAppFloat from "./components/WhatsAppFloat";
-import { WA_LINK, WA_DISPLAY, INSTAGRAM, INSTAGRAM_URL, EMAIL, EVENTS, IMAGES, HERO_SLIDES } from "./data";
+import Reveal from "../components/Reveal";
+import Designs from "../components/Designs";
+import Events from "../components/Events";
+import Marquee from "../components/Marquee";
+import Nav from "../components/Nav";
+import Photo from "../components/Photo";
+import ScrollFx from "../components/ScrollFx";
+import HeroSlider from "../components/HeroSlider";
+import WhatsAppFloat from "../components/WhatsAppFloat";
+import { WA_LINK, WA_DISPLAY, INSTAGRAM, INSTAGRAM_URL, EMAIL, EVENTS, IMAGES, HERO_SLIDES } from "../data";
 
 const steps = [
   { time: "01", title: "Konsultasi", note: "Ceritakan jenis acara & konsepmu", side: "left" },
@@ -185,6 +185,7 @@ export default function Home() {
               <a href="#acara">Acara</a>
               <a href="#design">Desain</a>
               <a href="#cara-kerja">Cara Kerja</a>
+              <a href="/masuk">Masuk Klien</a>
             </nav>
             <ul className="footer-contact">
               <li><a href={WA_LINK} target="_blank" rel="noreferrer">{WA_DISPLAY}</a></li>
