@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { requireInvitation } from "lib/auth";
 import { query, one } from "lib/db";
 import { getTemplate, loadTemplate, mergeConfig, upgradeConfig } from "lib/templates";
@@ -8,8 +9,10 @@ import Shell from "../../../_components/Shell";
 import ConfigEditor from "../../../_components/ConfigEditor";
 import GuestTable from "../../../_components/GuestTable";
 import RsvpBoard from "../../../_components/RsvpBoard";
+import TabNav from "../../../_components/TabNav";
+import LinkSettings from "../../../_components/LinkSettings";
 import { ActionForm, Submit, CopyButton } from "../../../_components/ui";
-import { saveSettings, saveWaMessage, addGuests } from "../../../actions";
+import { saveWaMessage, addGuests } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +31,13 @@ export default async function InvitationPage({ params, searchParams }) {
   const t = getTemplate(inv.template);
   const base = await inviteBase();
   const url = base.url(inv.slug);
-  const owner = user.role === "admin" ? await one("SELECT id, name FROM users WHERE id = $1", [inv.user_id]) : null;
-  const { n: rsvpCount } = await one("SELECT count(*)::int AS n FROM rsvps WHERE invitation_id = $1", [inv.id]);
+  // satu query (bukan dua berurutan) — tiap round-trip ke DB terasa saat pindah tab
+  const meta = await one(
+    "SELECT (SELECT count(*)::int FROM rsvps WHERE invitation_id = $1) AS rsvp_count, (SELECT name FROM users WHERE id = $2) AS owner_name",
+    [inv.id, inv.user_id]
+  );
+  const rsvpCount = meta.rsvp_count;
+  const owner = user.role === "admin" ? { id: inv.user_id, name: meta.owner_name } : null;
 
   const crumbs = owner
     ? [{ label: "Akun Customer", href: "/admin" }, { label: owner.name, href: `/admin/akun/${owner.id}` }, { label: inv.title }]
@@ -50,19 +58,15 @@ export default async function InvitationPage({ params, searchParams }) {
         <a href={url} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
       </div>
 
-      <nav className="tabs-dash">
-        {TABS.map(([k, label]) => (
-          <Link key={k} href={`?tab=${k}`} className={tab === k ? "on" : ""} scroll={false}>
-            {label}
-            {k === "rsvp" && rsvpCount > 0 && <i className="tab-count">{rsvpCount}</i>}
-          </Link>
-        ))}
-      </nav>
+      <TabNav tabs={TABS} current={tab} counts={{ rsvp: rsvpCount }} />
 
-      {tab === "data" && <DataTab inv={inv} url={url} />}
-      {tab === "link" && <LinkTab inv={inv} base={base} />}
-      {tab === "tamu" && <GuestsTab inv={inv} url={url} />}
-      {tab === "rsvp" && <RsvpTab inv={inv} />}
+      {/* key per tab: header & tab langsung tampil, isi tab menyusul (streaming) */}
+      <Suspense key={tab} fallback={<TabSkeleton />}>
+        {tab === "data" && <DataTab inv={inv} url={url} />}
+        {tab === "link" && <LinkTab inv={inv} base={base} />}
+        {tab === "tamu" && <GuestsTab inv={inv} url={url} />}
+        {tab === "rsvp" && <RsvpTab inv={inv} />}
+      </Suspense>
     </Shell>
   );
 }
@@ -90,38 +94,29 @@ async function DataTab({ inv, url }) {
 
 // ---------------------------------------------------------------- tab: link
 function LinkTab({ inv, base }) {
+  return <LinkSettings id={inv.id} title={inv.title} slug={inv.slug} sub={base.sub} root={ROOT_DOMAIN} origin={base.origin} />;
+}
+
+function TabSkeleton() {
   return (
-    <section className="card narrow">
-      <h2>Link & judul undangan</h2>
-      <ActionForm action={saveSettings} className="stack">
-        <input type="hidden" name="id" value={inv.id} />
-        <label className="field">
-          <span>Judul (tampil di tab browser & preview WhatsApp)</span>
-          <input name="title" defaultValue={inv.title} required />
-        </label>
-        <label className="field">
-          <span>Link undangan</span>
-          {base.sub ? (
-            <div className="prefix suffix"><input name="slug" defaultValue={inv.slug} required /><i>.{ROOT_DOMAIN}</i></div>
-          ) : (
-            <div className="prefix"><i>{base.origin.replace(/^https?:\/\//, "")}/</i><input name="slug" defaultValue={inv.slug} required /></div>
-          )}
-          <small>Huruf kecil, angka, dan tanda minus. Contoh: nadia-arga, wedding-dinda-raka.</small>
-        </label>
-        <Submit>Simpan</Submit>
-      </ActionForm>
-      <div className="tip">
-        <b>Link personal untuk tiap tamu</b>
-        <p>Tambahkan <code>?untuk=Nama</code> di akhir link, mis. <code>{base.label(inv.slug)}?untuk=Budi</code>. Di tab <i>Tamu & WhatsApp</i> link ini dibuat otomatis.</p>
+    <div className="tab-skel" aria-busy="true" aria-label="Memuat…">
+      <div className="card">
+        <i className="skel" style={{ width: "34%", height: 18 }} />
+        <i className="skel" style={{ width: "62%" }} />
+        <i className="skel" style={{ height: 42, marginTop: 12 }} />
+        <i className="skel" style={{ height: 42 }} />
+        <i className="skel" style={{ width: "28%", height: 40, marginTop: 6 }} />
       </div>
-    </section>
+    </div>
   );
 }
 
 // ---------------------------------------------------------------- tab: tamu
 async function GuestsTab({ inv, url }) {
-  const guests = await query("SELECT * FROM guests WHERE invitation_id = $1 ORDER BY created_at, id", [inv.id]);
-  const rsvps = await query("SELECT guest_name, attending, pax FROM rsvps WHERE invitation_id = $1", [inv.id]);
+  const [guests, rsvps] = await Promise.all([
+    query("SELECT * FROM guests WHERE invitation_id = $1 ORDER BY created_at, id", [inv.id]),
+    query("SELECT guest_name, attending, pax FROM rsvps WHERE invitation_id = $1", [inv.id]),
+  ]);
   const byName = new Map(rsvps.map((r) => [r.guest_name.trim().toLowerCase(), r]));
 
   const rows = guests.map((g) => {
@@ -185,8 +180,10 @@ async function GuestsTab({ inv, url }) {
 
 // ---------------------------------------------------------------- tab: rsvp
 async function RsvpTab({ inv }) {
-  const rows = await query("SELECT id, guest_name, attending, pax, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]);
-  const [{ n: invited }] = await query("SELECT count(*)::int AS n FROM guests WHERE invitation_id = $1", [inv.id]);
+  const [rows, [{ n: invited }]] = await Promise.all([
+    query("SELECT id, guest_name, attending, pax, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]),
+    query("SELECT count(*)::int AS n FROM guests WHERE invitation_id = $1", [inv.id]),
+  ]);
   const rsvps = rows.map((r) => ({ ...r, updated_at: new Date(r.updated_at).toISOString() }));
   const hadir = rsvps.filter((r) => r.attending);
   const pax = hadir.reduce((n, r) => n + r.pax, 0);

@@ -18,10 +18,10 @@ export function ActionForm({ action, children, className = "", resetOnOk = false
   );
 }
 
-export function Submit({ children, className = "btn btn-primary", pendingText = "Menyimpan…" }) {
+export function Submit({ children, className = "btn btn-primary", pendingText = "Menyimpan…", disabled = false }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className={className} disabled={pending}>
+    <button type="submit" className={className} disabled={pending || disabled}>
       {pending ? pendingText : children}
     </button>
   );

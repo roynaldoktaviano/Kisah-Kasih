@@ -7,6 +7,7 @@ import { query, one } from "lib/db";
 import { hashPassword, verifyPassword } from "lib/password";
 import { getTemplate } from "lib/templates";
 import { cleanSlug, slugError, normalizePhone, parseGuestLine, DEFAULT_WA_MESSAGE } from "lib/util";
+import { inviteBase } from "lib/site";
 
 const str = (fd, k, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 
@@ -147,7 +148,9 @@ export async function saveSettings(_prev, fd) {
   }
   await query("UPDATE invitations SET title = $1, slug = $2, updated_at = now() WHERE id = $3", [title, slug, inv.id]);
   revalidatePath(`/akun/undangan/${inv.id}`);
-  return { ok: slug !== inv.slug ? `Link diganti menjadi /${slug}. Link lama tidak berlaku lagi.` : "Tersimpan." };
+  if (slug === inv.slug) return { ok: "Perubahan tersimpan." };
+  const base = await inviteBase();
+  return { ok: `Link baru aktif: ${base.label(slug)}` };
 }
 
 // ---------------------------------------------------------------- tamu & WhatsApp
