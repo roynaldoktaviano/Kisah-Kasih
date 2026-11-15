@@ -458,6 +458,7 @@ const CONFIG = {
     { bank: "Mandiri", nomor: "0987654321", atasNama: "Arga Pratama" }
   ],
   alamatKado: "Nadia Larasati — Jl. Kenanga No. 12, Coblong, Bandung 40132",
+  tampilHadiah: true,                 // false = bagian hadiah disembunyikan
 
   // --- ucapan contoh yang tampil di bawah (ucapan tamu tersimpan di perangkatnya) ---
   ucapanContoh: [
@@ -469,10 +470,10 @@ const CONFIG = {
   namaAnjing: "Kopi",
 
   // --- tamu & RSVP ---
+  tampilRsvp: true,                   // false = RSVP & tulis ucapan disembunyikan
   tamuDefault: "Tamu Undangan",
   batasRsvp: "7 Februari 2027",
   maksTamu: 4,
-  waNumber: "",                       // nomor WA untuk RSVP, format 628xxxxxxxxx. Kosong = tombol WA disembunyikan
   musik: ""                           // file musik, misal "lagu.mp3". Kosong = musik kotak musik bawaan
 };
 
@@ -505,7 +506,7 @@ const EVENTS = CONFIG.acara.map(a => {
 const E0 = EVENTS[0];
 const START = new Date(Math.min(...EVENTS.map(e => e.s)));
 const END = new Date(Math.max(...EVENTS.map(e => e.e)));
-const waBase = CONFIG.waNumber.replace(/\D/g, "");
+const waBase = ""; // RSVP tersimpan langsung ke dashboard, tidak lewat WhatsApp
 const waLink = text => `https://wa.me/${waBase}?text=${encodeURIComponent(text)}`;
 const mapsUrl = l => l.linkMaps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([l.tempat, l.alamat].filter(Boolean).join(", "))}`;
 const stamp = d => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -936,6 +937,7 @@ async function copyText(t){
 }
 
 /* ================= ISI KARTU ================= */
+const OFF = new Set([CONFIG.tampilRsvp === false && "rsvp", CONFIG.tampilHadiah === false && "gift"].filter(Boolean));
 const HOTSPOTS = [
   { id:"about",   label:"About Us",     emo:"🖼️", hint:"kenalan dengan kami" },
   { id:"story",   label:"Love Story",   emo:"🎈", hint:"kisah kami" },
@@ -944,7 +946,7 @@ const HOTSPOTS = [
   { id:"gallery", label:"Gallery",      emo:"📷", hint:"foto-foto kami" },
   { id:"rsvp",    label:"RSVP",         emo:"📮", hint:"konfirmasi hadir" },
   { id:"gift",    label:"Gift",         emo:"🎁", hint:"tanda kasih" }
-];
+].filter(h => !OFF.has(h.id));
 let myRsvp = store.get("rsvp", null);
 let myWish = store.get("wish", null);
 const allWishes = () => (myWish ? [{ ...myWish, me:true }] : []).concat(CONFIG.ucapanContoh);
@@ -1034,7 +1036,7 @@ const SECTIONS = {
   }, after(b){ setTimeout(() => { const g = $("#gift-art", b); if (g){ g.classList.add("open"); AU.sparkle(); } }, 380); }},
   wishes:{ t:"Ucapan & Doa", r(){
     return `<div class="wl">${allWishes().map(w => `<div class="wi${w.me ? " me" : ""}"><span class="wn">${esc(w.nama)}${w.me ? " (kamu)" : ""}</span><p>${esc(w.pesan)}</p></div>`).join("")}</div>
-      <button class="btn solid block" type="button" data-go="rsvp" data-focus-msg>${ic("plus")} Tulis ucapan</button>`;
+      ${OFF.has("rsvp") ? "" : `<button class="btn solid block" type="button" data-go="rsvp" data-focus-msg>${ic("plus")} Tulis ucapan</button>`}`;
   }},
   info:{ t:"Selamat Datang", r(){
     return `<p class="lead">Halo, <b>${esc(GUEST)}</b>! Undangan ini adalah taman kecil kami. Ketuk benda yang <b>berkilau ✦</b> untuk membuka setiap bagian, atau langsung pilih di bawah ini:</p>
@@ -1174,7 +1176,7 @@ function showWish(i, anim = true){
 function startTicker(){ clearInterval(wTimer); wTimer = setInterval(() => { if (!modalOpen && !wHidden && !document.hidden) showWish(wI + 1); }, 5200); }
 function paintWishHide(){ $("#wish").classList.toggle("min", wHidden); $("#w-hide").textContent = wHidden ? "Tampilkan Ucapan" : "Sembunyikan Ucapan"; $("#w-hide").setAttribute("aria-pressed", String(wHidden)); }
 $("#wcard").addEventListener("click", () => { AU.tap(); showWish(wI + 1); });
-$("#w-add").addEventListener("click", e => openModal("rsvp", e.currentTarget, { focusMsg:true }));
+if ($("#w-add")) $("#w-add").addEventListener("click", e => openModal("rsvp", e.currentTarget, { focusMsg:true }));
 $("#w-all").addEventListener("click", e => openModal("wishes", e.currentTarget));
 $("#w-hide").addEventListener("click", () => { wHidden = !wHidden; store.set("wish-hidden", wHidden); AU.tap(); paintWishHide(); });
 
@@ -1205,9 +1207,11 @@ $("#open").addEventListener("click", openInvite);
 /* ================= ISI AWAL ================= */
 (function fill(){
   buildScene();
+  OFF.forEach(id => $$(`[data-open="${id}"]`).forEach(x => x.remove()));
+  if (OFF.has("rsvp")) $("#w-add").remove();
   $("#b-info").innerHTML = ic("info"); $("#b-music").innerHTML = ic("head"); $("#b-power").innerHTML = ic("power"); $("#b-qr").innerHTML = ic("qr");
   $(".x", win).innerHTML = ic("x"); $("#win-leaf").innerHTML = ic("leaf");
-  $("#w-add").innerHTML = ic("plus"); $("#w-all").innerHTML = ic("up");
+  if ($("#w-add")) $("#w-add").innerHTML = ic("plus"); $("#w-all").innerHTML = ic("up");
   $("#lb-x").innerHTML = ic("x"); $("#lb-p").innerHTML = ic("left"); $("#lb-n").innerHTML = ic("right");
   $("#cv-n").innerHTML = `${esc(W.panggilan)} <span>&amp;</span> ${esc(P.panggilan)}`;
   $("#cv-d").textContent = E0.tanggal;

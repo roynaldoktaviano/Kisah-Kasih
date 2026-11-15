@@ -464,7 +464,7 @@ textarea.inp{ min-height:90px; resize:vertical; line-height:1.5; }
         <div class="btns st"><a class="btn solid" id="song-btn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>Kirim Lagu</a></div>
       </article>
 
-      <div class="vine" data-vine></div>
+      <div class="vine" data-vine id="rsvp-vine"></div>
 
       <article class="card rsvp" data-r data-corners="tl tr" id="rsvp-sec">
         <p class="eyebrow st">RSVP</p>
@@ -558,9 +558,7 @@ const CONFIG = {
     foto: ""
   },
 
-  // --- waktu ---
-  mulai:   "2027-01-16T08:00",      // tanggal & jam mulai, format TTTT-BB-HHTjj:mm (untuk hitung mundur & kalender)
-  selesai: "2027-01-16T14:00",
+  // --- waktu (tanggal & jam diatur per acara di bawah) ---
   zona: "WIB",                      // WIB / WITA / WIT
   batasRsvp: "9 Januari 2027",
 
@@ -573,10 +571,10 @@ const CONFIG = {
   sumberKutipan: "QS. Ar-Rum: 21",  // "" = disembunyikan
   salamPembuka: "Bismillah · Dengan rahmat-Nya", // teks kecil di atas sambutan
 
-  // --- acara (bisa lebih dari satu) ---
+  // --- acara (bisa lebih dari satu). Acara paling awal dipakai untuk hitung mundur & kalender ---
   acara: [
-    { nama: "Akad Nikah", tanggal: "Sabtu, 16 Januari 2027", jam: "08.00 – 10.00 WIB", tempat: "Masjid Raya Al-Ikhlas", alamat: "Jl. Melati No. 8, Kebayoran Baru, Jakarta Selatan", linkMaps: "" },
-    { nama: "Resepsi", tanggal: "Sabtu, 16 Januari 2027", jam: "11.00 – 14.00 WIB", tempat: "Taman Mawar Ballroom", alamat: "Jl. Kenanga Raya No. 21, Jakarta Selatan", linkMaps: "" }
+    { nama: "Akad Nikah", mulai: "2027-01-16T08:00", selesai: "10:00", tempat: "Masjid Raya Al-Ikhlas", alamat: "Jl. Melati No. 8, Kebayoran Baru, Jakarta Selatan", linkMaps: "" },
+    { nama: "Resepsi", mulai: "2027-01-16T11:00", selesai: "14:00", tempat: "Taman Mawar Ballroom", alamat: "Jl. Kenanga Raya No. 21, Jakarta Selatan", linkMaps: "" }
   ],
 
   // --- dress code (dressCode "" untuk menyembunyikan) ---
@@ -593,12 +591,14 @@ const CONFIG = {
     { bank: "BCA", nomor: "1234567890", atasNama: "Nadia Larasati" },
     { bank: "Mandiri", nomor: "0987654321", atasNama: "Arga Pratama" }
   ],
+  tampilHadiah: true,               // false = bagian kado disembunyikan
 
   // --- tamu & RSVP ---
   // Kirim link personal: undangan-bunga.html?untuk=Budi
+  tampilRsvp: true,                 // false = bagian konfirmasi kehadiran disembunyikan
   tamuDefault: "Tamu Undangan",
   maksTamu: 4,
-  waNumber: "",                     // nomor WA untuk RSVP & request lagu, format 628xxxxxxxxx. Kosong = tombol WA disembunyikan
+  waNumber: "",                     // nomor WA untuk request lagu, format 628xxxxxxxxx. Kosong = bagian request lagu disembunyikan
   musik: ""                         // musik latar, misal "lagu.mp3". Kosong = tanpa musik
 };
 
@@ -616,10 +616,23 @@ const N1 = CONFIG.mempelai1.panggilan, N2 = CONFIG.mempelai2.panggilan, COUPLE =
 const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 const OFFSET = { WIB:"+07:00", WITA:"+08:00", WIT:"+09:00" }[CONFIG.zona] || "+07:00";
-const [Y, M, D] = CONFIG.mulai.slice(0, 10).split("-").map(Number);
+const RE_DT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, RE_HM = /^\d{2}:\d{2}$/;
+const ACARA = CONFIG.acara.map(a => {
+  if (!a || !RE_DT.test(a.mulai || "")) return { ...a };
+  const [d, t] = a.mulai.split("T"), [y, m, dd] = d.split("-").map(Number);
+  const wd = new Date(Date.UTC(y, m - 1, dd)).getUTCDay();
+  const sel = RE_HM.test(a.selesai || "") ? a.selesai : "";
+  const _s = new Date(`${a.mulai}:00${OFFSET}`);
+  let _e = sel ? new Date(`${d}T${sel}:00${OFFSET}`) : new Date(_s.getTime() + 2 * 36e5);
+  if (_e <= _s) _e = new Date(_s.getTime() + 2 * 36e5);
+  return { ...a, _s, _e, _d:d, tanggal:`${HARI[wd]}, ${dd} ${BULAN[m - 1]} ${y}`, jam:`${t.replace(":", ".")} – ${sel ? sel.replace(":", ".") : "selesai"} ${CONFIG.zona}` };
+});
+const TIMED = ACARA.filter(a => a._s).sort((a, b) => a._s - b._s);
+const MULAI0 = TIMED.length ? TIMED[0].mulai : (RE_DT.test(CONFIG.mulai || "") ? CONFIG.mulai : "2027-01-01T08:00");
+const [Y, M, D] = MULAI0.slice(0, 10).split("-").map(Number);
 const WEEKDAY = new Date(Date.UTC(Y, M - 1, D)).getUTCDay();
-const START = new Date(`${CONFIG.mulai}:00${OFFSET}`);
-const END = CONFIG.selesai ? new Date(`${CONFIG.selesai}:00${OFFSET}`) : new Date(START.getTime() + 4 * 36e5);
+const START = new Date(`${MULAI0}:00${OFFSET}`);
+const END = TIMED.length ? new Date(Math.max(...TIMED.map(a => a._e))) : (CONFIG.selesai ? new Date(`${CONFIG.selesai}:00${OFFSET}`) : new Date(START.getTime() + 4 * 36e5));
 const DATE_LONG = `${HARI[WEEKDAY]}, ${D} ${BULAN[M - 1]} ${Y}`;
 const waBase = CONFIG.waNumber.replace(/\D/g, "");
 const waLink = text => `https://wa.me/${waBase}?text=${encodeURIComponent(text)}`;
@@ -866,11 +879,11 @@ const archPh = (src, seed, alt) => src ? `<img src="${esc(src)}" alt="${esc(alt)
   $("#cal-g").innerHTML = cal;
   $("#big-date").textContent = DATE_LONG;
   const stamp = d => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const ev0 = CONFIG.acara[0] || {};
+  const ev0 = TIMED[0] || ACARA[0] || {};
   $("#cal-btn").href = "https://calendar.google.com/calendar/render?" + new URLSearchParams({ action:"TEMPLATE", text:`Pernikahan ${COUPLE}`, dates:`${stamp(START)}/${stamp(END)}`, location:[ev0.tempat, ev0.alamat].filter(Boolean).join(", "), details:`Undangan pernikahan ${COUPLE}` });
 
   // acara
-  $("#events").innerHTML = CONFIG.acara.map(e => {
+  $("#events").innerHTML = ACARA.map(e => {
     const maps = e.linkMaps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.tempat, e.alamat].filter(Boolean).join(", "))}`;
     return `<div class="ev st"><h3>${esc(e.nama)}</h3><p class="day">${esc(e.tanggal || DATE_LONG)}</p><p class="time">${esc(e.jam || "")}</p><p class="place">${esc(e.tempat)}</p><p class="p">${esc(e.alamat)}</p><div class="btns"><a class="btn solid" href="${esc(maps)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/></svg>Lihat Lokasi</a></div></div>`;
   }).join("");
@@ -889,7 +902,7 @@ const archPh = (src, seed, alt) => src ? `<img src="${esc(src)}" alt="${esc(alt)
   } else { $("#galeri").remove(); $("#gal-vine").remove(); $('[data-go="galeri"]').remove(); }
 
   // kado
-  if (CONFIG.hadiah.length){
+  if (CONFIG.tampilHadiah !== false && CONFIG.hadiah.length){
     $("#banks").innerHTML = CONFIG.hadiah.map(b => `<div class="bank st"><span class="tag">${esc(b.bank)}</span><div class="nf"><b>${esc(b.nomor)}</b><span>a.n. ${esc(b.atasNama)}</span></div><button type="button" data-copy="${esc(b.nomor.replace(/\s/g, ""))}">Salin</button></div>`).join("");
   } else { $("#hadiah").remove(); $("#gift-vine").remove(); $('[data-go="hadiah"]').remove(); }
 
@@ -897,6 +910,7 @@ const archPh = (src, seed, alt) => src ? `<img src="${esc(src)}" alt="${esc(alt)
   if (!waBase){ $("#song-sec").remove(); $("#song-vine").remove(); }
 
   // rsvp & penutup
+  if (CONFIG.tampilRsvp === false){ $("#rsvp-sec").style.display = "none"; $("#rsvp-vine").style.display = "none"; $('[data-go="rsvp-sec"]').remove(); }
   $("#rsvp-text").textContent = `Mohon konfirmasi kehadiran Anda sebelum ${CONFIG.batasRsvp}.`;
   $("#r-name").value = GUEST === CONFIG.tamuDefault ? "" : GUEST;
   $("#sign").textContent = COUPLE;
@@ -1059,9 +1073,7 @@ $("#rsvp").addEventListener("submit", e => {
 const ov = $("#ov");
 let lastFocus = null;
 function thanks({ name, att, n, msg }){
-  const wa = waBase ? waLink(att
-    ? `Halo ${COUPLE}! Saya ${name} konfirmasi HADIR di pernikahan kalian (${DATE_LONG}) bersama ${n} orang 🌸${msg ? `\n\nUcapan: ${msg}` : ""}`
-    : `Halo ${COUPLE}, saya ${name}. Mohon maaf belum bisa hadir di hari bahagia kalian 🙏${msg ? `\n\nUcapan: ${msg}` : ""}`) : "";
+  const wa = ""; // RSVP tersimpan langsung ke dashboard, tidak lewat WhatsApp
   $("#note").innerHTML = `
     <div class="note-top" aria-hidden="true"><svg viewBox="0 0 180 120">${Flora.bouquet(90, 70, 1, 300 + name.length, .5, 180, 360)}</svg></div>
     <h3>${att ? "Terima Kasih" : "Terima Kasih"}</h3>

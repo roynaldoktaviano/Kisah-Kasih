@@ -685,7 +685,7 @@ textarea.inp{ min-height:84px; resize:vertical; line-height:1.5; }
         <div class="btns st"><a class="btn solid" id="song-btn" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-music"/></svg>Kirim Lagu</a></div>
       </article>
 
-      <div class="route" data-route></div>
+      <div class="route" data-route id="rsvp-route"></div>
 
       <article class="tk rsvp" data-r id="rsvp-sec">
         <div class="pc pc-top tk-head"><span>Konfirmasi Kehadiran</span></div>
@@ -783,9 +783,7 @@ const CONFIG = {
     instagram: ""
   },
 
-  // --- waktu ---
-  mulai:   "2027-01-16T08:00",      // tanggal & jam mulai, format TTTT-BB-HHTjj:mm
-  selesai: "2027-01-16T14:00",      // jam selesai (untuk kalender)
+  // --- waktu (tanggal & jam diatur per lokasi acara di bawah) ---
   zona: "WIB",                      // WIB / WITA / WIT
   batasRsvp: "9 Januari 2027",      // batas konfirmasi kehadiran
 
@@ -809,11 +807,12 @@ const CONFIG = {
     ["14.00", "Penutupan", "Last call"]
   ],
 
-  // --- lokasi (bisa lebih dari satu) ---
+  // --- acara & lokasi (bisa lebih dari satu). Acara paling awal dipakai untuk hitung mundur & kalender ---
   lokasi: [
     {
       acara: "Akad & Resepsi",
-      jam: "08.00 – 14.00 WIB",
+      mulai: "2027-01-16T08:00",
+      selesai: "14:00",
       tempat: "Rumah Kaca Senayan",
       alamat: "Jl. Contoh Raya No. 12, Kebayoran Baru, Jakarta Selatan",
       linkMaps: ""                  // kosong = otomatis cari dari tempat + alamat
@@ -835,12 +834,14 @@ const CONFIG = {
     { bank: "BCA", nomor: "1234567890", atasNama: "Nadia Larasati" },
     { bank: "Mandiri", nomor: "0987654321", atasNama: "Arga Pratama" }
   ],
+  tampilHadiah: true,               // false = bagian kado disembunyikan
 
   // --- tamu & RSVP ---
   // Kirim link personal: undangan-pesawat.html?untuk=Budi
+  tampilRsvp: true,                 // false = bagian konfirmasi kehadiran disembunyikan
   tamuDefault: "Tamu Undangan",     // sapaan kalau link dibuka tanpa ?untuk=
   maksTamu: 4,                      // maksimal jumlah orang per undangan
-  waNumber: "",                     // nomor WA untuk RSVP & request lagu, format 628xxxxxxxxx. Kosong = tombol WA disembunyikan
+  waNumber: "",                     // nomor WA untuk request lagu, format 628xxxxxxxxx. Kosong = bagian request lagu disembunyikan
   musik: ""                         // musik latar, misal "lagu.mp3". Kosong = tanpa musik
 };
 
@@ -859,10 +860,23 @@ const fill = t => String(t).replace(/\{tamu\}/g, GUEST);
 const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 const OFFSET = { WIB:"+07:00", WITA:"+08:00", WIT:"+09:00" }[CONFIG.zona] || "+07:00";
-const [Y, M, D] = CONFIG.mulai.slice(0, 10).split("-").map(Number);
+const RE_DT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, RE_HM = /^\d{2}:\d{2}$/;
+const LOKASI = CONFIG.lokasi.map(a => {
+  if (!a || !RE_DT.test(a.mulai || "")) return { ...a };
+  const [d, t] = a.mulai.split("T"), [y, m, dd] = d.split("-").map(Number);
+  const wd = new Date(Date.UTC(y, m - 1, dd)).getUTCDay();
+  const sel = RE_HM.test(a.selesai || "") ? a.selesai : "";
+  const _s = new Date(`${a.mulai}:00${OFFSET}`);
+  let _e = sel ? new Date(`${d}T${sel}:00${OFFSET}`) : new Date(_s.getTime() + 2 * 36e5);
+  if (_e <= _s) _e = new Date(_s.getTime() + 2 * 36e5);
+  return { ...a, _s, _e, _d:d, tanggal:`${HARI[wd]}, ${dd} ${BULAN[m - 1]} ${y}`, jam:`${t.replace(":", ".")} – ${sel ? sel.replace(":", ".") : "selesai"} ${CONFIG.zona}` };
+});
+const TIMED = LOKASI.filter(a => a._s).sort((a, b) => a._s - b._s);
+const MULAI0 = TIMED.length ? TIMED[0].mulai : (RE_DT.test(CONFIG.mulai || "") ? CONFIG.mulai : "2027-01-01T08:00");
+const [Y, M, D] = MULAI0.slice(0, 10).split("-").map(Number);
 const WEEKDAY = new Date(Date.UTC(Y, M - 1, D)).getUTCDay();
-const START = new Date(`${CONFIG.mulai}:00${OFFSET}`);
-const END = CONFIG.selesai ? new Date(`${CONFIG.selesai}:00${OFFSET}`) : new Date(START.getTime() + 4 * 36e5);
+const START = new Date(`${MULAI0}:00${OFFSET}`);
+const END = TIMED.length ? new Date(Math.max(...TIMED.map(a => a._e))) : (CONFIG.selesai ? new Date(`${CONFIG.selesai}:00${OFFSET}`) : new Date(START.getTime() + 4 * 36e5));
 const DATE_DOT = `${pad(D)}.${pad(M)}.${Y}`;
 const DATE_LONG = `${HARI[WEEKDAY]}, ${D} ${BULAN[M - 1]} ${Y}`;
 const GATE = `${N1[0] || ""}${N2[0] || ""}`.toUpperCase();
@@ -1070,7 +1084,7 @@ const Art = (() => {
   $("#big-date").textContent = DATE_DOT;
   $("#big-day").textContent = DATE_LONG;
   const stamp = d => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const loc0 = CONFIG.lokasi[0] || {};
+  const loc0 = TIMED[0] || LOKASI[0] || {};
   $("#cal-btn").href = "https://calendar.google.com/calendar/render?" + new URLSearchParams({ action:"TEMPLATE", text:`Pernikahan ${COUPLE}`, dates:`${stamp(START)}/${stamp(END)}`, location:[loc0.tempat, loc0.alamat].filter(Boolean).join(", "), details:`Undangan pernikahan ${COUPLE}` });
 
   // papan keberangkatan
@@ -1079,9 +1093,9 @@ const Art = (() => {
   if (!CONFIG.jadwal.length) $("#board-sec").remove();
 
   // destinasi
-  $("#dest").innerHTML = CONFIG.lokasi.map(l => {
+  $("#dest").innerHTML = LOKASI.map(l => {
     const maps = l.linkMaps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([l.tempat, l.alamat].filter(Boolean).join(", "))}`;
-    return `<div class="dest st"><div class="pin" aria-hidden="true"><svg><use href="#pin"/></svg></div><p class="eyebrow">${esc(l.acara || "")}</p><h3>${esc(l.tempat)}</h3><p class="when">${esc(l.jam || "")}</p><p class="p">${esc(l.alamat)}</p><div class="btns"><a class="btn solid" href="${esc(maps)}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-map"/></svg>Petunjuk Arah</a></div></div>`;
+    return `<div class="dest st"><div class="pin" aria-hidden="true"><svg><use href="#pin"/></svg></div><p class="eyebrow">${esc(l.acara || "")}</p><h3>${esc(l.tempat)}</h3><p class="when">${esc(l._d && l._d !== MULAI0.slice(0, 10) ? `${l.tanggal} · ${l.jam}` : (l.jam || ""))}</p><p class="p">${esc(l.alamat)}</p><div class="btns"><a class="btn solid" href="${esc(maps)}" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#ic-map"/></svg>Petunjuk Arah</a></div></div>`;
   }).join("");
   if (!CONFIG.lokasi.length) $("#dest-sec").remove();
 
@@ -1098,7 +1112,7 @@ const Art = (() => {
   } else { $("#gal-sec").remove(); $("#gal-route").remove(); }
 
   // kado
-  if (CONFIG.hadiah.length){
+  if (CONFIG.tampilHadiah !== false && CONFIG.hadiah.length){
     $("#banks").innerHTML = CONFIG.hadiah.map(b => `<div class="bank st"><span class="tag">${esc(b.bank)}</span><div class="nf"><b>${esc(b.nomor)}</b><span>a.n. ${esc(b.atasNama)}</span></div><button type="button" data-copy="${esc(b.nomor.replace(/\s/g, ""))}">Salin</button></div>`).join("");
   } else { $("#gift-sec").remove(); $("#gift-route").remove(); }
 
@@ -1106,6 +1120,7 @@ const Art = (() => {
   if (!waBase){ $("#song-sec").remove(); $("#song-route").remove(); }
 
   // rsvp
+  if (CONFIG.tampilRsvp === false){ $("#rsvp-sec").style.display = "none"; $("#rsvp-route").style.display = "none"; $$('[data-go="rsvp-sec"]').forEach(x => x.remove()); }
   $("#rsvp-text").textContent = `Mohon konfirmasi kehadiran Anda sebelum ${CONFIG.batasRsvp}.`;
   $("#r-name").value = GUEST === CONFIG.tamuDefault ? "" : GUEST;
   $("#sign").textContent = COUPLE;
@@ -1235,7 +1250,7 @@ async function copyText(t){
   try { await navigator.clipboard.writeText(t); return true; }
   catch (e){ const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (_){} ta.remove(); return ok; }
 }
-$("#banks").addEventListener("click", async e => {
+$("#banks")?.addEventListener("click", async e => {
   const b = e.target.closest("[data-copy]"); if (!b) return; SFX.tap();
   if (await copyText(b.dataset.copy)){ b.textContent = "Tersalin"; b.classList.add("ok"); toast("Nomor rekening disalin"); setTimeout(() => { b.textContent = "Salin"; b.classList.remove("ok"); }, 2000); }
   else toast("Gagal menyalin, silakan salin manual");
@@ -1282,7 +1297,7 @@ function printPass({ name, att, n, msg }){
       <dl class="pass-f">
         <div class="wide"><dt>Penumpang</dt><dd>${esc(name)}</dd></div>
         ${att ? `<div><dt>Jumlah</dt><dd>${n} orang</dd></div><div><dt>Kursi</dt><dd>${seat}</dd></div><div><dt>Gate</dt><dd>${esc(GATE)}</dd></div>
-        <div><dt>Boarding</dt><dd>${esc(CONFIG.mulai.slice(11, 16).replace(":", "."))}</dd></div><div><dt>Kelas</dt><dd>${esc(CONFIG.kelas)}</dd></div><div><dt>Status</dt><dd>Hadir</dd></div>`
+        <div><dt>Boarding</dt><dd>${esc(MULAI0.slice(11, 16).replace(":", "."))}</dd></div><div><dt>Kelas</dt><dd>${esc(CONFIG.kelas)}</dd></div><div><dt>Status</dt><dd>Hadir</dd></div>`
         : `<div class="wide"><dt>Status</dt><dd style="font-size:15px">Belum bisa ikut terbang kali ini</dd></div>`}
       </dl>
       ${msg ? `<p class="pass-msg">“${esc(msg)}”</p>` : ""}
@@ -1292,7 +1307,7 @@ function printPass({ name, att, n, msg }){
   barcode($("#pass-bar"), name + seat);
 
   const wa = $("#ov-wa");
-  if (waBase){
+  if (false){ // RSVP tersimpan langsung ke dashboard, tidak lewat WhatsApp
     wa.hidden = false;
     wa.href = waLink(att
       ? `Halo ${COUPLE}! Saya ${name} konfirmasi HADIR di pernikahan kalian (${DATE_LONG}) bersama ${n} orang ✈️${msg ? `\n\nUcapan: ${msg}` : ""}`

@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { headers } from "next/headers";
 import { requireInvitation } from "lib/auth";
 import { query, one } from "lib/db";
-import { getTemplate, loadTemplate, mergeConfig } from "lib/templates";
-import { fillMessage, fmtDate } from "lib/util";
+import { getTemplate, loadTemplate, mergeConfig, upgradeConfig } from "lib/templates";
+import { fillMessage } from "lib/util";
+import { inviteBase, ROOT_DOMAIN } from "lib/site";
 import Shell from "../../../_components/Shell";
 import ConfigEditor from "../../../_components/ConfigEditor";
 import GuestTable from "../../../_components/GuestTable";
-import { ActionForm, Submit, CopyButton, ConfirmSubmit } from "../../../_components/ui";
-import { saveSettings, saveWaMessage, addGuests, deleteRsvp } from "../../../actions";
+import RsvpBoard from "../../../_components/RsvpBoard";
+import { ActionForm, Submit, CopyButton } from "../../../_components/ui";
+import { saveSettings, saveWaMessage, addGuests } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -19,23 +20,16 @@ const TABS = [
   ["rsvp", "RSVP & Ucapan"],
 ];
 
-async function siteOrigin() {
-  if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/$/, "");
-  const h = await headers();
-  const host = h.get("x-forwarded-host") || h.get("host") || "localhost:3000";
-  const proto = h.get("x-forwarded-proto") || (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
-  return `${proto}://${host}`;
-}
-
 export default async function InvitationPage({ params, searchParams }) {
   const { id } = await params;
   const { user, inv } = await requireInvitation(id);
   const sp = await searchParams;
   const tab = TABS.some(([k]) => k === sp?.tab) ? sp.tab : "data";
   const t = getTemplate(inv.template);
-  const origin = await siteOrigin();
-  const url = `${origin}/${inv.slug}`;
+  const base = await inviteBase();
+  const url = base.url(inv.slug);
   const owner = user.role === "admin" ? await one("SELECT id, name FROM users WHERE id = $1", [inv.user_id]) : null;
+  const { n: rsvpCount } = await one("SELECT count(*)::int AS n FROM rsvps WHERE invitation_id = $1", [inv.id]);
 
   const crumbs = owner
     ? [{ label: "Akun Customer", href: "/admin" }, { label: owner.name, href: `/admin/akun/${owner.id}` }, { label: inv.title }]
@@ -48,38 +42,39 @@ export default async function InvitationPage({ params, searchParams }) {
           <p className="eyebrow-sm">{t ? `${t.name} · ${t.type}` : inv.template}</p>
           <h1>{inv.title}</h1>
           <p className="link-line">
-            <a href={`/${inv.slug}`} target="_blank" rel="noreferrer">{url.replace(/^https?:\/\//, "")}</a>
+            <a href={url} target="_blank" rel="noreferrer">{base.label(inv.slug)}</a>
             <CopyButton text={url}>Salin link</CopyButton>
             {!inv.active && <span className="tag no">Nonaktif — hubungi admin</span>}
           </p>
         </div>
-        <a href={`/${inv.slug}`} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
+        <a href={url} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
       </div>
 
       <nav className="tabs-dash">
         {TABS.map(([k, label]) => (
           <Link key={k} href={`?tab=${k}`} className={tab === k ? "on" : ""} scroll={false}>
             {label}
+            {k === "rsvp" && rsvpCount > 0 && <i className="tab-count">{rsvpCount}</i>}
           </Link>
         ))}
       </nav>
 
-      {tab === "data" && <DataTab inv={inv} />}
-      {tab === "link" && <LinkTab inv={inv} origin={origin} />}
-      {tab === "tamu" && <GuestsTab inv={inv} origin={origin} />}
+      {tab === "data" && <DataTab inv={inv} url={url} />}
+      {tab === "link" && <LinkTab inv={inv} base={base} />}
+      {tab === "tamu" && <GuestsTab inv={inv} url={url} />}
       {tab === "rsvp" && <RsvpTab inv={inv} />}
     </Shell>
   );
 }
 
 // ---------------------------------------------------------------- tab: data
-async function DataTab({ inv }) {
+async function DataTab({ inv, url }) {
   const t = await loadTemplate(inv.template);
-  const initial = mergeConfig(t.defaults, inv.config || {});
+  const initial = upgradeConfig(mergeConfig(t.defaults, inv.config || {}), t.defaults);
   return (
     <>
       <p className="muted tab-intro">
-        Isi data undanganmu di bawah, lalu klik <b>Simpan perubahan</b>. Bagian yang dikosongkan biasanya otomatis disembunyikan di undangan.
+        Isi data undanganmu langkah demi langkah — tersimpan otomatis tiap pindah langkah. Isian yang dikosongkan biasanya otomatis disembunyikan di undangan.
       </p>
       <ConfigEditor
         invId={inv.id}
@@ -87,13 +82,14 @@ async function DataTab({ inv }) {
         hints={t.hints}
         initial={initial}
         preview={{ src: `/templates/${t.meta.file}`, start: t.start, end: t.end }}
+        links={{ open: url, guests: `/akun/undangan/${inv.id}?tab=tamu` }}
       />
     </>
   );
 }
 
 // ---------------------------------------------------------------- tab: link
-function LinkTab({ inv, origin }) {
+function LinkTab({ inv, base }) {
   return (
     <section className="card narrow">
       <h2>Link & judul undangan</h2>
@@ -105,27 +101,31 @@ function LinkTab({ inv, origin }) {
         </label>
         <label className="field">
           <span>Link undangan</span>
-          <div className="prefix"><i>{origin.replace(/^https?:\/\//, "")}/</i><input name="slug" defaultValue={inv.slug} required /></div>
+          {base.sub ? (
+            <div className="prefix suffix"><input name="slug" defaultValue={inv.slug} required /><i>.{ROOT_DOMAIN}</i></div>
+          ) : (
+            <div className="prefix"><i>{base.origin.replace(/^https?:\/\//, "")}/</i><input name="slug" defaultValue={inv.slug} required /></div>
+          )}
           <small>Huruf kecil, angka, dan tanda minus. Contoh: nadia-arga, wedding-dinda-raka.</small>
         </label>
         <Submit>Simpan</Submit>
       </ActionForm>
       <div className="tip">
         <b>Link personal untuk tiap tamu</b>
-        <p>Tambahkan <code>?untuk=Nama</code> di akhir link, mis. <code>/{inv.slug}?untuk=Budi</code>. Di tab <i>Tamu & WhatsApp</i> link ini dibuat otomatis.</p>
+        <p>Tambahkan <code>?untuk=Nama</code> di akhir link, mis. <code>{base.label(inv.slug)}?untuk=Budi</code>. Di tab <i>Tamu & WhatsApp</i> link ini dibuat otomatis.</p>
       </div>
     </section>
   );
 }
 
 // ---------------------------------------------------------------- tab: tamu
-async function GuestsTab({ inv, origin }) {
+async function GuestsTab({ inv, url }) {
   const guests = await query("SELECT * FROM guests WHERE invitation_id = $1 ORDER BY created_at, id", [inv.id]);
   const rsvps = await query("SELECT guest_name, attending, pax FROM rsvps WHERE invitation_id = $1", [inv.id]);
   const byName = new Map(rsvps.map((r) => [r.guest_name.trim().toLowerCase(), r]));
 
   const rows = guests.map((g) => {
-    const link = `${origin}/${inv.slug}?untuk=${encodeURIComponent(g.name)}`;
+    const link = `${url}?untuk=${encodeURIComponent(g.name)}`;
     const text = fillMessage(inv.wa_message, { nama: g.name, link, acara: inv.title });
     return {
       id: g.id,
@@ -137,7 +137,7 @@ async function GuestsTab({ inv, origin }) {
       rsvp: byName.get(g.name.trim().toLowerCase()) || null,
     };
   });
-  const sample = fillMessage(inv.wa_message, { nama: guests[0]?.name || "Budi Santoso", link: `${origin}/${inv.slug}?untuk=Budi`, acara: inv.title });
+  const sample = fillMessage(inv.wa_message, { nama: guests[0]?.name || "Budi Santoso", link: `${url}?untuk=Budi`, acara: inv.title });
 
   return (
     <>
@@ -185,47 +185,42 @@ async function GuestsTab({ inv, origin }) {
 
 // ---------------------------------------------------------------- tab: rsvp
 async function RsvpTab({ inv }) {
-  const rsvps = await query("SELECT * FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]);
+  const rows = await query("SELECT id, guest_name, attending, pax, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]);
+  const [{ n: invited }] = await query("SELECT count(*)::int AS n FROM guests WHERE invitation_id = $1", [inv.id]);
+  const rsvps = rows.map((r) => ({ ...r, updated_at: new Date(r.updated_at).toISOString() }));
   const hadir = rsvps.filter((r) => r.attending);
   const pax = hadir.reduce((n, r) => n + r.pax, 0);
-  const wishes = rsvps.filter((r) => r.message);
+  const rsvpOff = inv.config?.tampilRsvp === false;
 
   return (
     <>
+      {rsvpOff && (
+        <div className="banner">
+          <span>RSVP sedang <b>dimatikan</b> — tamu tidak bisa mengisi konfirmasi kehadiran.</span>
+          <Link href="?tab=data" className="btn-mini">Nyalakan di Data Undangan</Link>
+        </div>
+      )}
+
       <div className="stats">
-        <div><b>{rsvps.length}</b><span>Konfirmasi masuk</span></div>
-        <div><b>{hadir.length}</b><span>Akan hadir</span></div>
-        <div><b>{pax}</b><span>Total orang</span></div>
-        <div><b>{rsvps.length - hadir.length}</b><span>Berhalangan</span></div>
-        <div><b>{wishes.length}</b><span>Ucapan</span></div>
+        <div className="stat-hero">
+          <span>Total orang hadir</span>
+          <b>{pax}</b>
+          <small>dari {hadir.length} konfirmasi hadir</small>
+        </div>
+        <div><span>Konfirmasi masuk</span><b>{rsvps.length}</b>{invited > 0 && <small>dari {invited} tamu diundang</small>}</div>
+        <div><span>Hadir</span><b>{hadir.length}</b></div>
+        <div><span>Berhalangan</span><b>{rsvps.length - hadir.length}</b></div>
       </div>
 
       <section className="card">
         <div className="card-head">
-          <h2>RSVP & ucapan</h2>
+          <div>
+            <h2>Daftar konfirmasi</h2>
+            <p className="muted small">Masuk otomatis saat tamu mengisi RSVP di undangan.</p>
+          </div>
           {rsvps.length > 0 && <a className="btn-mini" href={`/akun/undangan/${inv.id}/export?type=rsvp`}>Unduh CSV</a>}
         </div>
-        {rsvps.length === 0 ? (
-          <p className="empty">Belum ada konfirmasi. RSVP & ucapan dari tamu akan muncul di sini secara otomatis.</p>
-        ) : (
-          <ul className="rsvp-list">
-            {rsvps.map((r) => (
-              <li key={r.id}>
-                <div className="rsvp-head">
-                  <b>{r.guest_name}</b>
-                  <span className={`tag ${r.attending ? "ok" : "no"}`}>{r.attending ? `Hadir · ${r.pax} orang` : "Berhalangan"}</span>
-                  <small>{fmtDate(r.updated_at)}</small>
-                </div>
-                {r.message && <p className="rsvp-msg">“{r.message}”</p>}
-                <form action={deleteRsvp} className="rsvp-del">
-                  <input type="hidden" name="invitation_id" value={inv.id} />
-                  <input type="hidden" name="id" value={r.id} />
-                  <ConfirmSubmit message={`Hapus RSVP dari ${r.guest_name}?`}>Hapus</ConfirmSubmit>
-                </form>
-              </li>
-            ))}
-          </ul>
-        )}
+        <RsvpBoard invId={inv.id} rsvps={rsvps} />
       </section>
     </>
   );

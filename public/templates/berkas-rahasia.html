@@ -487,7 +487,7 @@ button:focus-visible, a:focus-visible{ outline:2px solid var(--yellow); outline-
         <div class="paper notes"><ul id="notes"></ul></div>
       </section>
 
-      <section class="sec">
+      <section class="sec" id="rsvp-sec">
         <div class="paper rsvp">
           <p class="eyebrow">Konfirmasi kehadiran</p>
           <h2>Siap bertugas?</h2>
@@ -642,8 +642,8 @@ const CONFIG = {
 
   // --- tamu & RSVP ---
   // Kirim link personal: undangan.html?untuk=Budi  -> semua teks menyapa "Budi"
-  tamuDefault: "Detektif",          // sapaan kalau link dibuka tanpa ?untuk=
-  waNumber: ""                      // nomor WA untuk RSVP, format 628xxxxxxxxx. Kosong = tombol WA disembunyikan
+  tampilRsvp: true,                 // false = bagian konfirmasi kehadiran disembunyikan
+  tamuDefault: "Detektif"           // sapaan kalau link dibuka tanpa ?untuk=
 };
 
 /* ========================================================= */
@@ -1005,7 +1005,8 @@ function confetti(){
 }
 
 /* --- jawaban --- */
-const waBase = CONFIG.waNumber.replace(/\D/g, "");
+const waBase = ""; // RSVP tersimpan langsung ke dashboard, tidak lewat WhatsApp
+if (CONFIG.tampilRsvp === false) $("#rsvp-sec").style.display = "none";
 function setWA(id, text){ const a = $("#" + id); if (!waBase){ a.remove(); return; } a.href = `https://wa.me/${waBase}?text=${encodeURIComponent(text)}`; }
 setWA("wa-yes", `Halo ${CONFIG.nama}! Ini ${GUEST}. Berkasnya udah kubuka, dan aku DATANG ke ulang tahunmu 🎂`);
 setWA("wa-no", `Halo ${CONFIG.nama}, ini ${GUEST}. Makasih undangannya, tapi maaf banget aku nggak bisa datang. Selamat ulang tahun ya! 🎉`);

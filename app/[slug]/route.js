@@ -12,7 +12,7 @@ h1{font-weight:400;font-style:italic;font-size:2.2rem;margin:0 0 10px}p{color:#7
     { status, headers: { "Content-Type": "text/html; charset=utf-8" } }
   );
 
-// Undangan publik: kisahkasih.id/<link>?untuk=Nama
+// Undangan publik: <link>.kisahkasih.site?untuk=Nama (atau kisahkasih.site/<link>)
 export async function GET(_req, { params }) {
   const { slug } = await params;
   const inv = await one("SELECT * FROM invitations WHERE slug = $1", [String(slug).toLowerCase()]);

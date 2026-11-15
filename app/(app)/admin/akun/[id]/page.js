@@ -4,6 +4,7 @@ import { requireAdmin } from "lib/auth";
 import { query, one } from "lib/db";
 import { TEMPLATES, getTemplate } from "lib/templates";
 import { fmtDate } from "lib/util";
+import { inviteBase, ROOT_DOMAIN } from "lib/site";
 import Shell from "../../../_components/Shell";
 import { ActionForm, Submit, ConfirmSubmit } from "../../../_components/ui";
 import { createInvitation, updateCustomer, deleteCustomer, toggleInvitation, deleteInvitation } from "../../../actions";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AccountPage({ params }) {
   const admin = await requireAdmin();
+  const base = await inviteBase();
   const { id } = await params;
   const acc = await one("SELECT * FROM users WHERE id = $1 AND role = 'customer'", [Number(id) || 0]);
   if (!acc) notFound();
@@ -47,7 +49,7 @@ export default async function AccountPage({ params }) {
                   <div>
                     <b>{inv.title}</b>
                     <small>
-                      {t ? `${t.name} · ${t.type}` : inv.template} · <a href={`/${inv.slug}`} target="_blank" rel="noreferrer">/{inv.slug}</a>
+                      {t ? `${t.name} · ${t.type}` : inv.template} · <a href={base.url(inv.slug)} target="_blank" rel="noreferrer">{base.label(inv.slug)}</a>
                     </small>
                     <small>{inv.guests} tamu · {inv.rsvps} RSVP · {inv.active ? "Aktif" : "Nonaktif"}</small>
                   </div>
@@ -95,7 +97,11 @@ export default async function AccountPage({ params }) {
             </label>
             <label className="field">
               <span>Link (opsional)</span>
-              <div className="prefix"><i>/</i><input name="slug" placeholder="otomatis dari judul, mis. nadia-arga" /></div>
+              {base.sub ? (
+                <div className="prefix suffix"><input name="slug" placeholder="otomatis dari judul, mis. nadia-arga" /><i>.{ROOT_DOMAIN}</i></div>
+              ) : (
+                <div className="prefix"><i>/</i><input name="slug" placeholder="otomatis dari judul, mis. nadia-arga" /></div>
+              )}
               <small>Customer tetap bisa menggantinya sendiri nanti.</small>
             </label>
             <Submit>Tambah undangan</Submit>

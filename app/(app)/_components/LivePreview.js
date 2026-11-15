@@ -15,7 +15,7 @@ function buildDoc(html, start, end, config) {
   return doc.replace("<head>", `<head><base href="${location.origin}/">`);
 }
 
-export default function LivePreview({ src, start, end, config }) {
+export default function LivePreview({ src, start, end, config, inline = false }) {
   const [html, setHtml] = useState(null);
   const [doc, setDoc] = useState("");
   const [updating, setUpdating] = useState(false);
@@ -57,7 +57,7 @@ export default function LivePreview({ src, start, end, config }) {
   return (
     <>
       {/* desktop: mockup HP di samping form */}
-      <aside className="pv">
+      <aside className={`pv ${inline ? "pv-inline" : ""}`}>
         <div className="pv-head">
           <b>Preview</b>
           <span className={`pv-status ${updating ? "on" : ""}`}>{updating ? "Memperbarui…" : "Langsung dari form"}</span>
@@ -75,6 +75,8 @@ export default function LivePreview({ src, start, end, config }) {
         </div>
         <p className="pv-note">Preview memakai data di form, termasuk yang belum disimpan.</p>
       </aside>
+      {!inline && (
+        <>
 
       {/* layar kecil: tombol mengambang + layar penuh */}
       <button type="button" className="pv-fab" onClick={() => setOpen(true)}>
@@ -90,6 +92,8 @@ export default function LivePreview({ src, start, end, config }) {
           </div>
           {frame("pv-modal-frame")}
         </div>
+      )}
+        </>
       )}
     </>
   );

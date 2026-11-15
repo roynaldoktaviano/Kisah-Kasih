@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "lib/auth";
 import { query } from "lib/db";
 import { getTemplate } from "lib/templates";
+import { inviteBase } from "lib/site";
 import Shell from "../_components/Shell";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function MyInvitations() {
   const user = await requireUser();
   if (user.role === "admin") redirect("/admin");
+  const base = await inviteBase();
 
   const invitations = await query(
     `SELECT i.*,
@@ -42,7 +44,7 @@ export default async function MyInvitations() {
               <Link key={inv.id} href={`/akun/undangan/${inv.id}`} className="inv-card">
                 <span className="inv-card-tpl">{t ? `${t.name} · ${t.type}` : inv.template}</span>
                 <b>{inv.title}</b>
-                <small>/{inv.slug}{!inv.active && " · nonaktif"}</small>
+                <small>{base.label(inv.slug)}{!inv.active && " · nonaktif"}</small>
                 <span className="inv-card-stats">
                   <span><b>{inv.guests}</b> tamu</span>
                   <span><b>{inv.sent}</b> terkirim</span>
