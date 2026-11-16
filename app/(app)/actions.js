@@ -6,7 +6,7 @@ import { login, logout, requireAdmin, requireInvitation, requireUser, normalizeL
 import { query, one } from "lib/db";
 import { hashPassword, verifyPassword } from "lib/password";
 import { getTemplate } from "lib/templates";
-import { cleanSlug, slugError, normalizePhone, parseGuestLine, DEFAULT_WA_MESSAGE } from "lib/util";
+import { cleanSlug, slugError, normalizePhone, parseGuestLine, randomCode, DEFAULT_WA_MESSAGE } from "lib/util";
 import { inviteBase } from "lib/site";
 
 const str = (fd, k, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
@@ -114,6 +114,22 @@ export async function toggleInvitation(fd) {
   if (inv) revalidatePath(`/admin/akun/${inv.user_id}`);
 }
 
+// Paket "Undangan + Buku Tamu": dinyalakan admin setelah customer membayar.
+export async function toggleGuestbook(fd) {
+  await requireAdmin();
+  const id = Number(fd.get("id"));
+  const inv = await one(
+    `UPDATE invitations SET guestbook = NOT guestbook,
+            scan_token = COALESCE(scan_token, $2)
+      WHERE id = $1 RETURNING user_id`,
+    [id, randomCode(16)]
+  );
+  if (inv) {
+    revalidatePath(`/admin/akun/${inv.user_id}`);
+    revalidatePath(`/akun/undangan/${id}`);
+  }
+}
+
 export async function deleteInvitation(fd) {
   await requireAdmin();
   const inv = await one("DELETE FROM invitations WHERE id = $1 RETURNING user_id", [Number(fd.get("id"))]);
@@ -172,7 +188,7 @@ export async function addGuests(_prev, fd) {
     .slice(0, 1000);
   if (!rows.length) return { error: "Tulis minimal satu nama tamu." };
   for (const g of rows) {
-    await query("INSERT INTO guests (invitation_id, name, phone) VALUES ($1, $2, $3)", [inv.id, g.name, g.phone]);
+    await query("INSERT INTO guests (invitation_id, name, phone, code) VALUES ($1, $2, $3, $4)", [inv.id, g.name, g.phone, randomCode()]);
   }
   revalidatePath(`/akun/undangan/${inv.id}`);
   return { ok: `${rows.length} tamu ditambahkan.`, reset: true };
@@ -202,5 +218,22 @@ export async function markSent(invId, guestId, sent = true) {
 export async function deleteRsvp(fd) {
   const { inv } = await requireInvitation(fd.get("invitation_id"));
   await query("DELETE FROM rsvps WHERE id = $1 AND invitation_id = $2", [Number(fd.get("id")), inv.id]);
+  revalidatePath(`/akun/undangan/${inv.id}`);
+}
+
+// ---------------------------------------------------------------- buku tamu
+// Ganti link penerima tamu (mis. link tersebar ke orang yang tidak seharusnya). Link lama langsung mati.
+export async function resetScanToken(fd) {
+  const { inv } = await requireInvitation(fd.get("id"));
+  await query("UPDATE invitations SET scan_token = $1 WHERE id = $2", [randomCode(16), inv.id]);
+  revalidatePath(`/akun/undangan/${inv.id}`);
+}
+
+// Batalkan check-in dari dashboard (salah scan). Tamu walk-in dihapus sekalian.
+export async function undoCheckin(fd) {
+  const { inv } = await requireInvitation(fd.get("invitation_id"));
+  const id = Number(fd.get("id"));
+  await query("DELETE FROM guests WHERE id = $1 AND invitation_id = $2 AND walk_in", [id, inv.id]);
+  await query("UPDATE guests SET checked_in_at = NULL, checkin_pax = 0 WHERE id = $1 AND invitation_id = $2", [id, inv.id]);
   revalidatePath(`/akun/undangan/${inv.id}`);
 }

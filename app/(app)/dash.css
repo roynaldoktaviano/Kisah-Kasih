@@ -57,6 +57,9 @@ body:has(.dash), body:has(.auth) { background: #fff; }
   color: var(--text) !important; font: 500 .82rem var(--ui); text-decoration: none; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s;
 }
 .btn-mini:hover { background: var(--hover); }
+/* <button> kena `.dash button { font: inherit }` — samakan ukurannya dengan versi <a> */
+.dash button.btn-mini { font: 500 .82rem var(--ui); }
+.dash button.link-danger { font: 500 .82rem var(--ui); }
 .link-danger { background: none; border: 0; padding: 4px 2px; color: var(--bad); font: 500 .82rem var(--ui); cursor: pointer; }
 .link-danger:hover { text-decoration: underline; text-underline-offset: 3px; }
 .btn-wa { display: inline-flex; align-items: center; padding: 7px 14px; border-radius: var(--r-sm); background: var(--accent); color: #fff !important;
@@ -536,3 +539,21 @@ body:has(.dash), body:has(.auth) { background: #fff; }
   .stats:has(.stat-hero) small { display: none; }
   .stats .stat-hero small { display: block; }
 }
+
+/* ---------------- buku tamu (tab di halaman undangan) */
+.gb-promo ul { margin: 12px 0 20px; padding-left: 20px; color: var(--text-2); font-size: .92rem; line-height: 1.7; }
+.gb-link { margin: 4px 0 12px; }
+.gb-link code { display: inline-block; max-width: 100%; overflow-wrap: anywhere; }
+.gb-tip { margin: 14px 0 0; }
+.gb-list { list-style: none; margin: 0; padding: 0; }
+.gb-list li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); font-size: .92rem; }
+.gb-list li:first-child { border-top: 0; }
+.gb-when { width: 150px; flex-shrink: 0; color: var(--text-3); font-size: .82rem; font-variant-numeric: tabular-nums; }
+.gb-who { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gb-who b { font-weight: 500; }
+.gb-n { color: var(--text-2); font-size: .85rem; white-space: nowrap; }
+@media (max-width: 560px) {
+  .gb-list li { flex-wrap: wrap; gap: 4px 10px; }
+  .gb-when { width: 100%; order: 3; }
+}
+.gb-link + .row-actions { justify-content: flex-start; }

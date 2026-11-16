@@ -7,7 +7,7 @@ import { fmtDate } from "lib/util";
 import { inviteBase, ROOT_DOMAIN } from "lib/site";
 import Shell from "../../../_components/Shell";
 import { ActionForm, Submit, ConfirmSubmit } from "../../../_components/ui";
-import { createInvitation, updateCustomer, deleteCustomer, toggleInvitation, deleteInvitation } from "../../../actions";
+import { createInvitation, updateCustomer, deleteCustomer, toggleInvitation, toggleGuestbook, deleteInvitation } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -20,8 +20,9 @@ export default async function AccountPage({ params }) {
 
   const invitations = await query(
     `SELECT i.*,
-            (SELECT count(*)::int FROM guests g WHERE g.invitation_id = i.id) AS guests,
-            (SELECT count(*)::int FROM rsvps r WHERE r.invitation_id = i.id) AS rsvps
+            (SELECT count(*)::int FROM guests g WHERE g.invitation_id = i.id AND NOT g.walk_in) AS guests,
+            (SELECT count(*)::int FROM rsvps r WHERE r.invitation_id = i.id) AS rsvps,
+            (SELECT count(*)::int FROM guests g WHERE g.invitation_id = i.id AND g.checked_in_at IS NOT NULL) AS hadir
        FROM invitations i WHERE i.user_id = $1 ORDER BY i.created_at DESC`,
     [acc.id]
   );
@@ -51,13 +52,20 @@ export default async function AccountPage({ params }) {
                     <small>
                       {t ? `${t.name} · ${t.type}` : inv.template} · <a href={base.url(inv.slug)} target="_blank" rel="noreferrer">{base.label(inv.slug)}</a>
                     </small>
-                    <small>{inv.guests} tamu · {inv.rsvps} RSVP · {inv.active ? "Aktif" : "Nonaktif"}</small>
+                    <small>
+                      {inv.guests} tamu · {inv.rsvps} RSVP · {inv.active ? "Aktif" : "Nonaktif"}
+                      {inv.guestbook && <> · <span className="tag ok">Buku tamu{inv.hadir > 0 ? ` · ${inv.hadir} hadir` : ""}</span></>}
+                    </small>
                   </div>
                   <div className="row-actions">
                     <Link href={`/akun/undangan/${inv.id}`} className="btn-mini">Kelola</Link>
                     <form action={toggleInvitation}>
                       <input type="hidden" name="id" value={inv.id} />
                       <button className="btn-mini" type="submit">{inv.active ? "Nonaktifkan" : "Aktifkan"}</button>
+                    </form>
+                    <form action={toggleGuestbook}>
+                      <input type="hidden" name="id" value={inv.id} />
+                      <button className="btn-mini" type="submit">{inv.guestbook ? "Matikan buku tamu" : "Aktifkan buku tamu"}</button>
                     </form>
                     <form action={deleteInvitation}>
                       <input type="hidden" name="id" value={inv.id} />

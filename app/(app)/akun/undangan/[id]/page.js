@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { requireInvitation } from "lib/auth";
 import { query, one } from "lib/db";
 import { getTemplate, loadTemplate, mergeConfig, upgradeConfig } from "lib/templates";
-import { fillMessage } from "lib/util";
+import { fillMessage, guestLink, fmtDate } from "lib/util";
+import { waLinkFor } from "../../../../data";
 import { inviteBase, ROOT_DOMAIN } from "lib/site";
 import Shell from "../../../_components/Shell";
 import ConfigEditor from "../../../_components/ConfigEditor";
@@ -11,8 +12,8 @@ import RsvpBoard from "../../../_components/RsvpBoard";
 import { TabProvider, TabNav, TabPanel, TabLink } from "../../../_components/TabNav";
 import { TabSkeleton } from "../../../_components/Skeletons";
 import LinkSettings from "../../../_components/LinkSettings";
-import { ActionForm, Submit, CopyButton } from "../../../_components/ui";
-import { saveWaMessage, addGuests } from "../../../actions";
+import { ActionForm, Submit, CopyButton, ConfirmSubmit } from "../../../_components/ui";
+import { saveWaMessage, addGuests, resetScanToken, undoCheckin } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ const TABS = [
   ["link", "Link & Judul"],
   ["tamu", "Tamu & WhatsApp"],
   ["rsvp", "RSVP & Ucapan"],
+  ["bukutamu", "Buku Tamu"],
 ];
 
 export default async function InvitationPage({ params, searchParams }) {
@@ -33,7 +35,9 @@ export default async function InvitationPage({ params, searchParams }) {
   const url = base.url(inv.slug);
   // satu query (bukan dua berurutan) — tiap round-trip ke DB terasa saat pindah tab
   const meta = await one(
-    "SELECT (SELECT count(*)::int FROM rsvps WHERE invitation_id = $1) AS rsvp_count, (SELECT name FROM users WHERE id = $2) AS owner_name",
+    `SELECT (SELECT count(*)::int FROM rsvps WHERE invitation_id = $1) AS rsvp_count,
+            (SELECT count(*)::int FROM guests WHERE invitation_id = $1 AND checked_in_at IS NOT NULL) AS hadir_count,
+            (SELECT name FROM users WHERE id = $2) AS owner_name`,
     [inv.id, inv.user_id]
   );
   const rsvpCount = meta.rsvp_count;
@@ -59,7 +63,7 @@ export default async function InvitationPage({ params, searchParams }) {
       </div>
 
       <TabProvider current={tab}>
-        <TabNav tabs={TABS} counts={{ rsvp: rsvpCount }} />
+        <TabNav tabs={TABS} counts={{ rsvp: rsvpCount, bukutamu: meta.hadir_count }} />
         {/* klik tab → skeleton langsung (TabPanel); header & tab dari server tampil duluan,
             isi tab menyusul lewat Suspense dengan skeleton yang sama */}
         <TabPanel>
@@ -68,6 +72,7 @@ export default async function InvitationPage({ params, searchParams }) {
             {tab === "link" && <LinkTab inv={inv} base={base} />}
             {tab === "tamu" && <GuestsTab inv={inv} url={url} />}
             {tab === "rsvp" && <RsvpTab inv={inv} />}
+            {tab === "bukutamu" && <GuestbookTab inv={inv} origin={base.origin} />}
           </Suspense>
         </TabPanel>
       </TabProvider>
@@ -104,13 +109,15 @@ function LinkTab({ inv, base }) {
 // ---------------------------------------------------------------- tab: tamu
 async function GuestsTab({ inv, url }) {
   const [guests, rsvps] = await Promise.all([
-    query("SELECT * FROM guests WHERE invitation_id = $1 ORDER BY created_at, id", [inv.id]),
-    query("SELECT guest_name, attending, pax FROM rsvps WHERE invitation_id = $1", [inv.id]),
+    query("SELECT * FROM guests WHERE invitation_id = $1 AND NOT walk_in ORDER BY created_at, id", [inv.id]),
+    query("SELECT guest_id, guest_name, attending, pax FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at", [inv.id]),
   ]);
+  // RSVP dari link pribadi terhubung lewat guest_id; RSVP lama/link umum dicocokkan lewat nama
+  const byId = new Map(rsvps.filter((r) => r.guest_id).map((r) => [r.guest_id, r]));
   const byName = new Map(rsvps.map((r) => [r.guest_name.trim().toLowerCase(), r]));
 
   const rows = guests.map((g) => {
-    const link = `${url}?untuk=${encodeURIComponent(g.name)}`;
+    const link = guestLink(url, g.code);
     const text = fillMessage(inv.wa_message, { nama: g.name, link, acara: inv.title });
     return {
       id: g.id,
@@ -119,10 +126,11 @@ async function GuestsTab({ inv, url }) {
       sent_at: g.sent_at ? String(g.sent_at) : null,
       link,
       waUrl: `https://wa.me/${g.phone}?text=${encodeURIComponent(text)}`,
-      rsvp: byName.get(g.name.trim().toLowerCase()) || null,
+      rsvp: byId.get(g.id) || byName.get(g.name.trim().toLowerCase()) || null,
+      checkedIn: !!g.checked_in_at,
     };
   });
-  const sample = fillMessage(inv.wa_message, { nama: guests[0]?.name || "Budi Santoso", link: `${url}?untuk=Budi`, acara: inv.title });
+  const sample = fillMessage(inv.wa_message, { nama: guests[0]?.name || "Budi Santoso", link: guestLink(url, guests[0]?.code || "contoh1234"), acara: inv.title });
 
   return (
     <>
@@ -172,7 +180,7 @@ async function GuestsTab({ inv, url }) {
 async function RsvpTab({ inv }) {
   const [rows, [{ n: invited }]] = await Promise.all([
     query("SELECT id, guest_name, attending, pax, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]),
-    query("SELECT count(*)::int AS n FROM guests WHERE invitation_id = $1", [inv.id]),
+    query("SELECT count(*)::int AS n FROM guests WHERE invitation_id = $1 AND NOT walk_in", [inv.id]),
   ]);
   const rsvps = rows.map((r) => ({ ...r, updated_at: new Date(r.updated_at).toISOString() }));
   const hadir = rsvps.filter((r) => r.attending);
@@ -208,6 +216,112 @@ async function RsvpTab({ inv }) {
           {rsvps.length > 0 && <a className="btn-mini" href={`/akun/undangan/${inv.id}/export?type=rsvp`}>Unduh CSV</a>}
         </div>
         <RsvpBoard invId={inv.id} rsvps={rsvps} />
+      </section>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------- tab: buku tamu
+async function GuestbookTab({ inv, origin }) {
+  if (!inv.guestbook) {
+    const wa = waLinkFor(`Halo KISAHKASIH, saya ingin mengaktifkan Buku Tamu Digital untuk undangan "${inv.title}".`);
+    return (
+      <section className="card gb-promo">
+        <p className="eyebrow-sm">Fitur tambahan</p>
+        <h2>Buku Tamu Digital</h2>
+        <p className="muted">Ganti buku tamu kertas dengan check-in QR di hari H:</p>
+        <ul>
+          <li>Setiap tamu otomatis mendapat <b>QR pribadi</b> di undangannya.</li>
+          <li>Penerima tamu cukup <b>scan pakai HP</b> — tanpa install aplikasi, bisa beberapa HP sekaligus.</li>
+          <li>Tamu tanpa QR dicari lewat nama; tamu tidak terdaftar bisa ditambahkan di tempat.</li>
+          <li>Tetap jalan saat sinyal gedung lemah, data tersimpan otomatis.</li>
+          <li>Pantau siapa saja yang hadir secara langsung, unduh rekapnya setelah acara.</li>
+        </ul>
+        <a className="btn btn-primary" href={wa} target="_blank" rel="noreferrer">Aktifkan lewat WhatsApp</a>
+      </section>
+    );
+  }
+
+  const rows = await query(
+    `SELECT id, name, phone, walk_in, checked_in_at, checkin_pax, sent_at FROM guests
+      WHERE invitation_id = $1 ORDER BY checked_in_at DESC NULLS LAST, name`,
+    [inv.id]
+  );
+  const registered = rows.filter((g) => !g.walk_in);
+  const hadir = rows.filter((g) => g.checked_in_at);
+  const orang = hadir.reduce((n, g) => n + g.checkin_pax, 0);
+  const walkIns = hadir.filter((g) => g.walk_in).length;
+  const unsent = registered.filter((g) => !g.sent_at).length;
+  const scanUrl = `${origin}/bukutamu/${inv.scan_token}`;
+  const shareText = `Halo, ini link buku tamu untuk ${inv.title}. Buka di HP saat bertugas di meja penerima tamu:\n${scanUrl}`;
+
+  return (
+    <>
+      <div className="stats">
+        <div className="stat-hero">
+          <span>Total orang hadir</span>
+          <b>{orang}</b>
+          <small>dari {hadir.length} tamu check-in</small>
+        </div>
+        <div><span>Tamu terdaftar hadir</span><b>{hadir.length - walkIns}</b><small>dari {registered.length} diundang</small></div>
+        <div><span>Tidak terdaftar</span><b>{walkIns}</b><small>ditambahkan di lokasi</small></div>
+      </div>
+
+      <section className="card">
+        <div className="card-head">
+          <div>
+            <h2>Link penerima tamu</h2>
+            <p className="muted small">Bagikan ke keluarga/teman yang bertugas di meja penerima tamu. Dibuka di HP, tanpa login — bisa dipakai di beberapa HP sekaligus.</p>
+          </div>
+        </div>
+        <p className="link-line gb-link">
+          <code>{scanUrl}</code>
+        </p>
+        <div className="row-actions">
+          <CopyButton text={scanUrl}>Salin link</CopyButton>
+          <a className="btn-mini" href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noreferrer">Kirim lewat WA</a>
+          <a className="btn-mini" href={scanUrl} target="_blank" rel="noreferrer">Buka ↗</a>
+          <form action={resetScanToken}>
+            <input type="hidden" name="id" value={inv.id} />
+            <ConfirmSubmit message="Ganti link penerima tamu? Link lama langsung tidak bisa dipakai — bagikan ulang link yang baru.">Ganti link</ConfirmSubmit>
+          </form>
+        </div>
+        {unsent > 0 && (
+          <p className="note warn gb-tip">
+            {unsent} tamu belum dikirimi link pribadi. QR check-in hanya muncul di link pribadi (dari tab <b>Tamu &amp; WhatsApp</b>) — tamu yang membuka link umum tetap bisa check-in lewat pencarian nama.
+          </p>
+        )}
+      </section>
+
+      <section className="card">
+        <div className="card-head">
+          <div>
+            <h2>Daftar hadir</h2>
+            <p className="muted small">Masuk otomatis saat tamu check-in di lokasi.</p>
+          </div>
+          {rows.length > 0 && <a className="btn-mini" href={`/akun/undangan/${inv.id}/export?type=hadir`}>Unduh CSV</a>}
+        </div>
+        {hadir.length === 0 ? (
+          <p className="empty">Belum ada tamu yang check-in.</p>
+        ) : (
+          <ul className="gb-list">
+            {hadir.map((g) => (
+              <li key={g.id}>
+                <span className="gb-when">{fmtDate(g.checked_in_at)}</span>
+                <span className="gb-who">
+                  <b>{g.name}</b>
+                  {g.walk_in && <span className="tag">tidak terdaftar</span>}
+                </span>
+                <span className="gb-n">{g.checkin_pax} orang</span>
+                <form action={undoCheckin}>
+                  <input type="hidden" name="invitation_id" value={inv.id} />
+                  <input type="hidden" name="id" value={g.id} />
+                  <ConfirmSubmit message={g.walk_in ? `Hapus ${g.name} dari daftar hadir?` : `Batalkan check-in ${g.name}?`}>Batalkan</ConfirmSubmit>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </>
   );

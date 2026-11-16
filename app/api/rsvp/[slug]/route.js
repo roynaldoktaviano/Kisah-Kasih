@@ -21,15 +21,20 @@ export async function POST(req, { params }) {
   const inv = await one("SELECT id FROM invitations WHERE slug = $1 AND active", [String(slug).toLowerCase()]);
   if (!inv) return Response.json({ ok: false, error: "Undangan tidak ditemukan" }, { status: 404 });
 
+  // dikirim dari link pribadi → RSVP terhubung langsung ke tamu di daftar
+  const code = String(body.code || "").trim().toLowerCase().slice(0, 32);
+  const guest = code ? await one("SELECT id FROM guests WHERE invitation_id = $1 AND code = $2", [inv.id, code]) : null;
+
   await one(
-    `INSERT INTO rsvps (invitation_id, client_key, guest_name, attending, pax, message)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO rsvps (invitation_id, client_key, guest_name, attending, pax, message, guest_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      ON CONFLICT (invitation_id, client_key) DO UPDATE
        SET guest_name = EXCLUDED.guest_name, attending = EXCLUDED.attending, pax = EXCLUDED.pax,
+           guest_id = COALESCE(EXCLUDED.guest_id, rsvps.guest_id),
            message = CASE WHEN EXCLUDED.message <> '' THEN EXCLUDED.message ELSE rsvps.message END,
            updated_at = now()
      RETURNING id`,
-    [inv.id, key, name, attending, pax, message]
+    [inv.id, key, name, attending, pax, message, guest?.id ?? null]
   );
   return Response.json({ ok: true });
 }

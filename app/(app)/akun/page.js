@@ -15,7 +15,7 @@ export default async function MyInvitations() {
 
   const invitations = await query(
     `SELECT i.*,
-            (SELECT count(*)::int FROM guests g WHERE g.invitation_id = i.id) AS guests,
+            (SELECT count(*)::int FROM guests g WHERE g.invitation_id = i.id AND NOT g.walk_in) AS guests,
             (SELECT count(*)::int FROM guests g WHERE g.invitation_id = i.id AND g.sent_at IS NOT NULL) AS sent,
             (SELECT count(*)::int FROM rsvps r WHERE r.invitation_id = i.id AND r.attending) AS hadir,
             (SELECT count(*)::int FROM rsvps r WHERE r.invitation_id = i.id AND r.message <> '') AS ucapan

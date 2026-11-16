@@ -34,6 +34,17 @@ const TOP = {
   hadiah: "Rekening / e-wallet", teksHadiah: "Teks pengantar hadiah", alamatKado: "Alamat kirim kado",
   batasRsvp: "Batas konfirmasi kehadiran", maksTamu: "Maksimal tamu per undangan", waNumber: "Nomor WhatsApp untuk request lagu",
   tamuDefault: "Sapaan tamu (jika link tanpa nama)", ucapanContoh: "Contoh ucapan", namaAnjing: "Nama hewan peliharaan",
+  // template acara kantor & gereja
+  penyelenggara: "Nama penyelenggara", logo: "Logo", nomorSurat: "Nomor surat", tema: "Tema / tagline",
+  ayat: "Ayat Alkitab", sumberAyat: "Sumber ayat", hutKe: "Ulang tahun ke-", kataAcara: "Sebutan acara",
+  kotaAcara: "Kota acara", tempatSingkat: "Lokasi singkat", agenda: "Susunan acara", hari: "Jadwal per hari",
+  penandatangan: "Nama penandatangan", jabatan: "Jabatan penandatangan", salamPenutup: "Salam penutup",
+  sejarah: "Perjalanan / sejarah", pelayan: "Pelayan / pengisi acara", pembicara: "Pembicara", kontak: "Narahubung",
+  ketentuan: "Ketentuan peserta", pesertaBaptis: "Peserta baptisan", pesertaSidi: "Peserta sidi",
+  biaya: "Biaya", rincianBiaya: "Rincian biaya", rekening: "Rekening pembayaran", bawa: "Perlengkapan yang dibawa",
+  busana: "Kode busana", busanaDetail: "Penjelasan kode busana", warnaBusana: "Palet warna busana",
+  kolomTambahan: "Kolom tambahan di form", labelPesan: "Judul kolom pesan", tombolKirim: "Tulisan tombol kirim",
+  pesanHadir: "Pesan setelah konfirmasi hadir", pesanBerhalangan: "Pesan setelah konfirmasi berhalangan",
 };
 const NESTED = {
   panggilan: "Nama panggilan", lengkap: "Nama lengkap & gelar", keterangan: "Keterangan (putra/putri dari…)",
@@ -51,10 +62,10 @@ const hintFor = (k, hints) => (k in HINTS ? HINTS[k] : hints[k]);
 // Saklar bagian undangan: kalau dimatikan, isian terkait ikut disembunyikan
 const TOGGLES = {
   tampilHadiah: { title: "Bagian hadiah / kado", desc: "Tampilkan nomor rekening & alamat kirim kado di undangan.", keys: ["teksHadiah", "hadiah", "alamatKado"] },
-  tampilRsvp: { title: "RSVP (konfirmasi kehadiran)", desc: "Jawaban tamu langsung masuk ke tab RSVP & Ucapan di dashboard ini.", keys: ["batasRsvp", "maksTamu"] },
+  tampilRsvp: { title: "RSVP (konfirmasi kehadiran)", desc: "Jawaban tamu langsung masuk ke tab RSVP & Ucapan di dashboard ini.", keys: ["batasRsvp", "maksTamu", "kolomTambahan", "labelPesan", "tombolKirim", "pesanHadir", "pesanBerhalangan"] },
 };
 
-const isImageKey = (k) => /foto|galeri|latar/i.test(String(k));
+const isImageKey = (k) => /foto|galeri|latar|^logo$/i.test(String(k));
 const isAudioKey = (k) => k === "musik";
 const LONG_KEYS = /sambutan|kutipan|pesan|cerita|catatan|salam|keterangan|ortu|detail|teks|alamat|dressCode$/i;
 const RE_DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
@@ -341,11 +352,12 @@ function Field({ k, label, value, sample, hint, onChange, invId, depth }) {
 // ---------------------------------------------------------------- wizard
 // Kunci CONFIG dikelompokkan ke langkah-langkah (aturan pertama yang cocok dipakai).
 const STEPS = [
-  { id: "profil", title: "Profil", desc: "Nama dan data yang punya acara.", match: /^(mempelai\d|wanita|pria|nama|umur|foto)$/ },
-  { id: "acara", title: "Waktu & Tempat", desc: "Tanggal, jam, dan lokasi acara.", match: /^(mulai|selesai|zona|acara|lokasi|tempat|alamat|linkMaps|catatanLokasi|catatanAcara|jadwal|rundown|kelas|dari|tujuan)$/ },
-  { id: "pesan", title: "Cerita & Pesan", desc: "Kata sambutan, kutipan, dan kisah kalian.", match: /^(salam|salamPembuka|sambutan|kutipan|sumberKutipan|kisah|pesan|pesanRahasia|ttd|catatan|judulBanner)$/ },
-  { id: "tampilan", title: "Foto & Musik", desc: "Foto, galeri, dress code, dan musik latar.", match: /^(foto\w+|galeri|dressCode|dressCodeDetail|warna|warnaDressCode|musik|waNumber|ilustrasi)$/ },
-  { id: "rsvp", title: "Hadiah & RSVP", desc: "Nyalakan atau matikan bagian hadiah dan konfirmasi kehadiran.", match: /^(tampilHadiah|hadiah|teksHadiah|alamatKado|tampilRsvp|batasRsvp|maksTamu|tamuDefault|ucapanContoh|namaAnjing)$/ },
+  { id: "profil", title: "Profil", desc: "Nama dan data yang punya acara.", match: /^(mempelai\d|wanita|pria|nama|umur|foto|penyelenggara|logo|nomorSurat|hutKe)$/ },
+  { id: "acara", title: "Waktu & Tempat", desc: "Tanggal, jam, dan lokasi acara.", match: /^(mulai|selesai|zona|acara|kataAcara|lokasi|tempat|tempatSingkat|kotaAcara|alamat|linkMaps|catatanLokasi|catatanAcara|jadwal|rundown|agenda|hari|kelas|dari|tujuan)$/ },
+  { id: "pesan", title: "Cerita & Pesan", desc: "Kata sambutan, kutipan, dan kisah kalian.", match: /^(salam|salamPembuka|sambutan|tema|ayat|sumberAyat|kutipan|sumberKutipan|kisah|sejarah|pesan|pesanRahasia|ttd|penandatangan|jabatan|salamPenutup|catatan|judulBanner)$/ },
+  { id: "detail", title: "Pengisi & Info", desc: "Pembicara, pelayan, peserta, ketentuan, dan narahubung.", match: /^(pembicara|pelayan|pesertaBaptis|pesertaSidi|ketentuan|biaya|rincianBiaya|rekening|bawa|kontak)$/ },
+  { id: "tampilan", title: "Foto & Musik", desc: "Foto, galeri, dress code, dan musik latar.", match: /^(foto\w+|galeri|dressCode|dressCodeDetail|busana|busanaDetail|warna|warnaDressCode|warnaBusana|musik|waNumber|ilustrasi)$/ },
+  { id: "rsvp", title: "Hadiah & RSVP", desc: "Nyalakan atau matikan bagian hadiah dan konfirmasi kehadiran.", match: /^(tampilHadiah|hadiah|teksHadiah|alamatKado|tampilRsvp|batasRsvp|maksTamu|kolomTambahan|labelPesan|tombolKirim|pesanHadir|pesanBerhalangan|tamuDefault|ucapanContoh|namaAnjing)$/ },
   { id: "lain", title: "Lainnya", desc: "Pengaturan tambahan.", match: /./ },
 ];
 
@@ -449,7 +461,7 @@ export default function ConfigEditor({ invId, defaults, hints, initial, preview,
                 <Field
                   key={k}
                   k={k}
-                  label={labelFor(k, 0)}
+                  label={k === "acara" && typeof defaults[k] === "string" ? "Nama acara" : labelFor(k, 0)}
                   value={value[k]}
                   sample={defaults[k]}
                   hint={hintFor(k, hints)}

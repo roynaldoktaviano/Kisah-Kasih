@@ -10,7 +10,7 @@ const FILTERS = [
   ["rsvp", "Sudah RSVP"],
 ];
 
-// guests: [{ id, name, phone, sent_at, link, waUrl, rsvp: { attending, pax } | null }]
+// guests: [{ id, name, phone, sent_at, link, waUrl, rsvp: { attending, pax } | null, checkedIn }]
 export default function GuestTable({ invId, guests }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("all");
@@ -101,6 +101,7 @@ export default function GuestTable({ invId, guests }) {
                 <small>{g.phone ? `+${g.phone}` : "tanpa nomor — pilih kontak di WhatsApp"}</small>
                 <span className="guest-tags">
                   <span className={`tag ${sent ? "ok" : ""}`}>{sent ? "Terkirim" : "Belum dikirim"}</span>
+                  {g.checkedIn && <span className="tag ok">Hadir di lokasi</span>}
                   {g.rsvp && (
                     <span className={`tag ${g.rsvp.attending ? "ok" : "no"}`}>
                       {g.rsvp.attending ? `Hadir · ${g.rsvp.pax} org` : "Berhalangan"}

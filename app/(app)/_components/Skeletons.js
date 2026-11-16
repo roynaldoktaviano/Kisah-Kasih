@@ -141,7 +141,7 @@ function RsvpSkeleton() {
   );
 }
 
-const BY_TAB = { data: DataSkeleton, link: LinkSkeleton, tamu: GuestsSkeleton, rsvp: RsvpSkeleton };
+const BY_TAB = { data: DataSkeleton, link: LinkSkeleton, tamu: GuestsSkeleton, rsvp: RsvpSkeleton, bukutamu: RsvpSkeleton };
 
 export function TabSkeleton({ tab }) {
   const C = BY_TAB[tab] || DataSkeleton;
@@ -180,7 +180,7 @@ export function InvitationPageSkeleton() {
           <Sk w={160} h={42} r={10} className="sk-btn" />
         </div>
         <div className="tabs-dash sk-tabs">
-          {[110, 96, 132, 116].map((w, i) => (
+          {[110, 96, 132, 116, 90].map((w, i) => (
             <Sk key={i} w={w} h={12} />
           ))}
         </div>

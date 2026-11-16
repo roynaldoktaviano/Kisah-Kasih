@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contoh Template Undangan</title>
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; font:15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; background:#f4f4f2; color:#1a1a1a; }
+  .wrap{ max-width:980px; margin:0 auto; padding:48px 20px 64px; }
+  h1{ font-size:28px; margin:0 0 6px; letter-spacing:-.02em; }
+  p.sub{ color:#666; margin:0 0 36px; }
+  h2{ font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:#777; margin:36px 0 14px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
+  a.card{ display:flex; gap:14px; align-items:center; padding:16px; background:#fff; border:1px solid #e4e4e0; border-radius:12px; color:inherit; text-decoration:none; transition:border-color .2s, transform .2s; }
+  a.card:hover{ border-color:#999; transform:translateY(-2px); }
+  .sw{ display:flex; flex:none; width:54px; height:54px; border-radius:10px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,.08); }
+  .sw i{ flex:1; }
+  b{ display:block; }
+  small{ color:#777; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Contoh Template Undangan</h1>
+  <p class="sub">10 contoh: 5 acara kantor &amp; 5 acara gereja. Belum terdaftar di sistem. Tambahkan <code>?untuk=Nama</code> di alamat untuk mencoba sapaan tamu.</p>
+
+  <h2>Acara Kantor</h2>
+  <div class="grid">
+    <a class="card" href="korporat-1-lembar-putih.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#fff"></i><i style="background:#111"></i><i style="background:#1d4ed8"></i></span><span><b>Lembar Putih</b><small>Rapat kerja · minimalis hitam-putih</small></span></a>
+    <a class="card" href="korporat-2-navy-eksekutif.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#14213d"></i><i style="background:#f5f2ea"></i><i style="background:#a8875a"></i></span><span><b>Navy Eksekutif</b><small>Malam penghargaan · navy &amp; krem</small></span></a>
+    <a class="card" href="korporat-3-peluncuran.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#0e0e0f"></i><i style="background:#f2f2f0"></i><i style="background:#ff5a1f"></i></span><span><b>Peluncuran</b><small>Peluncuran produk · gelap &amp; oranye</small></span></a>
+    <a class="card" href="korporat-4-konferensi.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#f3f5f7"></i><i style="background:#0f172a"></i><i style="background:#0f766e"></i></span><span><b>Konferensi</b><small>Seminar · kartu peserta</small></span></a>
+    <a class="card" href="korporat-5-peresmian.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#f7f5f0"></i><i style="background:#1c1c1a"></i><i style="background:#1f3d2b"></i></span><span><b>Peresmian</b><small>Peresmian kantor · gunting pita</small></span></a>
+  </div>
+
+  <h2>Acara Gereja</h2>
+  <div class="grid">
+    <a class="card" href="gereja-1-natal.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#faf6ef"></i><i style="background:#8a1c2b"></i><i style="background:#22402f"></i></span><span><b>Natal</b><small>Ibadah &amp; perayaan Natal</small></span></a>
+    <a class="card" href="gereja-2-paskah.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#f5f1e8"></i><i style="background:#56705a"></i><i style="background:#d6a03c"></i></span><span><b>Paskah</b><small>Ibadah Paskah · matahari terbit</small></span></a>
+    <a class="card" href="gereja-3-syukur-hut.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#1e2d4f"></i><i style="background:#2f6f73"></i><i style="background:#c99a2e"></i><i style="background:#8c2f39"></i></span><span><b>Syukur HUT Gereja</b><small>Ulang tahun gereja · kaca patri</small></span></a>
+    <a class="card" href="gereja-4-baptisan.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#fbfcfd"></i><i style="background:#eaf2f9"></i><i style="background:#2f74b5"></i></span><span><b>Baptisan &amp; Sidi</b><small>Baptisan kudus · riak air</small></span></a>
+    <a class="card" href="gereja-5-retret-pemuda.html?untuk=Bapak%20Andi%20Saputra"><span class="sw"><i style="background:#f2f0ea"></i><i style="background:#2f5d50"></i><i style="background:#c4693d"></i></span><span><b>Retret Pemuda</b><small>Retret beberapa hari · pegunungan</small></span></a>
+  </div>
+</div>
+</body>
+</html>

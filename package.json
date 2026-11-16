@@ -10,9 +10,11 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.5.16",
     "@fontsource/cormorant-garamond": "^5.1.0",
+    "jsqr": "^1.4.0",
     "lenis": "^1.3.27",
     "next": "^15.0.0",
     "pg": "^8.23.1",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }

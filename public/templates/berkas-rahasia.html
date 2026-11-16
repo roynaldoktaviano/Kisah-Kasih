@@ -651,6 +651,8 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const GUEST = (() => {
+  // KK.guest: diisi server dari link pribadi (?k=<kode>). ?untuk= tetap jalan untuk demo template.
+  if (window.KK) return (KK.guest ? KK.guest.name : "").trim().slice(0, 40) || CONFIG.tamuDefault;
   try { const q = new URLSearchParams(location.search); return (q.get("untuk") || q.get("to") || "").trim().slice(0, 40) || CONFIG.tamuDefault; }
   catch (e) { return CONFIG.tamuDefault; }
 })();

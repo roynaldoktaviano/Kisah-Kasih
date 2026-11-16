@@ -56,6 +56,17 @@ export const DESIGN_TABS = [
     items: [
       { name: "Taman Bunga", event: "wedding", demo: "/templates/taman-bunga.html", tags: ["Amplop interaktif", "Kelopak berjatuhan"] },
       { name: "Boarding Pass", event: "wedding", demo: "/templates/boarding-pass.html", tags: ["Tiket check-in", "Papan keberangkatan"] },
+      // acara kantor
+      { name: "Lembar Putih", event: "company", demo: "/templates/lembar-putih.html", tags: ["Minimalis hitam-putih", "Rapat & raker"] },
+      { name: "Navy Eksekutif", event: "company", demo: "/templates/navy-eksekutif.html", tags: ["Sampul terbelah", "Gala & penghargaan"] },
+      { name: "Sorot Panggung", event: "company", demo: "/templates/sorot-panggung.html", tags: ["Pita teks berjalan", "Peluncuran produk"] },
+      { name: "Gunting Pita", event: "company", demo: "/templates/gunting-pita.html", tags: ["Gunting pita interaktif", "Peresmian kantor"] },
+      // acara gereja
+      { name: "Bintang Natal", event: "church", demo: "/templates/bintang-natal.html", tags: ["Bintang bergaris", "Ibadah Natal"] },
+      { name: "Fajar Paskah", event: "church", demo: "/templates/fajar-paskah.html", tags: ["Matahari terbit", "Jadwal ibadah"] },
+      { name: "Kaca Patri", event: "church", demo: "/templates/kaca-patri.html", tags: ["Jendela kaca patri", "HUT gereja"] },
+      { name: "Riak Air", event: "church", demo: "/templates/riak-air.html", tags: ["Riak air", "Baptisan & sidi"] },
+      { name: "Lembah Hijau", event: "church", demo: "/templates/lembah-hijau.html", tags: ["Pegunungan berlapis", "Retret pemuda"] },
     ],
   },
   {
@@ -65,6 +76,8 @@ export const DESIGN_TABS = [
     items: [
       { name: "Taman Kecil", event: "wedding", demo: "/templates/taman-kecil.html", tags: ["Ilustrasi taman", "QR check-in"] },
       { name: "Berkas Rahasia", event: "birthday", demo: "/templates/berkas-rahasia.html", tags: ["Tema detektif", "RSVP sidik jari"] },
+      { name: "Lorong Cahaya", event: "wedding", demo: "/templates/lorong-cahaya.html", tags: ["Ruang 3D", "Galeri di lorong"] },
+      { name: "Lapisan Senja", event: "wedding", demo: "/templates/lapisan-senja.html", tags: ["Diorama parallax", "Pagi hingga malam"] },
     ],
   },
 ];

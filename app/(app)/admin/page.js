@@ -27,7 +27,7 @@ export default async function AdminPage({ searchParams }) {
     `SELECT (SELECT count(*)::int FROM users WHERE role = 'customer') AS customers,
             (SELECT count(*)::int FROM invitations) AS invitations,
             (SELECT count(*)::int FROM rsvps) AS rsvps,
-            (SELECT count(*)::int FROM guests) AS guests`
+            (SELECT count(*)::int FROM guests WHERE NOT walk_in) AS guests`
   );
 
   return (

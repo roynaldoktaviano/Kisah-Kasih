@@ -488,6 +488,8 @@ const store = {
   set(k, v){ try { localStorage.setItem("tm-" + k, JSON.stringify(v)); } catch (e) {} }
 };
 const GUEST = (() => {
+  // KK.guest: diisi server dari link pribadi (?k=<kode>). ?untuk= tetap jalan untuk demo template.
+  if (window.KK) return (KK.guest ? KK.guest.name : "").trim().slice(0, 40) || CONFIG.tamuDefault;
   try { const q = new URLSearchParams(location.search); return (q.get("untuk") || q.get("to") || "").trim().slice(0, 40) || CONFIG.tamuDefault; }
   catch (e) { return CONFIG.tamuDefault; }
 })();
@@ -1044,9 +1046,13 @@ const SECTIONS = {
       <ul class="tips"><li><i>${ic("head")}</i>Nyalakan / matikan musik</li><li><i>${ic("power")}</i>Tutup undangan, kembali ke sampul</li><li><i>${ic("qr")}</i>QR untuk check-in di lokasi acara</li><li><i aria-hidden="true">🐶</i>Psst… coba bangunkan ${esc(CONFIG.namaAnjing)} yang tidur di jalan setapak</li></ul>`;
   }},
   qr:{ t:"QR Check-in", r(){
-    return `<div class="qr" id="qr"><p>Memuat QR…</p></div><p class="qr-n">${esc(GUEST)}</p><p class="lead">Tunjukkan QR ini kepada penerima tamu saat tiba di lokasi.</p>`;
+    // buku tamu aktif tapi dibuka dari link umum → tidak ada kode tamu untuk di-scan
+    if (window.KK && KK.guestbook && !KK.guest) return `<p class="lead">QR check-in tersedia di link undangan pribadi yang dikirim untukmu. Kamu tetap bisa check-in dengan menyebutkan nama kepada penerima tamu.</p>`;
+    return `<div class="qr" id="qr"><p>Memuat QR…</p></div><p class="qr-n">${esc(GUEST)}</p>${window.KK && KK.guest ? `<p class="qr-n" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:.14em;font-size:13px;opacity:.7">${esc(KK.guest.code.toUpperCase())}</p>` : ""}<p class="lead">Tunjukkan QR ini kepada penerima tamu saat tiba di lokasi.</p>`;
   }, after(b){
-    const box = $("#qr", b), text = `${COUPLE} | ${GUEST} | ${E0.tanggal}`;
+    // QR berisi kode tamu (dibaca halaman penerima tamu); tanpa buku tamu tetap QR dekoratif seperti dulu
+    const box = $("#qr", b); if (!box) return;
+    const text = window.KK && KK.guestbook && KK.guest ? KK.guest.code : `${COUPLE} | ${GUEST} | ${E0.tanggal}`;
     const draw = () => {
       try {
         if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
