@@ -219,7 +219,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .pax-ch{ position:relative; width:150px; height:190px; margin:8px auto 6px; }
 .pax-ch .halo{ position:absolute; left:50%; top:-6px; width:150px; height:150px; margin-left:-75px; overflow:visible; animation:spin 50s linear infinite; }
 .pax-ch .who{ position:relative; display:block; width:100%; height:100%; overflow:visible; transform:translateY(16px) scale(.7); opacity:0; transform-origin:50% 100%; transition:transform 1s cubic-bezier(.3,1.5,.5,1) .35s, opacity .5s .35s; }
-.in .pax-ch .who{ transform:none; opacity:1; }
+.in .pax-ch .who, .play .pax-ch .who{ transform:none; opacity:1; }
+.hero-couple{ position:absolute; z-index:2; display:flex; justify-content:center; pointer-events:none; }
+.hero-couple .pax-ch{ flex:none; width:60%; height:100%; margin:0; }
+.hero-couple .pax-ch + .pax-ch{ margin-left:-20%; }
+.hero-couple .pax-ch .who{ transition-delay:3.5s; }
+.hero-couple .pax-ch.pria .who{ transition-delay:3.7s; }
+.hero-couple .hrt{ animation-delay:calc(var(--d) + 4s); }
 .pax-ch .sway{ transform-box:view-box; transform-origin:60px 146px; animation:ch-sway 4.4s ease-in-out infinite; }
 .pax-ch.pria .sway{ animation-delay:-2.2s; }
 @keyframes ch-sway{ 0%,100%{ transform:rotate(-2.4deg); } 50%{ transform:rotate(2.4deg); } }
@@ -1003,9 +1009,14 @@ function paintWishes(fresh){
   const hearts = [["8%", "0s", "11px", "#e6a93a", "-8px"], ["82%", "1.7s", "9px", "#f5b417", "8px"], ["16%", "3.3s", "8px", "#e09a12", "4px"]]
     .map(([x, d, sz, c, dx]) => `<svg class="hrt" viewBox="0 0 24 24" style="--x:${x};--d:${d};--s:${sz};--c:${c};--dx:${dx}">${HEART}</svg>`).join("");
   const isPria = (m, i) => /^\s*putra/i.test(m.keterangan || "") || (!/^\s*putri/i.test(m.keterangan || "") && i === 1);
-  const chara = (m, i) => { const pria = isPria(m, i); return `<div class="pax-ch ${pria ? "pria" : "wanita"}" role="img" aria-label="Ilustrasi ${pria ? "pengantin pria" : "pengantin wanita"}"><svg class="halo" viewBox="-50 -50 100 100" aria-hidden="true"><g class="fl" style="--d:.2s"><use href="#peony" x="-50" y="-50" width="100" height="100" style="--p1:#fff0bf;--p2:#ffe08a;--p3:#f3c96a;--p4:#fbe7b5"/></g></svg><svg class="who" viewBox="0 0 120 152" aria-hidden="true">${pria ? groom() : bride(!!CONFIG.pengantinBerhijab)}</svg>${hearts}</div>`; };
+  const chara = (m, i, halo = true) => { const pria = isPria(m, i); return `<div class="pax-ch ${pria ? "pria" : "wanita"}" role="img" aria-label="Ilustrasi ${pria ? "pengantin pria" : "pengantin wanita"}">${halo ? `<svg class="halo" viewBox="-50 -50 100 100" aria-hidden="true"><g class="fl" style="--d:.2s"><use href="#peony" x="-50" y="-50" width="100" height="100" style="--p1:#fff0bf;--p2:#ffe08a;--p3:#f3c96a;--p4:#fbe7b5"/></g></svg>` : ""}<svg class="who" viewBox="0 0 120 152" aria-hidden="true">${pria ? groom() : bride(!!CONFIG.pengantinBerhijab)}</svg>${hearts}</div>`; };
   const pax = (m, i) => `<div class="pax st">${role(m.keterangan) ? `<p class="role">${role(m.keterangan)}</p>` : ""}${m.foto ? `<div class="pax-sf photo"><div class="face"><img src="${esc(m.foto)}" alt="${esc(m.lengkap)}" loading="lazy"></div></div>` : CONFIG.karakterMempelai ? chara(m, i) : `<div class="pax-sf"><svg viewBox="-50 -50 100 100" aria-hidden="true"><g class="fl" style="--d:.35s"><use href="#peony" x="-50" y="-50" width="100" height="100" style="${SUN}"/></g></svg></div>`}<h3>${esc(m.panggilan)}</h3><p class="full">${esc(m.lengkap)}</p>${m.sapaan ? `<p class="alias">akrab disapa ${esc(m.sapaan)}</p>` : ""}${parents(m.keterangan)}${m.instagram ? `<a class="ig" href="https://instagram.com/${encodeURIComponent(m.instagram.replace(/^@/, ""))}" target="_blank" rel="noopener">@${esc(m.instagram.replace(/^@/, ""))}</a>` : ""}</div>`;
   $("#pax").innerHTML = pax(CONFIG.mempelai1, 0) + `<div class="amp st" aria-hidden="true"><i></i><span>&amp;</span><i></i></div>` + pax(CONFIG.mempelai2, 1);
+  // adegan pembuka: pasangan berdiri di bawah gapura (wanita kiri, pria kanan)
+  if (CONFIG.karakterMempelai){
+    const ms = [[CONFIG.mempelai1, 0], [CONFIG.mempelai2, 1]].sort((a, b) => isPria(...a) - isPria(...b));
+    $("#hero").insertAdjacentHTML("beforeend", `<div class="hero-couple" id="hero-couple">${ms.map(([m, i]) => chara(m, i, false)).join("")}</div>`);
+  }
 
   // kalender
   $("#cal-m").textContent = `${BULAN[M - 1]} ${Y}`;
@@ -1071,6 +1082,8 @@ function placeHeroText(){
   const s = Math.max(W / 430, H / 820), ox = (W - 430 * s) / 2, oy = H - 820 * s;
   Object.assign(heroText.style, { left:`${ox + 92 * s}px`, top:`${oy + 200 * s}px`, width:`${246 * s}px`, height:`${400 * s}px` });
   heroText.style.setProperty("--fs", Math.min(1.15, s).toFixed(3));
+  const hc = $("#hero-couple");
+  if (hc) Object.assign(hc.style, { left:`${ox + 105 * s}px`, top:`${oy + 560 * s}px`, width:`${220 * s}px`, height:`${170 * s}px` });
 }
 addEventListener("resize", placeHeroText);
 
