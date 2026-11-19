@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d3520">
+<title>Undangan Pernikahan · Bunga Matahari</title>
+<meta name="description" content="Dengan penuh sukacita, kami mengundang Anda untuk hadir di hari pernikahan kami.">
+<meta property="og:title" content="Undangan Pernikahan">
+<meta property="og:description" content="Kami mengundang Anda untuk hadir di hari bahagia kami.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#1d3520; --forest-2:#27452a; --leaf:#5d8a3c; --leaf-2:#3f6b2c; --sage:#a9c27c;
+  --sun:#f5b417; --sun-2:#e08a0b; --honey:#ffd65a; --butter:#fff1c2;
+  --cream:#fdf8ec; --paper:#fffcf5; --seed:#4a2c14; --ink:#3a2c18; --ink-2:#7d6a4c; --line:#eadcb8;
+  --script:"Parisienne", "Snell Roundhand", cursive;
+  --disp:"Cormorant Garamond", Georgia, serif;
+  --sans:"Jost", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --col:480px;
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; font-feature-settings:"lnum" 1; }
+body{
+  margin:0; color:var(--ink); font-family:var(--sans); font-weight:300; line-height:1.7; -webkit-font-smoothing:antialiased; font-variant-numeric:lining-nums;
+  background:var(--forest) radial-gradient(ellipse at 50% 0%, #34603a 0%, transparent 60%) fixed;
+}
+body.locked{ overflow:hidden; height:100%; }
+button, input, textarea{ font:inherit; color:inherit; }
+button{ cursor:pointer; border:0; background:none; padding:0; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+a{ color:inherit; }
+svg{ display:block; }
+:focus-visible{ outline:2px solid var(--sun); outline-offset:3px; }
+[hidden]{ display:none !important; }
+.script{ font-family:var(--script); font-weight:400; }
+.eyebrow{ margin:0; font:500 11px/1.4 var(--sans); letter-spacing:.32em; text-transform:uppercase; color:var(--sun-2); }
+#defs{ position:absolute; width:0; height:0; overflow:hidden; }
+
+/* ===== bunga matahari (SVG buatan JS) ===== */
+svg.sf{ width:100%; height:auto; overflow:visible; }
+.sf .pt{ transform-box:fill-box; transform-origin:50% 100%; transform:scale(.001); transition:transform .9s var(--spring); transition-delay:calc(var(--bd, 0s) + var(--i) * 22ms); }
+.sf .pt.in2{ transition-delay:calc(var(--bd, 0s) + .25s + var(--i) * 22ms); }
+.sf .sp{ transform-box:fill-box; transform-origin:50% 100%; transform:scale(.001); transition:transform .7s var(--ease); transition-delay:var(--bd, 0s); }
+.sf .ctr{ transform-box:fill-box; transform-origin:center; transform:scale(.001); transition:transform .8s var(--spring); transition-delay:var(--bd, 0s); }
+.sf .sd{ transform-box:fill-box; transform-origin:center; transform:scale(0); transition:transform .45s var(--spring); transition-delay:calc(var(--bd, 0s) + .45s + var(--i) * 3ms); }
+.sf .mono{ opacity:0; transition:opacity 1s var(--ease); transition-delay:calc(var(--bd, 0s) + 1.1s); }
+.sf.on .pt, .sf.on .sp, .sf.on .ctr, .sf.on .sd{ transform:none; }
+.sf.on .mono{ opacity:1; }
+.spin{ animation:spin 90s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ===== banner kiri & kanan (desktop): kolom undangan ukuran HP di tengah ===== */
+.bn{ display:none; }
+@media (min-width:1000px){
+  .bn{ display:block; position:fixed; top:0; bottom:0; z-index:0; width:calc(50% - var(--col) / 2); overflow:hidden; text-align:center;
+    background:linear-gradient(180deg, #fbd877 0%, #fde7a6 34%, #fff5d9 68%, #f7f3df 100%); }
+  .bn.l{ left:0; } .bn.r{ right:0; }
+}
+.bn-rays{ position:absolute; left:50%; top:38%; width:900px; height:900px; margin:-450px 0 0 -450px; border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,196,54,.26) 0deg 5deg, rgba(255,196,54,0) 5deg 15deg);
+  -webkit-mask:radial-gradient(circle, #000 12%, transparent 62%); mask:radial-gradient(circle, #000 12%, transparent 62%); animation:spin 140s linear infinite; }
+.bn.r .bn-rays{ top:8%; animation-direction:reverse; }
+.bn-in{ position:relative; z-index:4; display:flex; flex-direction:column; align-items:center; justify-content:center; height:84%; padding:0 24px; }
+.bn-fl{ width:min(78%, 300px, 38vh); aspect-ratio:1; margin:14px 0 4px; filter:drop-shadow(0 18px 30px rgba(150,90,0,.25)); }
+.bn-names{ margin:0; font-size:clamp(44px, 4.4vw, 84px); line-height:1.1; color:var(--forest); white-space:nowrap; }
+.bn-names i{ font-style:normal; font-size:.62em; padding:0 .14em; color:var(--sun-2); }
+.bn-date{ margin:8px 0 0; font:400 14px/1 var(--sans); letter-spacing:.4em; color:var(--forest-2); }
+.bn-guest{ margin:22px 0 0; font-size:12px; letter-spacing:.06em; color:var(--ink-2); }
+.bn-guest b{ display:block; margin-top:2px; font:500 21px/1.3 var(--disp); letter-spacing:0; color:var(--ink); }
+.bn .hills.back{ height:22%; }
+.bn .hills.front{ height:12%; }
+.bn-top{ position:relative; z-index:4; padding:9vh 24px 0; }
+.bn-cd{ margin:8px 0 0; font:italic 500 clamp(28px, 2.6vw, 40px)/1.15 var(--disp); color:var(--forest); }
+.bn-sub{ margin:6px 0 0; font-size:13px; letter-spacing:.08em; color:var(--ink-2); }
+#g-sf .sp{ transform:none; }
+#g-sf .ctr{ transform:scale(.55); }
+#g-sf.on .ctr{ transform:none; }
+#grow .gl{ transform:scale(0); }
+#grow{ position:absolute; left:50%; bottom:0; z-index:2; height:74%; width:auto; transform:translateX(-50%); overflow:visible; }
+.bn-hint{ position:absolute; left:0; right:0; bottom:3.5%; z-index:4; margin:0; padding:0 20px; font:italic 400 15px/1.4 var(--disp); color:#fff8de; text-shadow:0 1px 6px rgba(0,0,0,.35); transition:opacity .5s; }
+
+/* ===== sampul ===== */
+#cover{
+  position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; overflow:hidden;
+  background:radial-gradient(circle at 50% 40%, #3a6a37 0%, #1d3520 58%, #11210f 100%); color:var(--butter);
+  transition:opacity .8s var(--ease), visibility .8s;
+}
+#cover.going{ opacity:0; visibility:hidden; }
+#cover.gone{ display:none; }
+.cv-in{ position:relative; z-index:2; width:100%; max-width:var(--col); padding:max(28px, env(safe-area-inset-top)) 28px max(28px, env(safe-area-inset-bottom)); text-align:center; }
+.cv-in .eyebrow{ color:var(--honey); opacity:0; animation:up .9s var(--ease) .2s forwards; }
+.cv-fl{ position:relative; width:min(58vw, 250px, 34vh); aspect-ratio:1; margin:14px auto 6px; transition:transform 1.1s cubic-bezier(.6,0,.3,1), opacity 1s; }
+.cv-fl::before{ content:""; position:absolute; inset:-22%; border-radius:50%; background:radial-gradient(circle, rgba(255,214,90,.42), rgba(255,214,90,0) 62%); animation:pulse 4s ease-in-out infinite; }
+#cover.going .cv-fl{ transform:scale(4.5) rotate(40deg); opacity:0; }
+#cover.going .cv-txt{ opacity:0; transform:translateY(20px); }
+.cv-txt{ transition:opacity .5s, transform .5s; }
+.cv-names{ margin:0; font-size:clamp(54px, 15vw, 74px); line-height:1.1; color:#fff7dd; opacity:0; animation:up 1s var(--ease) .9s forwards; text-shadow:0 2px 24px rgba(0,0,0,.25); }
+.cv-names i{ font-style:normal; color:var(--honey); padding:0 .12em; }
+.cv-date{ margin:4px 0 22px; font:400 13px/1 var(--sans); letter-spacing:.4em; color:var(--sage); opacity:0; animation:up 1s var(--ease) 1.1s forwards; }
+.cv-guest{ margin:0 auto 22px; max-width:300px; padding:14px 18px; border-radius:16px; background:rgba(255,248,220,.07); border:1px solid rgba(255,214,90,.22); opacity:0; animation:up 1s var(--ease) 1.3s forwards; }
+.cv-guest span{ display:block; font-size:12px; letter-spacing:.08em; color:var(--sage); }
+.cv-guest b{ display:block; margin:2px 0; font:500 24px/1.3 var(--disp); color:#fff7dd; }
+.cv-guest small{ display:block; font-size:10.5px; line-height:1.5; color:rgba(255,241,194,.55); }
+#open-btn{ opacity:0; animation:up 1s var(--ease) 1.5s forwards; }
+@keyframes up{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:none; } }
+@keyframes pulse{ 50%{ transform:scale(1.08); opacity:.7; } }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:13px 24px; border-radius:999px;
+  font:500 13px/1 var(--sans); letter-spacing:.08em; text-decoration:none; transition:transform .25s var(--ease), box-shadow .25s, background .25s;
+}
+.btn svg{ width:16px; height:16px; flex:none; }
+.btn.sun{ background:linear-gradient(135deg, #ffd65a, #f5b417 55%, #e8960e); color:#3a2208; box-shadow:0 8px 24px rgba(245,180,23,.35), inset 0 1px 0 rgba(255,255,255,.5); }
+.btn.sun:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(245,180,23,.45); }
+.btn.line{ border:1px solid currentColor; }
+.btn.line:hover{ background:rgba(245,180,23,.12); }
+.btn:active{ transform:scale(.97); }
+
+/* kelopak beterbangan saat sampul dibuka */
+.burst{ position:fixed; z-index:65; pointer-events:none; }
+.burst i{
+  position:absolute; width:14px; height:24px; margin:-12px 0 0 -7px; border-radius:50% 50% 50% 50% / 70% 70% 30% 30%;
+  background:linear-gradient(#ffd84a, #f0a012); animation:burst 1.3s cubic-bezier(.15,.7,.3,1) forwards;
+}
+@keyframes burst{ to{ transform:translate(var(--x), var(--y)) rotate(var(--r)); opacity:0; } }
+
+/* ===== kolom utama ===== */
+#main{ position:relative; z-index:1; max-width:var(--col); margin:0 auto; background:var(--cream); overflow-x:clip; box-shadow:0 0 80px rgba(0,0,0,.35); }
+.sec{ position:relative; padding:88px 28px; text-align:center; }
+.sec h2{ margin:8px 0 0; font:italic 500 38px/1.15 var(--disp); color:var(--forest); }
+.sec .lead{ margin:16px auto 0; max-width:360px; font-size:14.5px; color:var(--ink-2); }
+
+/* ===== hero ===== */
+.hero{ position:relative; height:clamp(640px, 100svh, 940px); overflow:hidden; background:linear-gradient(180deg, #fbd877 0%, #fde7a6 30%, #fff5d9 62%, #f7f3df 100%); }
+.hero .sunwrap{ position:absolute; left:50%; top:24%; width:0; height:0; will-change:transform; }
+.hero .rays{ position:absolute; width:640px; height:640px; left:-320px; top:-320px; border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,196,54,.32) 0deg 5deg, rgba(255,196,54,0) 5deg 15deg);
+  -webkit-mask:radial-gradient(circle, #000 18%, transparent 66%); mask:radial-gradient(circle, #000 18%, transparent 66%); animation:spin 120s linear infinite; }
+.hero .disc{ position:absolute; width:240px; height:240px; left:-120px; top:-120px; border-radius:50%; background:radial-gradient(circle, #fffbe8 0%, #fff0b0 45%, rgba(255,226,120,.7) 62%, rgba(255,214,90,0) 72%); animation:pulse 6s ease-in-out infinite; }
+.cloud{ position:absolute; height:22px; border-radius:22px; background:rgba(255,255,255,.75); filter:blur(.4px); animation:drift linear infinite; }
+.cloud::before, .cloud::after{ content:""; position:absolute; border-radius:50%; background:inherit; }
+.cloud::before{ width:34px; height:34px; left:14px; top:-16px; }
+.cloud::after{ width:24px; height:24px; left:40px; top:-10px; }
+.cloud.c1{ width:86px; top:11%; left:-90px; animation-duration:70s; }
+.cloud.c2{ width:64px; top:20%; left:-70px; animation-duration:95s; animation-delay:-50s; opacity:.8; }
+.cloud.c3{ width:74px; top:6%; left:-80px; animation-duration:84s; animation-delay:-20s; opacity:.6; }
+@keyframes drift{ to{ transform:translateX(calc(var(--col) + 200px)); } }
+.hero-txt{ position:relative; z-index:4; padding:calc(16svh + 10px) 24px 0; text-align:center; }
+.hero-txt > *{ opacity:0; transform:translateY(18px); transition:opacity 1.1s var(--ease), transform 1.1s var(--ease); }
+.hero.in .hero-txt > *{ opacity:1; transform:none; }
+.hero.in .hero-txt > :nth-child(2){ transition-delay:.25s; }
+.hero.in .hero-txt > :nth-child(3){ transition-delay:.5s; }
+.hero.in .hero-txt > :nth-child(4){ transition-delay:.7s; }
+.hero .eyebrow{ color:#9a5a06; }
+.names{ margin:8px 0 0; font-size:clamp(58px, 17vw, 84px); line-height:1.1; color:var(--forest); white-space:nowrap; }
+.names i{ padding:0 .14em; font-size:.62em; font-style:normal; color:var(--sun-2); }
+.hero-date{ margin:16px 0 0; font:400 13px/1 var(--sans); letter-spacing:.42em; color:var(--forest-2); }
+.hero-date b{ color:var(--sun-2); font-weight:500; }
+.hero-tag{ margin:14px auto 0; max-width:300px; font:italic 400 16px/1.5 var(--disp); color:#6b5734; }
+.hills{ position:absolute; left:0; right:0; bottom:0; width:100%; pointer-events:none; }
+.hills.back{ height:30%; z-index:1; }
+.hills.front{ height:17%; z-index:3; }
+.field{ position:absolute; inset:0; pointer-events:none; }
+.field.back{ z-index:2; }
+.field.front{ z-index:5; }
+.ff{ position:absolute; bottom:0; overflow:visible; transform-origin:50% 100%; animation:sway var(--dur) ease-in-out var(--del) infinite alternate; }
+@keyframes sway{ from{ transform:translateX(-50%) rotate(-2.2deg); } to{ transform:translateX(-50%) rotate(2.2deg); } }
+.scroll-hint{ position:absolute; left:50%; bottom:22px; z-index:6; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:4px; font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#fff8de; text-decoration:none; text-shadow:0 1px 6px rgba(0,0,0,.35); opacity:0; transition:opacity 1s 2.2s; }
+.hero.in .scroll-hint{ opacity:.95; }
+.scroll-hint svg{ width:18px; height:18px; animation:bob 1.8s ease-in-out infinite; }
+@keyframes bob{ 50%{ transform:translateY(5px); } }
+#bee{ position:absolute; left:0; top:0; z-index:6; width:34px; height:34px; pointer-events:none; will-change:transform; }
+#bee .w{ transform-box:fill-box; transform-origin:50% 100%; animation:flap .12s linear infinite alternate; }
+@keyframes flap{ to{ transform:scaleY(.35); } }
+
+/* ===== pembatas bunga ===== */
+.dv{ display:flex; align-items:center; justify-content:center; gap:4px; margin:0 auto 18px; }
+.dv .lf{ width:46px; height:20px; }
+.dv .lf.r{ transform:scaleX(-1); }
+.dv .sf{ width:48px; height:48px; }
+
+/* ===== salam & ayat ===== */
+#salam{ background:var(--cream); }
+.salam{ margin:0; font:italic 500 22px/1.45 var(--disp); color:var(--forest); }
+.ayat{ position:relative; margin:30px auto 0; max-width:380px; padding:34px 26px 26px; border-radius:24px; background:var(--paper); border:1px solid var(--line); box-shadow:0 14px 40px -24px rgba(110,80,20,.4); }
+.ayat::before{ content:"\201C"; position:absolute; left:50%; top:-26px; transform:translateX(-50%); width:52px; height:52px; border-radius:50%; background:var(--sun); color:#fff; font:600 46px/66px var(--disp); }
+.ayat p{ margin:0; font:italic 400 17px/1.65 var(--disp); color:var(--ink); }
+.ayat cite{ display:block; margin-top:14px; font:500 11px/1 var(--sans); font-style:normal; letter-spacing:.24em; text-transform:uppercase; color:var(--sun-2); }
+
+/* ===== mempelai ===== */
+#mempelai{ background:linear-gradient(180deg, var(--cream), #fbf0d2); }
+.person{ margin-top:34px; }
+.medal{ position:relative; width:220px; height:220px; margin:0 auto; }
+.medal .sf{ width:100%; height:100%; }
+.medal .sf .mono text{ font-family:var(--script); }
+.person h3{ margin:8px 0 0; font:400 50px/1.1 var(--script); color:var(--forest); }
+.person h4{ margin:4px 0 0; font:600 19px/1.35 var(--disp); color:var(--ink); letter-spacing:.02em; }
+.person .alias{ margin:2px 0 0; font:italic 400 15px/1.4 var(--disp); color:var(--sun-2); }
+.person p.ket{ margin:12px 0 0; font-size:14px; line-height:1.6; color:var(--ink-2); white-space:pre-line; }
+.amp{ margin:30px 0 -6px; font:400 64px/1 var(--script); color:var(--sun); }
+
+/* ===== hitung mundur ===== */
+#hitung{ background:linear-gradient(160deg, #ffd65a, #f5b417 60%, #ea9d12); color:#3a2208; overflow:hidden; }
+#hitung::before{ content:""; position:absolute; inset:-40%; background:repeating-conic-gradient(rgba(255,255,255,.12) 0deg 6deg, transparent 6deg 18deg); animation:spin 160s linear infinite; }
+#hitung > *{ position:relative; }
+#hitung .eyebrow{ color:#7a4304; }
+#hitung h2{ color:#3a2208; }
+.cd{ display:flex; justify-content:center; gap:10px; margin:28px 0 8px; }
+.cd .u{ width:72px; padding:14px 0 10px; border-radius:40px 40px 18px 18px; background:rgba(255,252,240,.92); box-shadow:0 10px 24px -12px rgba(120,60,0,.6); }
+.cd b{ display:block; font:400 30px/1 var(--sans); color:var(--forest); font-variant-numeric:tabular-nums; }
+.cd b.tick{ animation:tick .5s var(--spring); }
+@keyframes tick{ from{ transform:translateY(-6px) scale(.85); opacity:.3; } }
+.cd span{ display:block; margin-top:6px; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-2); }
+.cd-done{ margin:26px auto 6px; font:italic 500 22px/1.4 var(--disp); }
+#hitung .btn{ margin-top:18px; background:var(--forest); color:var(--butter); }
+
+/* ===== acara ===== */
+#acara{ background:var(--forest) radial-gradient(ellipse at 50% 0%, #2f5530 0%, transparent 70%); color:var(--butter); }
+#acara .eyebrow{ color:var(--honey); }
+#acara h2{ color:#fff6da; }
+.ev{ position:relative; margin:44px auto 0; max-width:380px; padding:70px 24px 28px; border-radius:200px 200px 26px 26px; background:var(--paper); color:var(--ink); box-shadow:0 30px 60px -30px rgba(0,0,0,.6); }
+.ev + .ev{ margin-top:70px; }
+.ev .badge{ position:absolute; left:50%; top:-40px; width:84px; height:84px; transform:translateX(-50%); }
+.ev h3{ margin:0; font:400 clamp(34px, 9.5vw, 42px)/1.15 var(--script); color:var(--forest); }
+.ev-date{ display:flex; align-items:center; justify-content:center; gap:14px; margin:18px 0 6px; }
+.ev-date span{ min-width:84px; padding:8px 0; border-block:1px solid var(--line); font:500 12px/1.35 var(--sans); letter-spacing:.2em; text-transform:uppercase; color:var(--ink-2); }
+.ev-date b{ font:300 54px/1 var(--sans); color:var(--sun-2); }
+.ev-time{ margin:10px 0 0; font:500 15px/1.4 var(--sans); letter-spacing:.06em; color:var(--forest); }
+.ev hr{ width:40px; margin:20px auto; border:0; border-top:2px dotted var(--sun); }
+.ev-place{ margin:0; font:600 21px/1.3 var(--disp); color:var(--ink); }
+.ev-addr{ margin:6px 0 20px; font-size:14px; color:var(--ink-2); }
+.ev .btns{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+.ev .btn.line{ color:var(--forest); border-color:var(--sage); }
+
+/* ===== hadiah ===== */
+#hadiah{ background:var(--cream); }
+.gifts{ display:grid; gap:14px; margin:30px auto 0; max-width:360px; }
+.gift{ position:relative; overflow:hidden; padding:20px 22px 18px; border-radius:20px; text-align:left; color:#3a2208; background:linear-gradient(135deg, #ffe48c, #f8bd2a 60%, #eea318); box-shadow:0 16px 30px -18px rgba(150,90,0,.7); }
+.gift::after{ content:""; position:absolute; right:-46px; top:-46px; width:150px; height:150px; border-radius:50%; background:repeating-conic-gradient(rgba(255,255,255,.28) 0deg 9deg, transparent 9deg 22deg); -webkit-mask:radial-gradient(circle, transparent 22%, #000 24%, #000 60%, transparent 70%); mask:radial-gradient(circle, transparent 22%, #000 24%, #000 60%, transparent 70%); }
+.gift .bank{ font:600 13px/1 var(--sans); letter-spacing:.24em; text-transform:uppercase; color:#6d3d04; }
+.gift .no{ margin:12px 0 2px; font:500 21px/1.2 var(--sans); letter-spacing:.08em; color:var(--forest); font-variant-numeric:tabular-nums; }
+.gift .an{ font-size:13px; color:#6d4a14; }
+.gift button{ position:relative; z-index:1; display:inline-flex; align-items:center; gap:6px; margin-top:12px; padding:8px 14px; border-radius:999px; background:var(--forest); color:var(--butter); font:500 12px/1 var(--sans); letter-spacing:.04em; }
+.gift button svg{ width:14px; height:14px; }
+.addr{ margin:14px auto 0; max-width:360px; padding:22px; border-radius:20px; border:1px dashed var(--sun); background:var(--paper); }
+.addr b{ display:block; font:600 20px/1.3 var(--disp); color:var(--forest); }
+.addr p{ margin:6px 0 14px; font-size:14px; color:var(--ink-2); }
+.addr .btn{ color:var(--forest); border-color:var(--sage); padding:10px 18px; }
+
+/* ===== RSVP & ucapan ===== */
+#ucapan{ background:linear-gradient(180deg, #fbf0d2, var(--cream)); }
+.deadline{ margin:10px 0 0; font-size:13px; color:var(--sun-2); }
+.card{ margin:28px auto 0; max-width:380px; padding:24px 22px; border-radius:24px; background:var(--paper); border:1px solid var(--line); text-align:left; box-shadow:0 16px 40px -28px rgba(110,80,20,.5); }
+.fld{ display:block; margin-bottom:16px; }
+.fld > span{ display:block; margin-bottom:6px; font:500 11px/1 var(--sans); letter-spacing:.18em; text-transform:uppercase; color:var(--ink-2); }
+.inp{ width:100%; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:#fff; font-size:15px; outline:none; transition:border-color .2s, box-shadow .2s; }
+.inp:focus{ border-color:var(--sun); box-shadow:0 0 0 3px rgba(245,180,23,.18); }
+textarea.inp{ min-height:96px; resize:vertical; }
+.seg{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.seg button{ padding:11px; border-radius:14px; border:1px solid var(--line); background:#fff; font-size:14px; transition:all .2s; }
+.seg button[aria-pressed="true"]{ background:var(--forest); border-color:var(--forest); color:var(--butter); }
+.step{ display:flex; align-items:center; gap:14px; }
+.step button{ width:40px; height:40px; border-radius:50%; border:1px solid var(--line); background:#fff; font-size:20px; line-height:1; }
+.step output{ min-width:24px; text-align:center; font:500 20px/1 var(--sans); }
+.card .btn.sun{ width:100%; margin-top:4px; padding:15px; }
+.err{ margin:8px 0 0; min-height:1em; font-size:13px; color:#b34a0e; }
+#sent{ text-align:center; }
+#sent .sf{ width:84px; height:84px; margin:0 auto 6px; }
+#sent h3{ margin:0; font:italic 500 26px/1.3 var(--disp); color:var(--forest); }
+#sent p{ margin:8px 0 16px; font-size:14px; color:var(--ink-2); }
+#r-edit{ font-size:13px; text-decoration:underline; color:var(--sun-2); }
+.wishes{ margin:22px auto 0; max-width:380px; text-align:left; }
+.wishes .hd{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; padding:0 4px; font:500 11px/1 var(--sans); letter-spacing:.18em; text-transform:uppercase; color:var(--ink-2); }
+.wl{ max-height:360px; overflow-y:auto; display:grid; gap:10px; padding:2px; }
+.wc{ display:flex; gap:12px; padding:14px; border-radius:18px; background:var(--paper); border:1px solid var(--line); }
+.wc .av{ flex:none; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background:var(--sun); color:#fff; font:600 16px/1 var(--disp); }
+.wc b{ display:block; font:600 15px/1.3 var(--disp); color:var(--forest); }
+.wc p{ margin:3px 0 0; font-size:13.5px; line-height:1.55; color:var(--ink-2); word-break:break-word; }
+.w-empty{ padding:18px; border-radius:18px; border:1px dashed var(--line); text-align:center; font:italic 400 15px/1.5 var(--disp); color:var(--ink-2); }
+
+/* ===== penutup ===== */
+#penutup{ padding-bottom:0; overflow:hidden; background:linear-gradient(180deg, var(--cream) 0%, #fde7a6 62%, #fbd877 100%); }
+#penutup .closing{ margin:0 auto; max-width:360px; font-size:14.5px; color:var(--ink-2); }
+#penutup .by{ margin:24px 0 0; font:500 11px/1 var(--sans); letter-spacing:.3em; text-transform:uppercase; color:var(--sun-2); }
+#penutup .cn{ margin:6px 0 0; font:400 60px/1.1 var(--script); color:var(--forest); }
+#penutup .fam{ margin:6px auto 0; max-width:320px; font:italic 400 16px/1.5 var(--disp); color:var(--ink); }
+#penutup .bye{ margin:22px 0 0; font:italic 500 19px/1.4 var(--disp); color:var(--forest); }
+.foot-field{ position:relative; height:250px; margin:30px -28px 0; }
+.foot-field .hills.front{ height:34%; }
+.credit{ position:absolute; left:0; right:0; bottom:12px; z-index:6; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,248,222,.85); }
+
+/* ===== muncul saat digulir ===== */
+.rv{ opacity:0; transform:translateY(26px); transition:opacity 1s var(--ease), transform 1s var(--ease); }
+.rv.in{ opacity:1; transform:none; }
+.rv.l{ transform:translateX(-46px); } .rv.r{ transform:translateX(46px); } .rv.z{ transform:scale(.82); }
+.rv.l.in, .rv.r.in, .rv.z.in{ transform:none; }
+.rv.d1{ transition-delay:.12s; } .rv.d2{ transition-delay:.24s; } .rv.d3{ transition-delay:.36s; }
+
+/* ===== kelopak jatuh ===== */
+#petals{ position:fixed; inset:0; z-index:40; pointer-events:none; overflow:hidden; }
+.fp{ position:absolute; top:-40px; animation:fall var(--dur) linear var(--del) infinite; }
+.fp b{ display:block; width:calc(11px * var(--sz)); height:calc(19px * var(--sz)); border-radius:50% 50% 50% 50% / 70% 70% 30% 30%; background:linear-gradient(#ffd84a, #f2a516); opacity:.9; animation:flutter calc(var(--dur) / 3) ease-in-out var(--del) infinite alternate; }
+@keyframes fall{ to{ transform:translateY(calc(100vh + 80px)); } }
+@keyframes flutter{ from{ transform:translateX(calc(var(--sx) * -1)) rotate(-50deg) rotateY(0deg); } to{ transform:translateX(var(--sx)) rotate(60deg) rotateY(160deg); } }
+
+/* ===== musik ===== */
+#snd{ position:fixed; right:max(16px, calc(50% - var(--col) / 2 + 16px)); bottom:calc(env(safe-area-inset-bottom, 0px) + 16px); z-index:50; width:48px; height:48px; border-radius:50%; background:var(--forest); box-shadow:0 8px 22px rgba(0,0,0,.3); display:grid; place-items:center; }
+#snd .sf{ width:40px; height:40px; }
+#snd.on .sf{ animation:spin 6s linear infinite; }
+#snd::after{ content:""; position:absolute; width:22px; height:2px; background:var(--butter); transform:rotate(-45deg); border-radius:2px; box-shadow:0 0 0 1.5px var(--forest); }
+#snd.on::after{ display:none; }
+#song{ position:fixed; right:max(72px, calc(50% - var(--col) / 2 + 72px)); bottom:calc(env(safe-area-inset-bottom, 0px) + 25px); z-index:50; max-width:calc(100vw - 100px); padding:7px 14px; border-radius:999px; background:rgba(29,53,32,.92); color:var(--butter); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:0; transform:translateX(10px); transition:opacity .5s, transform .5s; pointer-events:none; }
+#song.on{ opacity:1; transform:none; }
+#toast{ position:fixed; left:50%; bottom:90px; z-index:70; padding:10px 18px; border-radius:999px; background:var(--forest); color:var(--butter); font-size:13px; transform:translate(-50%, 20px); opacity:0; transition:all .35s var(--ease); pointer-events:none; }
+#toast.on{ opacity:1; transform:translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.001s !important; animation-iteration-count:1 !important; transition-duration:.001s !important; transition-delay:0s !important; }
+  #petals, #bee{ display:none; }
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- gradien bersama untuk semua bunga -->
+<svg id="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gP" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d9780a"/><stop offset=".35" stop-color="#f4a915"/><stop offset="1" stop-color="#ffd447"/></linearGradient>
+    <linearGradient id="gP2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#b35a05"/><stop offset=".45" stop-color="#e8930e"/><stop offset="1" stop-color="#ffc73a"/></linearGradient>
+    <linearGradient id="gS" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2c5420"/><stop offset="1" stop-color="#6f9e45"/></linearGradient>
+    <radialGradient id="gC"><stop offset="0" stop-color="#7a5418"/><stop offset=".55" stop-color="#4a2a10"/><stop offset="1" stop-color="#2a170a"/></radialGradient>
+    <linearGradient id="gL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a6528"/><stop offset="1" stop-color="#78a64a"/></linearGradient>
+    <linearGradient id="gH1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cc068"/><stop offset="1" stop-color="#6e9a46"/></linearGradient>
+    <linearGradient id="gH2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5f8d3c"/><stop offset="1" stop-color="#2f5524"/></linearGradient>
+  </defs>
+</svg>
+
+<!-- banner kiri & kanan, hanya tampil di layar lebar -->
+<aside class="bn l" aria-hidden="true">
+  <div class="bn-rays"></div>
+  <div class="bn-in">
+    <p class="eyebrow">The Wedding of</p>
+    <div class="bn-fl" id="bn-fl"></div>
+    <p class="bn-names script" id="bn-names"></p>
+    <p class="bn-date" id="bn-date"></p>
+    <p class="bn-guest">Kepada Yth.<b id="bn-guest"></b></p>
+  </div>
+  <svg class="hills back" viewBox="0 0 400 120" preserveAspectRatio="none"><path d="M0 50 C 80 20 140 34 210 46 S 330 22 400 38 V120 H0Z" fill="url(#gH1)"/></svg>
+  <div class="field back" id="bnl-field"></div>
+  <svg class="hills front" viewBox="0 0 400 80" preserveAspectRatio="none"><path d="M0 30 C 90 8 170 16 240 28 S 350 12 400 20 V80 H0Z" fill="url(#gH2)"/></svg>
+</aside>
+<aside class="bn r" aria-hidden="true">
+  <div class="bn-rays"></div>
+  <div class="bn-top"><p class="eyebrow">Menuju Hari Bahagia</p><p class="bn-cd" id="bn-cd"></p><p class="bn-sub" id="bn-sub"></p></div>
+  <svg class="hills back" viewBox="0 0 400 120" preserveAspectRatio="none"><path d="M0 40 C 70 22 150 30 220 48 S 340 26 400 46 V120 H0Z" fill="url(#gH1)"/></svg>
+  <svg id="grow" viewBox="0 0 240 640"></svg>
+  <svg class="hills front" viewBox="0 0 400 80" preserveAspectRatio="none"><path d="M0 24 C 100 10 160 20 230 30 S 340 8 400 26 V80 H0Z" fill="url(#gH2)"/></svg>
+  <p class="bn-hint" id="bn-hint">Gulir ke bawah, biarkan bunganya tumbuh 🌻</p>
+</aside>
+
+<!-- ============ SAMPUL ============ -->
+<section id="cover" aria-label="Sampul undangan">
+  <div class="cv-in">
+    <p class="eyebrow" id="cv-of">The Wedding of</p>
+    <div class="cv-fl" id="cv-fl" aria-hidden="true"></div>
+    <div class="cv-txt">
+      <h1 class="cv-names script" id="cv-names"></h1>
+      <p class="cv-date" id="cv-date"></p>
+      <div class="cv-guest"><span>Kepada Yth. Bapak/Ibu/Saudara/i</span><b id="cv-guest"></b><small>Mohon maaf bila ada kesalahan penulisan nama &amp; gelar</small></div>
+      <button class="btn sun" id="open-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        Buka Undangan
+      </button>
+    </div>
+  </div>
+</section>
+
+<main id="main" aria-hidden="true">
+
+  <!-- ============ PEMBUKA ============ -->
+  <section class="hero" id="home">
+    <div class="sunwrap" aria-hidden="true"><div class="rays"></div><div class="disc"></div></div>
+    <i class="cloud c1" aria-hidden="true"></i><i class="cloud c2" aria-hidden="true"></i><i class="cloud c3" aria-hidden="true"></i>
+    <div class="hero-txt">
+      <p class="eyebrow" id="h-of">The Wedding of</p>
+      <h1 class="names script" id="h-names"></h1>
+      <p class="hero-date" id="h-date"></p>
+      <p class="hero-tag" id="h-tag"></p>
+    </div>
+    <svg class="hills back" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 52 C 70 18 130 30 200 46 S 330 20 400 40 V120 H0Z" fill="url(#gH1)"/></svg>
+    <div class="field back" id="field-back" aria-hidden="true"></div>
+    <svg class="hills front" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 C 90 6 160 14 230 28 S 350 12 400 22 V80 H0Z" fill="url(#gH2)"/></svg>
+    <div class="field front" id="field-front" aria-hidden="true"></div>
+    <div id="bee" aria-hidden="true"></div>
+    <a class="scroll-hint" href="#salam">Gulir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a>
+  </section>
+
+  <!-- ============ SALAM & AYAT ============ -->
+  <section class="sec" id="salam">
+    <div class="dv rv" aria-hidden="true"></div>
+    <p class="salam rv" id="salam-t"></p>
+    <figure class="ayat rv d1" id="ayat"><p id="ayat-t"></p><cite id="ayat-s"></cite></figure>
+  </section>
+
+  <!-- ============ MEMPELAI ============ -->
+  <section class="sec" id="mempelai">
+    <div class="dv rv" aria-hidden="true"></div>
+    <p class="eyebrow rv">Mempelai</p>
+    <h2 class="rv">Dua Hati, Satu Arah</h2>
+    <p class="lead rv d1" id="mempelai-lead"></p>
+    <div class="person" id="p1"></div>
+    <p class="amp rv" aria-hidden="true">&amp;</p>
+    <div class="person" id="p2"></div>
+  </section>
+
+  <!-- ============ HITUNG MUNDUR ============ -->
+  <section class="sec" id="hitung">
+    <p class="eyebrow rv">Menuju Hari Bahagia</p>
+    <h2 class="rv" id="cd-date"></h2>
+    <div class="cd" id="cd" role="timer" aria-live="off"></div>
+    <p class="cd-done" id="cd-done" hidden>Alhamdulillah, hari bahagia telah tiba.</p>
+    <a class="btn rv d2" id="cal-btn" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+      Simpan ke Kalender
+    </a>
+  </section>
+
+  <!-- ============ ACARA ============ -->
+  <section class="sec" id="acara">
+    <p class="eyebrow rv">Waktu &amp; Tempat</p>
+    <h2 class="rv">Hari Bahagia Kami</h2>
+    <div id="evs"></div>
+  </section>
+
+  <!-- ============ AMPLOP DIGITAL ============ -->
+  <section class="sec" id="hadiah">
+    <div class="dv rv" aria-hidden="true"></div>
+    <p class="eyebrow rv">Amplop Digital</p>
+    <h2 class="rv">Tanda Kasih</h2>
+    <p class="lead rv d1" id="gift-t"></p>
+    <div class="gifts" id="gifts"></div>
+    <div class="addr rv" id="addr"></div>
+  </section>
+
+  <!-- ============ RSVP & UCAPAN ============ -->
+  <section class="sec" id="ucapan">
+    <div class="dv rv" aria-hidden="true"></div>
+    <p class="eyebrow rv">RSVP &amp; Doa</p>
+    <h2 class="rv" id="rsvp-h">Kehadiran &amp; Ucapan</h2>
+    <p class="deadline rv d1" id="deadline"></p>
+    <div class="card rv z d1" id="form-box">
+      <form id="rsvp" novalidate>
+        <label class="fld"><span>Nama</span><input class="inp" id="r-name" maxlength="40" autocomplete="name" required placeholder="Nama lengkap"></label>
+        <div class="fld"><span id="r-att-l">Kehadiran</span>
+          <div class="seg" role="group" aria-labelledby="r-att-l"><button type="button" data-att="1" aria-pressed="true">Insya Allah hadir</button><button type="button" data-att="0" aria-pressed="false">Berhalangan</button></div>
+        </div>
+        <div class="fld" id="r-count-f"><span id="r-count-l">Jumlah tamu</span>
+          <div class="step" role="group" aria-labelledby="r-count-l"><button type="button" id="r-minus" aria-label="Kurangi">−</button><output id="r-count">1</output><button type="button" id="r-plus" aria-label="Tambah">+</button></div>
+        </div>
+        <label class="fld"><span>Ucapan &amp; doa</span><textarea class="inp" id="r-msg" maxlength="400" placeholder="Tuliskan ucapan dan doa terbaik…"></textarea></label>
+        <button class="btn sun" type="submit">Kirim</button>
+        <p class="err" id="r-err" role="alert"></p>
+      </form>
+      <div id="sent" hidden>
+        <div id="sent-fl" aria-hidden="true"></div>
+        <h3 id="sent-h"></h3>
+        <p id="sent-p"></p>
+        <button type="button" id="r-edit">Ubah jawaban</button>
+      </div>
+    </div>
+    <div class="wishes rv" id="wishes">
+      <div class="hd"><span>Ucapan &amp; doa</span><span id="w-count"></span></div>
+      <div class="wl" id="wl"></div>
+    </div>
+  </section>
+
+  <!-- ============ PENUTUP ============ -->
+  <section class="sec" id="penutup">
+    <div class="dv rv" aria-hidden="true"></div>
+    <p class="closing rv" id="close-t"></p>
+    <p class="by rv">Kami yang berbahagia</p>
+    <p class="cn rv d1" id="close-n"></p>
+    <p class="fam rv d2" id="fam"></p>
+    <p class="bye rv d3" id="bye"></p>
+    <div class="foot-field" aria-hidden="true">
+      <div class="field back" id="foot-back"></div>
+      <svg class="hills front" viewBox="0 0 400 80" preserveAspectRatio="none"><path d="M0 30 C 80 8 150 18 220 30 S 340 10 400 24 V80 H0Z" fill="url(#gH2)"/></svg>
+      <div class="field front" id="foot-front"></div>
+    </div>
+  </section>
+</main>
+
+<div id="petals" aria-hidden="true"></div>
+<button id="snd" type="button" aria-label="Putar / jeda musik" hidden></button>
+<div id="song" aria-hidden="true"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<audio id="bgm" loop preload="none"></audio>
+
+<script>
+const CONFIG = {
+  // --- mempelai (tampil berurutan: mempelai1 lalu mempelai2) ---
+  mempelai1: {
+    panggilan: "Sekar",
+    sapaan: "",                     // nama akrab, tampil "akrab disapa ...". Kosong = disembunyikan
+    lengkap: "Sekar Ayu Lestari, S.Pd.",
+    keterangan: "Putri pertama dari\nBapak Hartono & Ibu Wulandari"
+  },
+  mempelai2: {
+    panggilan: "Bima",
+    sapaan: "",
+    lengkap: "Bima Prasetyo, S.T.",
+    keterangan: "Putra kedua dari\nBapak Suyanto & Ibu Rahayu"
+  },
+
+  // --- waktu ---
+  zona: "WIB",                      // WIB / WITA / WIT
+  batasRsvp: "1 Juni 2027",
+
+  // --- kata-kata ---
+  tagline: "Seperti bunga matahari yang selalu menghadap cahaya, kami memilih untuk saling menghadap, hari ini dan seterusnya.",
+  salamPembuka: "Assalamu'alaikum Warahmatullahi Wabarakatuh",
+  kutipan: "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.",
+  sumberKutipan: "QS. Ar-Rum : 21",
+  sambutan: "Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan pernikahan putra-putri kami:",
+  penutup: "Merupakan suatu kebahagiaan dan kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kedua mempelai.",
+  keluarga: "Keluarga Besar Bapak Hartono & Keluarga Besar Bapak Suyanto",
+  salamPenutup: "Wassalamu'alaikum Warahmatullahi Wabarakatuh",
+
+  // --- rangkaian acara. Acara paling awal dipakai untuk kalender & hitung mundur ---
+  acara: [
+    { nama: "Akad & Resepsi", mulai: "2027-06-12T08:00", selesai: "", tempat: "Gedung Serbaguna Matahari", alamat: "Jl. Bunga Matahari No. 12, Kediri", linkMaps: "" }
+  ],
+
+  // --- amplop digital ---
+  tampilHadiah: true,               // false = bagian amplop digital disembunyikan
+  teksHadiah: "Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika memberi adalah ungkapan tanda kasih, Anda dapat memberi kado secara cashless.",
+  hadiah: [
+    { bank: "BCA", nomor: "1234567890", atasNama: "Sekar Ayu Lestari" },
+    { bank: "Mandiri", nomor: "0987654321", atasNama: "Bima Prasetyo" },
+    { bank: "DANA", nomor: "081234567890", atasNama: "Sekar Ayu Lestari" }
+  ],
+  alamatKado: "Jl. Bunga Matahari No. 12, Kediri", // "" = disembunyikan
+
+  // --- tamu & RSVP ---
+  tampilRsvp: true,                 // false = form konfirmasi kehadiran disembunyikan
+  tamuDefault: "Tamu Undangan",
+  maksTamu: 2,
+  ucapanContoh: [],
+
+  // --- musik ---
+  musik: "",                        // musik latar. Kosong = tanpa musik
+  judulLagu: "NCT DREAM · Like We Just Met" // tampil sebentar saat musik mulai. Kosong = disembunyikan
+};
+
+const TEXT = {
+  hadir: "Terima kasih! Kami tidak sabar bertemu Anda.",
+  absen: "Terima kasih atas doa dan ucapannya.",
+};
+
+/* ========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const pad = n => String(n).padStart(2, "0");
+const arr = v => Array.isArray(v) ? v : [];
+const rnd = (a, b) => a + Math.random() * (b - a);
+const initial = s => (String(s || "").trim()[0] || "").toUpperCase();
+const GUEST = (() => {
+  if (window.KK) return (KK.guest ? KK.guest.name : "").trim().slice(0, 40) || CONFIG.tamuDefault;
+  try { const q = new URLSearchParams(location.search); return (q.get("untuk") || q.get("to") || "").trim().slice(0, 40) || CONFIG.tamuDefault; }
+  catch (e) { return CONFIG.tamuDefault; }
+})();
+const P1 = CONFIG.mempelai1 || {}, P2 = CONFIG.mempelai2 || {};
+const N1 = P1.panggilan || "", N2 = P2.panggilan || "", COUPLE = `${N1} & ${N2}`;
+const HARI = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+const BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+const ICON = {
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>',
+};
+
+/* ---------- tanggal ---------- */
+const OFF = { WIB:"+07:00", WITA:"+08:00", WIT:"+09:00" }[String(CONFIG.zona || "WIB").toUpperCase()] || "+07:00";
+function parseWhen(s){
+  const m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!m) return null;
+  const [, y, mo, d, h, mi] = m;
+  return { y:+y, m:+mo, d:+d, t:`${h}.${mi}`, date:new Date(`${y}-${mo}-${d}T${h}:${mi}:00${OFF}`), wd:new Date(Date.UTC(+y, +mo - 1, +d)).getUTCDay() };
+}
+const ACARA = arr(CONFIG.acara).filter(a => a && a.nama).map(a => ({ ...a, _p:parseWhen(a.mulai) }));
+const TIMED = ACARA.filter(a => a._p).sort((a, b) => a._p.date - b._p.date);
+const FIRST = TIMED[0] ? TIMED[0]._p : null;
+const START = FIRST ? FIRST.date : new Date(Date.now() + 30 * 864e5);
+const END = (() => {
+  const L = TIMED[TIMED.length - 1]; if (!L) return new Date(+START + 4 * 36e5);
+  const e = /^\d{2}:\d{2}$/.test(L.selesai || "") ? new Date(`${L.mulai.slice(0, 10)}T${L.selesai}:00${OFF}`) : null;
+  return e && e > L._p.date ? e : new Date(+L._p.date + 4 * 36e5);
+})();
+const DOTS = FIRST ? `${pad(FIRST.d)} · ${pad(FIRST.m)} · ${FIRST.y}` : "";
+
+/* ---------- pembuat bunga matahari ---------- */
+function petal(r0, len, w){
+  const y0 = -r0, y1 = -r0 - len;
+  return `M0 ${y0}C${w} ${(y0 - len * .25).toFixed(1)} ${(w * .75).toFixed(1)} ${(y1 + len * .2).toFixed(1)} 0 ${y1.toFixed(1)}C${(-w * .75).toFixed(1)} ${(y1 + len * .2).toFixed(1)} ${-w} ${(y0 - len * .25).toFixed(1)} 0 ${y0}Z`;
+}
+// cr = jari-jari tengah, seeds = jumlah biji, mono = huruf di tengah (opsional)
+function flowerInner({ cr = 34, n = 22, seeds = 140, mono = "", k = 1.55 } = {}){
+  const out = [];
+  const lenO = Math.min(94 - (cr - 6), cr * k), lenI = lenO * .74;
+  const step = 360 / n;
+  for (let i = 0; i < n; i++) out.push(`<g transform="rotate(${(i * step + step / 4).toFixed(1)})"><path class="sp" d="${petal(cr - 4, lenO * .62, 6)}" fill="url(#gS)"/></g>`);
+  for (let i = 0; i < n; i++){
+    const a = i * step + rnd(-2, 2), l = lenO * rnd(.9, 1.06);
+    out.push(`<g transform="rotate(${a.toFixed(1)})"><path class="pt" style="--i:${i}" d="${petal(cr - 6, l, cr * .36)}" fill="url(#gP)"/></g>`);
+  }
+  for (let i = 0; i < n; i++){
+    const a = i * step + step / 2 + rnd(-2, 2), l = lenI * rnd(.9, 1.08);
+    out.push(`<g transform="rotate(${a.toFixed(1)})"><path class="pt in2" style="--i:${i}" d="${petal(cr - 6, l, cr * .3)}" fill="url(#gP2)"/></g>`);
+  }
+  out.push(`<circle class="ctr" r="${cr}" fill="url(#gC)"/>`);
+  out.push(`<circle class="ctr" r="${cr - 1.5}" fill="none" stroke="#c98a1a" stroke-width="1.6" stroke-dasharray="1.6 2.4" opacity=".8"/>`);
+  const inner = mono ? cr * .66 : 0, c = (cr * .9) / Math.sqrt(seeds), sr = c * .52;
+  for (let i = 1; i <= seeds; i++){
+    const r = c * Math.sqrt(i); if (r < inner) continue;
+    const th = i * 2.39996323, q = r / cr;
+    const col = q < .22 ? "#a08a2c" : q < .4 ? "#7a5418" : q < .8 ? (i % 3 ? "#3a200b" : "#5a3412") : "#c98a1a";
+    out.push(`<circle class="sd" style="--i:${i}" cx="${(r * Math.cos(th)).toFixed(1)}" cy="${(r * Math.sin(th)).toFixed(1)}" r="${(sr * (q > .8 ? .8 : 1)).toFixed(2)}" fill="${col}"/>`);
+  }
+  if (mono) out.push(`<g class="mono"><circle r="${(inner - 1).toFixed(1)}" fill="#fff7e2"/><circle r="${(inner - 4).toFixed(1)}" fill="none" stroke="#e8b04a" stroke-width=".8"/><text y="${(inner * .32).toFixed(1)}" text-anchor="middle" font-size="${(inner * 1.25).toFixed(1)}" fill="#3f6b2c">${esc(mono)}</text></g>`);
+  return out.join("");
+}
+const flowerSvg = (o = {}, cls = "") => `<svg class="sf ${cls}" viewBox="-100 -100 200 200" aria-hidden="true">${flowerInner(o)}</svg>`;
+const leafPath = (x, y, rot, s) => `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})"><path d="M0 0C18-22 52-26 82-6 58 10 24 14 0 0Z" fill="url(#gL)"/><path d="M3 0C28-8 54-11 78-6" stroke="#2c5420" stroke-width="1.6" fill="none" opacity=".55"/></g>`;
+// bunga lengkap dengan batang & daun (untuk ladang)
+// y = tinggi pusat kepala bunga dari dasar (px)
+function fieldFlower({ x, w, y, tilt = 0, seeds = 80 }){
+  const L = Math.max(60, Math.round(y * 200 / w)), H = 100 + L, bend = rnd(-14, 14);
+  const stem = `<path d="M0 40C${bend} ${L * .4} ${-bend} ${L * .75} 0 ${H}" stroke="#3f6b2c" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+  const leaves = leafPath(2, 60 + L * .35, -24, 1.05) + leafPath(-2, 60 + L * .6, 204, 1.15);
+  const el = document.createElement("div");
+  el.innerHTML = `<svg class="ff sf" viewBox="-100 -100 200 ${H}" style="left:${x}%;width:${w}px;--dur:${rnd(3.2, 5.2).toFixed(1)}s;--del:${(-rnd(0, 5)).toFixed(1)}s">${stem}${leaves}<g transform="rotate(${tilt})">${flowerInner({ seeds })}</g></svg>`;
+  return el.firstElementChild;
+}
+function plant(target, list){ const box = $(target); list.forEach(f => box.appendChild(fieldFlower(f))); }
+
+/* ---------- isi teks ---------- */
+const namesHtml = `${esc(N1)}<i>&amp;</i>${esc(N2)}`;
+$("#cv-names").innerHTML = `${esc(N1)}<i>&amp;</i>${esc(N2)}`;
+$("#cv-date").textContent = DOTS;
+$("#cv-guest").textContent = GUEST;
+$("#cv-fl").innerHTML = flowerSvg({ seeds:200 }, "spin");
+$("#h-names").innerHTML = namesHtml;
+$("#h-date").innerHTML = FIRST ? `${pad(FIRST.d)} <b>·</b> ${pad(FIRST.m)} <b>·</b> ${FIRST.y}` : "";
+$("#h-tag").textContent = CONFIG.tagline || "";
+$("#salam-t").textContent = CONFIG.salamPembuka || "";
+if (CONFIG.kutipan){ $("#ayat-t").textContent = CONFIG.kutipan; $("#ayat-s").textContent = CONFIG.sumberKutipan || ""; } else $("#ayat").hidden = true;
+if (!CONFIG.salamPembuka && !CONFIG.kutipan) $("#salam").hidden = true;
+$("#mempelai-lead").textContent = CONFIG.sambutan || "";
+$("#close-t").textContent = CONFIG.penutup || "";
+$("#close-n").textContent = COUPLE;
+$("#fam").textContent = CONFIG.keluarga || "";
+$("#bye").textContent = CONFIG.salamPenutup || "";
+document.title = `Undangan Pernikahan ${COUPLE}`.trim();
+
+// pembatas: daun – bunga – daun
+const leafSvg = cls => `<svg class="lf ${cls}" viewBox="0 -14 84 24" aria-hidden="true">${leafPath(0, 0, 0, 1)}</svg>`;
+$$(".dv").forEach(d => d.innerHTML = leafSvg("") + flowerSvg({ seeds:50, cr:30 }) + leafSvg("r"));
+
+/* ---------- mempelai ---------- */
+const person = p => `
+  <div class="medal rv z">${flowerSvg({ cr:46, k:1.2, seeds:150, mono:initial(p.panggilan) })}</div>
+  <h3 class="rv">${esc(p.panggilan || "")}</h3>
+  <h4 class="rv d1">${esc(p.lengkap || "")}</h4>
+  ${p.sapaan ? `<p class="alias rv d1">akrab disapa ${esc(p.sapaan)}</p>` : ""}
+  <p class="ket rv d2">${esc(p.keterangan || "")}</p>`;
+$("#p1").innerHTML = person(P1);
+$("#p2").innerHTML = person(P2);
+
+/* ---------- acara ---------- */
+const mapsUrl = a => a.linkMaps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([a.tempat, a.alamat].filter(Boolean).join(", "))}`;
+$("#evs").innerHTML = ACARA.map(a => {
+  const p = a._p;
+  return `<article class="ev rv z">
+    <div class="badge">${flowerSvg({ seeds:70 })}</div>
+    <h3>${esc(a.nama)}</h3>
+    ${p ? `<div class="ev-date"><span>${HARI[p.wd]}</span><b>${pad(p.d)}</b><span>${BULAN[p.m - 1]}<br>${p.y}</span></div>
+    <p class="ev-time">${p.t} ${esc(CONFIG.zona || "")} – ${a.selesai ? esc(String(a.selesai).replace(":", ".")) + " " + esc(CONFIG.zona || "") : "selesai"}</p>` : ""}
+    ${a.tempat || a.alamat ? `<hr>
+    ${a.tempat ? `<p class="ev-place">${esc(a.tempat)}</p>` : ""}
+    ${a.alamat ? `<p class="ev-addr">${esc(a.alamat)}</p>` : ""}
+    <div class="btns"><a class="btn sun" href="${esc(mapsUrl(a))}" target="_blank" rel="noopener">${ICON.pin}Petunjuk Arah</a></div>` : ""}
+  </article>`;
+}).join("");
+if (!ACARA.length) $("#acara").hidden = true;
+
+const stamp = d => d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+const A0 = TIMED[0] || ACARA[0] || {};
+$("#cal-btn").href = "https://calendar.google.com/calendar/render?" + new URLSearchParams({
+  action:"TEMPLATE", text:`Pernikahan ${COUPLE}`, dates:`${stamp(START)}/${stamp(END)}`,
+  location:[A0.tempat, A0.alamat].filter(Boolean).join(", "), details:`Undangan pernikahan ${COUPLE}` });
+$("#cd-date").textContent = FIRST ? `${HARI[FIRST.wd]}, ${FIRST.d} ${BULAN[FIRST.m - 1]} ${FIRST.y}` : "";
+
+/* ---------- hitung mundur ---------- */
+const CD = [["Hari", 86400], ["Jam", 3600], ["Menit", 60], ["Detik", 1]];
+$("#cd").innerHTML = CD.map(([n], i) => `<div class="u rv z${i ? " d" + Math.min(i, 3) : ""}"><b data-u="${n}">00</b><span>${n}</span></div>`).join("");
+function tickCd(){
+  let s = Math.floor((START - Date.now()) / 1000);
+  if (s <= 0){ $("#cd").hidden = true; $("#cd-done").hidden = false; return; }
+  CD.forEach(([n, size]) => {
+    const v = Math.floor(s / size); s -= v * size;
+    const el = $(`[data-u="${n}"]`), t = pad(v);
+    if (el.textContent !== t){ el.textContent = t; if (!RM){ el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); } }
+  });
+}
+tickCd(); setInterval(tickCd, 1000);
+
+/* ---------- amplop digital ---------- */
+const GIFTS = arr(CONFIG.hadiah).filter(h => h && h.nomor);
+if (CONFIG.tampilHadiah === false || (!GIFTS.length && !CONFIG.alamatKado)) $("#hadiah").hidden = true;
+$("#gift-t").textContent = CONFIG.teksHadiah || "";
+$("#gifts").innerHTML = GIFTS.map((h, i) => `<div class="gift rv ${i % 2 ? "r" : "l"}">
+  <span class="bank">${esc(h.bank || "")}</span>
+  <div class="no">${esc(h.nomor)}</div>
+  ${h.atasNama ? `<div class="an">a.n. ${esc(h.atasNama)}</div>` : ""}
+  <button type="button" data-copy="${esc(String(h.nomor).replace(/[^\d]/g, "") || h.nomor)}">${ICON.copy}Salin nomor</button>
+</div>`).join("");
+if (CONFIG.alamatKado) $("#addr").innerHTML = `<b>Kirim Kado</b><p>${esc(CONFIG.alamatKado)}</p><button class="btn line" type="button" data-copy="${esc(CONFIG.alamatKado)}">${ICON.copy}Salin alamat</button>`;
+else $("#addr").hidden = true;
+const toast = t => { const el = $("#toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("on"), 1800); };
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]"); if (!b) return;
+  const v = b.dataset.copy;
+  try { await navigator.clipboard.writeText(v); }
+  catch (err) { const t = document.createElement("textarea"); t.value = v; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); } catch (e2) {} t.remove(); }
+  toast("Berhasil disalin");
+});
+
+/* ---------- RSVP & ucapan ---------- */
+const R = { att:true, n:1 };
+const MAX = Math.max(1, Number(CONFIG.maksTamu) || 1);
+if (CONFIG.tampilRsvp === false){ $("#form-box").hidden = true; $("#deadline").hidden = true; $("#rsvp-h").textContent = "Doa & Ucapan"; }
+$("#deadline").textContent = CONFIG.batasRsvp ? `Mohon konfirmasi kehadiran sebelum ${CONFIG.batasRsvp}` : "";
+if (GUEST !== CONFIG.tamuDefault) $("#r-name").value = GUEST;
+$("#sent-fl").innerHTML = flowerSvg({ seeds:60 });
+function paintR(){
+  $$("[data-att]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.att === "1") === R.att)));
+  $("#r-count-f").hidden = !R.att; $("#r-count").textContent = R.n;
+}
+$$("[data-att]").forEach(b => b.addEventListener("click", () => { R.att = b.dataset.att === "1"; paintR(); }));
+$("#r-minus").onclick = () => { R.n = Math.max(1, R.n - 1); paintR(); };
+$("#r-plus").onclick = () => { R.n = Math.min(MAX, R.n + 1); paintR(); };
+const WISH = arr(CONFIG.ucapanContoh).filter(w => w && w.pesan);
+function paintWishes(){
+  $("#w-count").textContent = `${WISH.length} ucapan`;
+  $("#wl").innerHTML = WISH.length
+    ? WISH.map(w => `<div class="wc"><span class="av">${esc(initial(w.nama || "T"))}</span><div><b>${esc(w.nama || "Tamu")}</b><p>${esc(w.pesan)}</p></div></div>`).join("")
+    : `<div class="w-empty">Jadilah yang pertama mengirimkan doa untuk ${esc(COUPLE)} 🌻</div>`;
+}
+function showSent(s){
+  $("#rsvp").hidden = true; $("#sent").hidden = false;
+  $("#sent-h").textContent = s.att ? `${s.name}, sampai jumpa!` : `Terima kasih, ${s.name}`;
+  $("#sent-p").textContent = s.att ? `${TEXT.hadir} (${s.n} orang)` : TEXT.absen;
+  const f = $("#sent-fl .sf"); f.classList.remove("on"); requestAnimationFrame(() => requestAnimationFrame(() => f.classList.add("on")));
+}
+const KEY = "kk-rsvp-" + location.pathname;
+try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.name){ R.att = !!s.att; R.n = Math.min(MAX, Math.max(1, s.n | 0)); $("#r-name").value = s.name; $("#r-msg").value = s.msg || ""; showSent(s); } } catch (e) {}
+paintR(); paintWishes();
+$("#rsvp").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = $("#r-name").value.trim(), msg = $("#r-msg").value.trim();
+  if (!name){ $("#r-err").textContent = "Mohon isi nama terlebih dahulu."; $("#r-name").focus(); return; }
+  $("#r-err").textContent = "";
+  const s = { name, att:R.att, n:R.att ? R.n : 0, msg };
+  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e2) {}
+  if (msg){ WISH.unshift({ nama:name, pesan:msg }); paintWishes(); }
+  showSent(s);
+});
+$("#r-edit").onclick = () => { $("#rsvp").hidden = false; $("#sent").hidden = true; };
+
+/* ---------- musik ---------- */
+const bgm = $("#bgm"), snd = $("#snd"), song = $("#song");
+if (CONFIG.musik){ bgm.src = CONFIG.musik; snd.hidden = false; snd.innerHTML = flowerSvg({ seeds:40 }, "on"); }
+let songShown = false;
+const paintSnd = () => {
+  snd.classList.toggle("on", !bgm.paused);
+  if (!bgm.paused && CONFIG.judulLagu && !songShown){ songShown = true; song.textContent = "♪ " + CONFIG.judulLagu; song.classList.add("on"); setTimeout(() => song.classList.remove("on"), 4500); }
+};
+snd.onclick = () => { if (bgm.paused) bgm.play().catch(() => {}); else bgm.pause(); };
+bgm.addEventListener("play", paintSnd); bgm.addEventListener("pause", paintSnd);
+
+/* ---------- ladang bunga ---------- */
+plant("#field-back", [
+  { x:8, w:60, y:170, tilt:-8, seeds:50 }, { x:25, w:70, y:190, tilt:6, seeds:50 }, { x:42, w:56, y:160, tilt:-4, seeds:50 },
+  { x:59, w:62, y:176, tilt:8, seeds:50 }, { x:76, w:72, y:196, tilt:-6, seeds:50 }, { x:93, w:58, y:166, tilt:5, seeds:50 },
+]);
+plant("#field-front", [
+  { x:3, w:150, y:236, tilt:12 }, { x:27, w:100, y:128, tilt:-6 }, { x:75, w:106, y:140, tilt:8 }, { x:99, w:158, y:256, tilt:-12 },
+]);
+plant("#foot-back", [
+  { x:10, w:64, y:150, tilt:-6, seeds:50 }, { x:31, w:76, y:176, tilt:5, seeds:50 }, { x:53, w:60, y:142, tilt:-3, seeds:50 },
+  { x:73, w:74, y:170, tilt:7, seeds:50 }, { x:92, w:62, y:150, tilt:-5, seeds:50 },
+]);
+plant("#foot-front", [ { x:5, w:118, y:118, tilt:10 }, { x:50, w:90, y:84, tilt:-4 }, { x:95, w:126, y:126, tilt:-10 } ]);
+
+/* ---------- banner desktop ---------- */
+const WIDE = matchMedia("(min-width:1000px)");
+$("#bn-fl").innerHTML = flowerSvg({ seeds:200 });
+$("#bn-names").innerHTML = namesHtml;
+$("#bn-date").textContent = DOTS;
+$("#bn-guest").textContent = GUEST;
+plant("#bnl-field", [ { x:12, w:90, y:130, tilt:-8, seeds:50 }, { x:50, w:70, y:110, tilt:4, seeds:50 }, { x:88, w:96, y:140, tilt:9, seeds:50 } ]);
+(function(){
+  const days = Math.ceil((START - Date.now()) / 864e5);
+  $("#bn-cd").textContent = days > 1 ? `${days} hari lagi` : days === 1 ? "Besok!" : days === 0 ? "Hari ini!" : "Alhamdulillah, sah!";
+  $("#bn-sub").textContent = FIRST ? `${HARI[FIRST.wd]}, ${FIRST.d} ${BULAN[FIRST.m - 1]} ${FIRST.y}` : "";
+})();
+// bunga yang tumbuh mengikuti scroll
+const G = (() => {
+  const svg = $("#grow");
+  svg.innerHTML = `<path id="g-stem" d="M120 650C90 540 152 440 116 320 96 250 126 200 120 150" stroke="#3f6b2c" stroke-width="9" fill="none" stroke-linecap="round"/><g id="g-leaves"></g><g id="g-head"><g id="g-rot"><g class="sf" id="g-sf">${flowerInner({ seeds:130 })}</g></g></g>`;
+  const stem = $("#g-stem"), len = stem.getTotalLength();
+  stem.style.strokeDasharray = len;
+  const leaves = [[.22, -28], [.38, 206], [.54, -32], [.68, 210]].map(([f, rot]) => {
+    const pt = stem.getPointAtLength(len * f), g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("transform", `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
+    g.innerHTML = `<g class="gl">${leafPath(0, 0, rot, 1.05)}</g>`;
+    $("#g-leaves").appendChild(g);
+    return { f, el:g.firstElementChild };
+  });
+  const head = $("#g-head"), rot = $("#g-rot"), sf = $("#g-sf"), hint = $("#bn-hint");
+  let bloomed = false;
+  return (p, y) => {
+    const q = Math.min(1, .2 + p * .84);
+    stem.style.strokeDashoffset = (len * (1 - q)).toFixed(1);
+    leaves.forEach(l => { const s = Math.max(0, Math.min(1, (q - l.f) * 8)); l.el.style.transform = `scale(${s.toFixed(3)})`; });
+    const tip = stem.getPointAtLength(len * q);
+    head.setAttribute("transform", `translate(${tip.x.toFixed(1)} ${tip.y.toFixed(1)}) scale(${(.22 + .58 * q).toFixed(3)})`);
+    rot.setAttribute("transform", `rotate(${(y * .06).toFixed(1)})`);
+    const b = q > .96;
+    if (b !== bloomed){ bloomed = b; sf.classList.toggle("on", b); hint.textContent = b ? "Terima kasih sudah membaca undangan kami 🌻" : "Gulir ke bawah, biarkan bunganya tumbuh 🌻"; }
+  };
+})();
+
+/* ---------- lebah kecil ---------- */
+$("#bee").innerHTML = `<svg viewBox="-20 -20 40 40"><ellipse class="w" cx="-3" cy="-9" rx="6" ry="9" fill="#e9f6ff" fill-opacity=".85" stroke="#9fc3d6" stroke-width=".8"/><ellipse class="w" cx="4" cy="-8" rx="5" ry="8" fill="#e9f6ff" fill-opacity=".75" stroke="#9fc3d6" stroke-width=".8"/><ellipse cx="0" cy="2" rx="11" ry="8" fill="#ffc928"/><path d="M-4-5.4v14.8M2-6v16" stroke="#2a1a08" stroke-width="3"/><circle cx="11" cy="1" r="5" fill="#2a1a08"/><circle cx="12.6" cy="-.4" r="1.2" fill="#fff"/><path d="M-11 2l-4 1 4 1" fill="#2a1a08"/></svg>`;
+function startBee(){
+  const bee = $("#bee"), hero = $("#home"); let vis = true, t0 = performance.now(), lastX = 0;
+  new IntersectionObserver(es => { vis = es[0].isIntersecting; }).observe(hero);
+  (function loop(now){
+    requestAnimationFrame(loop); if (!vis) return;
+    const t = (now - t0) / 1000, W = hero.clientWidth, H = hero.clientHeight;
+    const x = W / 2 + Math.sin(t * .45) * W * .36 + Math.sin(t * 2.3) * 6;
+    const y = H * .64 + Math.sin(t * .9) * H * .07 + Math.cos(t * 3.1) * 4;
+    const dir = x >= lastX ? 1 : -1; lastX = x;
+    bee.style.transform = `translate(${(x - 17).toFixed(1)}px, ${(y - 17).toFixed(1)}px) scaleX(${dir})`;
+  })(t0);
+}
+
+/* ---------- kelopak jatuh ---------- */
+function startPetals(){
+  const n = innerWidth < 600 ? 9 : 14;
+  $("#petals").innerHTML = Array.from({ length:n }, () =>
+    `<i class="fp" style="left:${rnd(0, 100).toFixed(1)}%;--dur:${rnd(11, 19).toFixed(1)}s;--del:${(-rnd(0, 18)).toFixed(1)}s;--sz:${rnd(.6, 1.15).toFixed(2)};--sx:${rnd(18, 46).toFixed(0)}px"><b></b></i>`).join("");
+}
+
+/* ---------- muncul saat digulir ---------- */
+const io = new IntersectionObserver(es => es.forEach(en => {
+  if (!en.isIntersecting) return;
+  const el = en.target;
+  el.classList.add("in");
+  $$(".sf", el).forEach(f => f.classList.add("on"));
+  if (el.classList.contains("sf")) el.classList.add("on");
+  io.unobserve(el);
+}), { threshold:.15, rootMargin:"0px 0px -6% 0px" });
+
+/* ---------- animasi scroll: parallax & bunga berputar ---------- */
+const HERO = $("#home"), H_SUN = $("#home .sunwrap"), H_TXT = $("#home .hero-txt"), H_BACK = $("#field-back"), BN_FL = $("#bn-fl");
+let SPIN = [], ticking = false;
+function onScroll(){
+  ticking = false;
+  const y = scrollY, H = HERO.offsetHeight;
+  if (y < H * 1.3){
+    H_SUN.style.transform = `translate3d(0, ${(y * .45).toFixed(1)}px, 0)`;
+    H_TXT.style.transform = `translate3d(0, ${(y * .32).toFixed(1)}px, 0)`;
+    H_TXT.style.opacity = Math.max(0, 1 - y / (H * .55)).toFixed(3);
+    H_BACK.style.transform = `translate3d(0, ${(y * .14).toFixed(1)}px, 0)`;
+  }
+  const r = `rotate(${(y * .12).toFixed(1)}deg)`;
+  SPIN.forEach(el => el.style.transform = r);
+  if (WIDE.matches){
+    BN_FL.style.transform = `rotate(${(y * .08).toFixed(1)}deg)`;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    G(max > 0 ? Math.min(1, y / max) : 1, y);
+  }
+}
+const queueScroll = () => { if (!ticking){ ticking = true; requestAnimationFrame(onScroll); } };
+G(0, 0);
+
+/* ---------- buka undangan ---------- */
+requestAnimationFrame(() => requestAnimationFrame(() => $("#cv-fl .sf").classList.add("on")));
+let opened = false;
+function burst(){
+  const b = document.createElement("div"); b.className = "burst";
+  b.innerHTML = Array.from({ length:28 }, (_, i) => {
+    const a = (i / 28) * Math.PI * 2 + rnd(-.2, .2), d = rnd(160, 420);
+    return `<i style="--x:${(Math.cos(a) * d).toFixed(0)}px;--y:${(Math.sin(a) * d).toFixed(0)}px;--r:${rnd(-360, 360).toFixed(0)}deg;transform:rotate(${(a * 57.3 + 90).toFixed(0)}deg)"></i>`;
+  }).join("");
+  const r = $("#cv-fl").getBoundingClientRect();
+  b.style.left = r.left + r.width / 2 + "px"; b.style.top = r.top + r.height / 2 + "px";
+  document.body.appendChild(b); setTimeout(() => b.remove(), 1500);
+}
+function openInv(){
+  if (opened) return; opened = true;
+  if (CONFIG.musik) bgm.play().catch(() => {});
+  if (!RM) burst();
+  $("#cover").classList.add("going");
+  document.body.classList.remove("locked");
+  $("#main").removeAttribute("aria-hidden");
+  window.scrollTo(0, 0);
+  setTimeout(() => $("#cover").classList.add("gone"), RM ? 0 : 900);
+  setTimeout(() => {
+    $("#home").classList.add("in");
+    $$("#home .ff").forEach((f, i) => { f.style.setProperty("--bd", (i * .12).toFixed(2) + "s"); f.classList.add("on"); });
+  }, RM ? 0 : 250);
+  $$(".rv, #penutup .ff").forEach(el => io.observe(el));
+  if (!RM){ startPetals(); startBee(); }
+  SPIN = $$(".dv .sf, .ev .badge .sf");
+  setTimeout(() => $$("#bn-fl .sf").forEach(f => f.classList.add("on")), RM ? 0 : 400);
+  if (!RM) addEventListener("scroll", queueScroll, { passive:true });
+  else addEventListener("scroll", () => { const max = document.documentElement.scrollHeight - innerHeight; if (WIDE.matches) G(max > 0 ? Math.min(1, scrollY / max) : 1, 0); }, { passive:true });
+  addEventListener("resize", queueScroll);
+}
+$("#open-btn").addEventListener("click", openInv);
+</script>
+</body>
+</html>

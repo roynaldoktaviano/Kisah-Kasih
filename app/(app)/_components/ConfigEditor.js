@@ -45,6 +45,16 @@ const TOP = {
   busana: "Kode busana", busanaDetail: "Penjelasan kode busana", warnaBusana: "Palet warna busana",
   kolomTambahan: "Kolom tambahan di form", labelPesan: "Judul kolom pesan", tombolKirim: "Tulisan tombol kirim",
   pesanHadir: "Pesan setelah konfirmasi hadir", pesanBerhalangan: "Pesan setelah konfirmasi berhalangan",
+  // template LDR
+  fotoUtama: "Foto utama (pembuka & panel laptop)", fotoKutipan: "Foto di atas ayat / kutipan", fotoPenutup: "Foto penutup",
+  salamPenutup: "Salam penutup", keluarga: "Keluarga yang mengundang", linkLive: "Link live streaming",
+  // koleksi elegan (Kayu Manis, Tinta Gading, Layar Perak)
+  fotoInspirasi: "Foto inspirasi busana", linkGrup: "Link grup WhatsApp tamu", teksGrup: "Teks ajakan grup", fotoGrup: "Foto di atas info grup",
+  fotoLokasi: "Foto di atas info lokasi", linkAlbum: "Link album foto bersama", teksAlbum: "Teks ajakan album foto",
+  kota: "Kota (di bawah nama)", tagline: "Kalimat pembuka singkat", fotoHadiah: "Foto di bagian amplop",
+  penginapan: "Rekomendasi penginapan", transportasi: "Rekomendasi transportasi", fotoTransportasi: "Foto di atas info transportasi",
+  // Bunga Matahari
+  penutup: "Kata penutup", judulLagu: "Judul lagu (tampil saat musik diputar)",
 };
 const NESTED = {
   panggilan: "Nama panggilan", lengkap: "Nama lengkap & gelar", keterangan: "Keterangan (putra/putri dari…)",
@@ -53,10 +63,15 @@ const NESTED = {
   selesai: "Jam selesai", lokasi: "Nomor lokasi", ikon: "Ikon", bank: "Bank / e-wallet", nomor: "Nomor rekening",
   atasNama: "Atas nama", tahun: "Tahun", judul: "Judul", cerita: "Cerita", catatan: "Catatan", pria: "Pria",
   wanita: "Wanita", hindari: "Yang perlu dihindari", warna: "Palet warna", pesan: "Ucapan", acara: "Nama acara",
+  kota: "Kota", zonaWaktu: "Zona waktu kota", linkLive: "Link siaran langsung (opsional)",
+  sapaan: "Nama akrab / sapaan", deskripsi: "Keterangan singkat", peran: "Peran", telepon: "Nomor telepon / WhatsApp", link: "Link",
 };
 const labelFor = (k, depth) => (depth === 0 ? TOP[k] : NESTED[k]) || humanize(k);
 // petunjuk dari komentar template yang perlu diganti untuk dashboard
-const HINTS = { musik: "", zona: "", waNumber: "Format 628xxxxxxxxx. Kosong = bagian request lagu disembunyikan." };
+const HINTS = {
+  musik: "", zona: "", waNumber: "Format 628xxxxxxxxx. Kosong = bagian request lagu disembunyikan.",
+  linkLive: "Untuk keluarga & sahabat yang jauh (YouTube, Zoom, dll). Kosongkan untuk menyembunyikan.",
+};
 const hintFor = (k, hints) => (k in HINTS ? HINTS[k] : hints[k]);
 
 // Saklar bagian undangan: kalau dimatikan, isian terkait ikut disembunyikan
@@ -64,6 +79,21 @@ const TOGGLES = {
   tampilHadiah: { title: "Bagian hadiah / kado", desc: "Tampilkan nomor rekening & alamat kirim kado di undangan.", keys: ["teksHadiah", "hadiah", "alamatKado"] },
   tampilRsvp: { title: "RSVP (konfirmasi kehadiran)", desc: "Jawaban tamu langsung masuk ke tab RSVP & Ucapan di dashboard ini.", keys: ["batasRsvp", "maksTamu", "kolomTambahan", "labelPesan", "tombolKirim", "pesanHadir", "pesanBerhalangan"] },
 };
+
+// Zona waktu kota untuk template LDR (jam langsung di dua kota)
+const TIMEZONES = [
+  ["Asia/Jakarta", "WIB: Jakarta, Bandung, Surabaya, Medan"], ["Asia/Makassar", "WITA: Makassar, Bali, Balikpapan"], ["Asia/Jayapura", "WIT: Jayapura, Ambon"],
+  ["Asia/Singapore", "Singapura"], ["Asia/Kuala_Lumpur", "Kuala Lumpur"], ["Asia/Bangkok", "Bangkok, Hanoi"], ["Asia/Manila", "Manila"],
+  ["Asia/Hong_Kong", "Hong Kong"], ["Asia/Taipei", "Taipei"], ["Asia/Shanghai", "Beijing, Shanghai"], ["Asia/Seoul", "Seoul"], ["Asia/Tokyo", "Tokyo, Osaka"],
+  ["Asia/Kolkata", "India"], ["Asia/Dubai", "Dubai, Abu Dhabi"], ["Asia/Qatar", "Doha"], ["Asia/Riyadh", "Riyadh, Jeddah, Makkah"],
+  ["Australia/Perth", "Perth"], ["Australia/Darwin", "Darwin"], ["Australia/Brisbane", "Brisbane"], ["Australia/Adelaide", "Adelaide"],
+  ["Australia/Sydney", "Sydney, Canberra"], ["Australia/Melbourne", "Melbourne"], ["Pacific/Auckland", "Auckland, Wellington"],
+  ["Europe/London", "London, Manchester"], ["Europe/Dublin", "Dublin"], ["Europe/Amsterdam", "Amsterdam, Rotterdam, Den Haag"], ["Europe/Berlin", "Berlin, München"],
+  ["Europe/Paris", "Paris"], ["Europe/Brussels", "Brussel"], ["Europe/Zurich", "Zürich"], ["Europe/Rome", "Roma, Milan"], ["Europe/Madrid", "Madrid"],
+  ["Europe/Stockholm", "Stockholm"], ["Europe/Istanbul", "Istanbul"], ["Europe/Moscow", "Moskow"], ["Africa/Cairo", "Kairo"],
+  ["America/New_York", "New York, Boston, Toronto"], ["America/Chicago", "Chicago, Houston"], ["America/Denver", "Denver"],
+  ["America/Los_Angeles", "Los Angeles, San Francisco, Seattle"], ["America/Vancouver", "Vancouver"], ["America/Sao_Paulo", "São Paulo"],
+];
 
 const isImageKey = (k) => /foto|galeri|latar|^logo$/i.test(String(k));
 const isAudioKey = (k) => k === "musik";
@@ -254,6 +284,17 @@ function Primitive({ k, value, sample, onChange, invId }) {
       </select>
     );
   }
+  if (k === "zonaWaktu") {
+    const known = TIMEZONES.some(([z]) => z === value);
+    return (
+      <select value={value || "Asia/Jakarta"} onChange={(e) => onChange(e.target.value)}>
+        {!known && value && <option value={value}>{value}</option>}
+        {TIMEZONES.map(([z, name]) => (
+          <option key={z} value={z}>{name}</option>
+        ))}
+      </select>
+    );
+  }
   if (isAudioKey(k)) return <AudioInput value={value} onChange={onChange} invId={invId} />;
   if (isImageKey(k)) return <ImageInput value={value} onChange={onChange} invId={invId} />;
   if (RE_DATETIME.test(s)) return <input type="datetime-local" value={value || ""} onChange={(e) => onChange(e.target.value)} />;
@@ -353,10 +394,10 @@ function Field({ k, label, value, sample, hint, onChange, invId, depth }) {
 // Kunci CONFIG dikelompokkan ke langkah-langkah (aturan pertama yang cocok dipakai).
 const STEPS = [
   { id: "profil", title: "Profil", desc: "Nama dan data yang punya acara.", match: /^(mempelai\d|wanita|pria|nama|umur|foto|penyelenggara|logo|nomorSurat|hutKe)$/ },
-  { id: "acara", title: "Waktu & Tempat", desc: "Tanggal, jam, dan lokasi acara.", match: /^(mulai|selesai|zona|acara|kataAcara|lokasi|tempat|tempatSingkat|kotaAcara|alamat|linkMaps|catatanLokasi|catatanAcara|jadwal|rundown|agenda|hari|kelas|dari|tujuan)$/ },
-  { id: "pesan", title: "Cerita & Pesan", desc: "Kata sambutan, kutipan, dan kisah kalian.", match: /^(salam|salamPembuka|sambutan|tema|ayat|sumberAyat|kutipan|sumberKutipan|kisah|sejarah|pesan|pesanRahasia|ttd|penandatangan|jabatan|salamPenutup|catatan|judulBanner)$/ },
-  { id: "detail", title: "Pengisi & Info", desc: "Pembicara, pelayan, peserta, ketentuan, dan narahubung.", match: /^(pembicara|pelayan|pesertaBaptis|pesertaSidi|ketentuan|biaya|rincianBiaya|rekening|bawa|kontak)$/ },
-  { id: "tampilan", title: "Foto & Musik", desc: "Foto, galeri, dress code, dan musik latar.", match: /^(foto\w+|galeri|dressCode|dressCodeDetail|busana|busanaDetail|warna|warnaDressCode|warnaBusana|musik|waNumber|ilustrasi)$/ },
+  { id: "acara", title: "Waktu & Tempat", desc: "Tanggal, jam, dan lokasi acara.", match: /^(mulai|selesai|zona|acara|linkLive|kota|penginapan|transportasi|kataAcara|lokasi|tempat|tempatSingkat|kotaAcara|alamat|linkMaps|catatanLokasi|catatanAcara|jadwal|rundown|agenda|hari|kelas|dari|tujuan)$/ },
+  { id: "pesan", title: "Cerita & Pesan", desc: "Kata sambutan, kutipan, dan kisah kalian.", match: /^(salam|salamPembuka|sambutan|tagline|tema|ayat|sumberAyat|kutipan|sumberKutipan|kisah|keluarga|sejarah|pesan|pesanRahasia|ttd|penandatangan|jabatan|salamPenutup|penutup|catatan|judulBanner)$/ },
+  { id: "detail", title: "Pengisi & Info", desc: "Pembicara, pelayan, peserta, ketentuan, dan narahubung.", match: /^(pembicara|pelayan|pesertaBaptis|pesertaSidi|ketentuan|biaya|rincianBiaya|rekening|bawa|kontak|linkGrup|teksGrup|linkAlbum|teksAlbum)$/ },
+  { id: "tampilan", title: "Foto & Musik", desc: "Foto, galeri, dress code, dan musik latar.", match: /^(foto\w+|galeri|dressCode|dressCodeDetail|busana|busanaDetail|warna|warnaDressCode|warnaBusana|musik|judulLagu|waNumber|ilustrasi)$/ },
   { id: "rsvp", title: "Hadiah & RSVP", desc: "Nyalakan atau matikan bagian hadiah dan konfirmasi kehadiran.", match: /^(tampilHadiah|hadiah|teksHadiah|alamatKado|tampilRsvp|batasRsvp|maksTamu|kolomTambahan|labelPesan|tombolKirim|pesanHadir|pesanBerhalangan|tamuDefault|ucapanContoh|namaAnjing)$/ },
   { id: "lain", title: "Lainnya", desc: "Pengaturan tambahan.", match: /./ },
 ];

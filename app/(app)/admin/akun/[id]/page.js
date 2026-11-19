@@ -87,7 +87,7 @@ export default async function AccountPage({ params }) {
             <fieldset className="field">
               <span>Template</span>
               <div className="tpl-pick">
-                {TEMPLATES.map((t, i) => (
+                {TEMPLATES.filter((t) => !t.retired).map((t, i) => (
                   <label key={t.id} className="tpl-opt">
                     <input type="radio" name="template" value={t.id} defaultChecked={i === 0} />
                     <span>
