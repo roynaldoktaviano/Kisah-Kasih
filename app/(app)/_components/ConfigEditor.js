@@ -55,6 +55,8 @@ const TOP = {
   penginapan: "Rekomendasi penginapan", transportasi: "Rekomendasi transportasi", fotoTransportasi: "Foto di atas info transportasi",
   // Bunga Matahari
   penutup: "Kata penutup", judulLagu: "Judul lagu (tampil saat musik diputar)",
+  // Taman Matahari
+  karakterMempelai: "Karakter animasi pengantin", pengantinBerhijab: "Karakter pengantin wanita berhijab",
 };
 const NESTED = {
   panggilan: "Nama panggilan", lengkap: "Nama lengkap & gelar", keterangan: "Keterangan (putra/putri dari…)",
@@ -393,7 +395,7 @@ function Field({ k, label, value, sample, hint, onChange, invId, depth }) {
 // ---------------------------------------------------------------- wizard
 // Kunci CONFIG dikelompokkan ke langkah-langkah (aturan pertama yang cocok dipakai).
 const STEPS = [
-  { id: "profil", title: "Profil", desc: "Nama dan data yang punya acara.", match: /^(mempelai\d|wanita|pria|nama|umur|foto|penyelenggara|logo|nomorSurat|hutKe)$/ },
+  { id: "profil", title: "Profil", desc: "Nama dan data yang punya acara.", match: /^(mempelai\d|wanita|pria|nama|umur|foto|penyelenggara|logo|nomorSurat|hutKe|karakterMempelai|pengantinBerhijab)$/ },
   { id: "acara", title: "Waktu & Tempat", desc: "Tanggal, jam, dan lokasi acara.", match: /^(mulai|selesai|zona|acara|linkLive|kota|penginapan|transportasi|kataAcara|lokasi|tempat|tempatSingkat|kotaAcara|alamat|linkMaps|catatanLokasi|catatanAcara|jadwal|rundown|agenda|hari|kelas|dari|tujuan)$/ },
   { id: "pesan", title: "Cerita & Pesan", desc: "Kata sambutan, kutipan, dan kisah kalian.", match: /^(salam|salamPembuka|sambutan|tagline|tema|ayat|sumberAyat|kutipan|sumberKutipan|kisah|keluarga|sejarah|pesan|pesanRahasia|ttd|penandatangan|jabatan|salamPenutup|penutup|catatan|judulBanner)$/ },
   { id: "detail", title: "Pengisi & Info", desc: "Pembicara, pelayan, peserta, ketentuan, dan narahubung.", match: /^(pembicara|pelayan|pesertaBaptis|pesertaSidi|ketentuan|biaya|rincianBiaya|rekening|bawa|kontak|linkGrup|teksGrup|linkAlbum|teksAlbum)$/ },

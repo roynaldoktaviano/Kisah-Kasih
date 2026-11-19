@@ -215,6 +215,28 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .pax-sf.photo{ width:150px; height:150px; }
 .pax-sf .face{ position:absolute; inset:0; border-radius:50%; overflow:hidden; box-shadow:inset 0 0 0 4px #fff, 0 10px 24px -12px rgba(130,90,20,.6); }
 .pax-sf .face img{ width:100%; height:100%; object-fit:cover; }
+/* karakter animasi pengantin (opsi karakterMempelai) */
+.pax-ch{ position:relative; width:150px; height:190px; margin:8px auto 6px; }
+.pax-ch .halo{ position:absolute; left:50%; top:-6px; width:150px; height:150px; margin-left:-75px; overflow:visible; animation:spin 50s linear infinite; }
+.pax-ch .who{ position:relative; display:block; width:100%; height:100%; overflow:visible; transform:translateY(16px) scale(.7); opacity:0; transform-origin:50% 100%; transition:transform 1s cubic-bezier(.3,1.5,.5,1) .35s, opacity .5s .35s; }
+.in .pax-ch .who{ transform:none; opacity:1; }
+.pax-ch .sway{ transform-box:view-box; transform-origin:60px 146px; animation:ch-sway 4.4s ease-in-out infinite; }
+.pax-ch.pria .sway{ animation-delay:-2.2s; }
+@keyframes ch-sway{ 0%,100%{ transform:rotate(-2.4deg); } 50%{ transform:rotate(2.4deg); } }
+.pax-ch .tilt{ transform-box:view-box; transform-origin:60px 72px; animation:ch-tilt 4.4s ease-in-out infinite; }
+.pax-ch.pria .tilt{ animation-delay:-1.2s; }
+@keyframes ch-tilt{ 0%,100%{ transform:rotate(3deg); } 50%{ transform:rotate(-3deg); } }
+.pax-ch .blink{ transform-box:fill-box; transform-origin:center; animation:ch-blink 4.8s infinite; }
+.pax-ch.pria .blink{ animation-delay:-1.7s; }
+@keyframes ch-blink{ 0%,93%,100%{ transform:none; } 96%{ transform:scaleY(.1); } }
+.pax-ch .wave{ transform-box:view-box; transform-origin:77px 85px; animation:ch-wave 3.6s ease-in-out infinite; }
+@keyframes ch-wave{ 0%,55%,100%{ transform:rotate(0); } 10%,30%{ transform:rotate(16deg); } 20%,40%{ transform:rotate(-6deg); } }
+.pax-ch .bq{ transform-box:view-box; transform-origin:60px 110px; animation:ch-bq 3.2s ease-in-out infinite; }
+@keyframes ch-bq{ 0%,100%{ transform:rotate(-5deg); } 50%{ transform:rotate(5deg); } }
+.pax-ch .veil{ transform-box:view-box; transform-origin:60px 22px; animation:ch-veil 5s ease-in-out infinite; }
+@keyframes ch-veil{ 0%,100%{ transform:none; } 50%{ transform:skewX(3deg) scaleX(1.04); } }
+.pax-ch .hrt{ position:absolute; left:var(--x); bottom:48%; width:var(--s, 12px); height:var(--s, 12px); fill:var(--c, #e6a93a); opacity:0; animation:ch-hrt 5s ease-out var(--d) infinite; }
+@keyframes ch-hrt{ 0%{ opacity:0; transform:translateY(0) scale(.4); } 20%{ opacity:.9; } 100%{ opacity:0; transform:translate(var(--dx, 6px), -84px) scale(1); } }
 .pax h3{ margin:0; font-family:var(--script); font-weight:400; font-size:54px; line-height:1.15; color:var(--rose); }
 .pax .full{ margin:2px 0 0; font-family:var(--serif); font-weight:600; font-size:19px; letter-spacing:.02em; color:var(--ink); }
 .pax .alias{ margin:2px 0 0; font-family:var(--serif); font-style:italic; font-size:15px; color:var(--gold); }
@@ -625,6 +647,8 @@ const CONFIG = {
   fotoSampul: "",                   // "" = ilustrasi bunga matahari
   fotoBanner: "",                   // latar banner kanan di desktop. "" = ilustrasi
   galeri: [],                       // [] = sembunyikan galeri, "" = ilustrasi bunga
+  karakterMempelai: false,          // true = karakter animasi pengantin (pengganti bunga matahari jika foto mempelai kosong)
+  pengantinBerhijab: false,         // true = karakter pengantin wanita memakai hijab
 
   // --- kado digital ([] untuk menyembunyikan) ---
   hadiah: [
@@ -939,8 +963,49 @@ function paintWishes(fresh){
     if (!m) return k ? `<p class="par">${esc(k)}</p>` : "";
     return `<div class="par"><span>${esc(m[1])}</span>${m[2].split(/\s+&\s+/).map((p, i) => `<b>${i ? "&amp; " : ""}${esc(p)}</b>`).join("")}</div>`;
   };
-  const pax = m => `<div class="pax st">${role(m.keterangan) ? `<p class="role">${role(m.keterangan)}</p>` : ""}${m.foto ? `<div class="pax-sf photo"><div class="face"><img src="${esc(m.foto)}" alt="${esc(m.lengkap)}" loading="lazy"></div></div>` : `<div class="pax-sf"><svg viewBox="-50 -50 100 100" aria-hidden="true"><g class="fl" style="--d:.35s"><use href="#peony" x="-50" y="-50" width="100" height="100" style="${SUN}"/></g></svg></div>`}<h3>${esc(m.panggilan)}</h3><p class="full">${esc(m.lengkap)}</p>${m.sapaan ? `<p class="alias">akrab disapa ${esc(m.sapaan)}</p>` : ""}${parents(m.keterangan)}${m.instagram ? `<a class="ig" href="https://instagram.com/${encodeURIComponent(m.instagram.replace(/^@/, ""))}" target="_blank" rel="noopener">@${esc(m.instagram.replace(/^@/, ""))}</a>` : ""}</div>`;
-  $("#pax").innerHTML = pax(CONFIG.mempelai1) + `<div class="amp st" aria-hidden="true"><i></i><span>&amp;</span><i></i></div>` + pax(CONFIG.mempelai2);
+  // karakter animasi pengantin (SVG). Jenis dari keterangan "Putri…/Putra…", cadangan: mempelai1 wanita, mempelai2 pria
+  const SKIN = "#f8d6bc", HAIR = "#3a2414", EYE = "#3a2414";
+  const face = (cy, dx, lash) => `<g class="blink">${[-1, 1].map(s => `<ellipse cx="${60 + s * dx}" cy="${cy}" rx="2.3" ry="2.9" fill="${EYE}"/><circle cx="${60 + s * dx + .8}" cy="${cy - 1}" r=".8" fill="#fff"/>${lash ? `<path d="M${60 + s * (dx + 1.8)} ${cy - 2} l${s * 2.2} -1.6" stroke="${EYE}" stroke-width="1.1" stroke-linecap="round"/>` : ""}`).join("")}</g>`
+    + [-1, 1].map(s => `<ellipse cx="${60 + s * (dx + 6)}" cy="${cy + 7}" rx="4" ry="2.4" fill="#f4a48a" opacity=".55"/>`).join("")
+    + `<path d="M${60 - 4.5} ${cy + 9} Q60 ${cy + 13.5} ${60 + 4.5} ${cy + 9}" fill="none" stroke="${lash ? "#c4574a" : "#8a4a2a"}" stroke-width="1.8" stroke-linecap="round"/>`;
+  const sf = (x, y, w) => `<use href="#peony" x="${x - w / 2}" y="${y - w / 2}" width="${w}" height="${w}" style="${SUN}"/>`;
+  const shadow = `<ellipse cx="60" cy="147" rx="28" ry="3.6" fill="rgba(130,90,20,.18)"/>`;
+  const groom = () => `${shadow}<g class="sway">
+    <path d="M50 120h9v22h-9zM61 120h9v22h-9z" fill="#2f271d"/><ellipse cx="53" cy="143" rx="7" ry="3.2" fill="#1f1913"/><ellipse cx="67" cy="143" rx="7" ry="3.2" fill="#1f1913"/>
+    <path d="M43 85Q35 100 38 115" fill="none" stroke="#3d3428" stroke-width="9" stroke-linecap="round"/><circle cx="38" cy="117.5" r="4.6" fill="${SKIN}"/>
+    <path d="M40 89Q40 77 52 75L68 75Q80 77 80 89L82 124L38 124Z" fill="#3d3428"/>
+    <path d="M52 75L60 100L68 75Z" fill="#fffaf0"/><path d="M52 75L57 93L49 87ZM68 75L63 93L71 87Z" fill="#574a3a"/>
+    <path d="M60 100V124" stroke="#2a231a" stroke-width="1"/><circle cx="60" cy="107" r="1.4" fill="#e6a93a"/><circle cx="60" cy="114" r="1.4" fill="#e6a93a"/>
+    <path d="M60 80L53 76.5v7ZM60 80L67 76.5v7Z" fill="#e09a12"/><circle cx="60" cy="80" r="1.9" fill="#c27f0c"/>${sf(71.5, 88, 11)}
+    <g class="wave"><path d="M77 85Q89 77 92 63" fill="none" stroke="#3d3428" stroke-width="9" stroke-linecap="round"/><circle cx="92.5" cy="58.5" r="4.8" fill="${SKIN}"/></g>
+    <g class="tilt"><rect x="56" y="66" width="8" height="12" rx="3" fill="#ecc4a6"/><circle cx="38.5" cy="52" r="4.5" fill="${SKIN}"/><circle cx="81.5" cy="52" r="4.5" fill="${SKIN}"/>
+      <circle cx="60" cy="50" r="22" fill="${SKIN}"/><path d="M38 50Q35 26 58 25Q84 24 82.5 50Q80 38 70 35Q62 41 50 37Q42 40 38 50Z" fill="${HAIR}"/>${face(53, 8, false)}</g>
+  </g>`;
+  const bride = hijab => `${shadow}<g class="sway">
+    <g class="veil"><path d="M60 ${hijab ? 18 : 20}Q30 30 23 132Q60 141 97 132Q90 30 60 ${hijab ? 18 : 20}Z" fill="#fff" fill-opacity=".62" stroke="#eedfb8" stroke-width=".8"/></g>
+    <path d="M47 80Q60 75 73 80L75 98Q90 121 96 142Q60 150 24 142Q30 121 45 98Z" fill="#fffdf6" stroke="#eedfb8" stroke-width="1"/>
+    <path d="M52 104Q46 124 42 145M68 104Q74 124 78 145M60 104V147" fill="none" stroke="#f1e3c0" stroke-width="1"/>
+    <path d="M25 140Q60 148 95 140" fill="none" stroke="#e6a93a" stroke-width="1.6"/><path d="M48 80Q60 88 72 80" fill="none" stroke="#eedfb8"/>
+    <path d="M45 98Q60 102 75 98" fill="none" stroke="#e6a93a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M48 83Q41 98 54 105M72 83Q79 98 66 105" fill="none" stroke="${hijab ? "#fff6e2" : SKIN}" stroke-width="5.5" stroke-linecap="round"/>
+    <g class="tilt">${hijab
+      ? `<path d="M60 24Q34 24 34 52Q33 72 28 88Q60 98 92 88Q87 72 86 52Q86 24 60 24Z" fill="#fff6e2" stroke="#eedfb8" stroke-width="1"/><path d="M40 74Q48 86 60 88M80 74Q72 86 60 88" fill="none" stroke="#f1e3c0" stroke-width="1"/>
+        <ellipse cx="60" cy="53" rx="17.5" ry="19.5" fill="none" stroke="#f0dcae" stroke-width="1.8"/><ellipse cx="60" cy="53" rx="16.5" ry="18.5" fill="${SKIN}"/>${face(52, 6, true)}${sf(48, 30, 9)}${sf(72, 30, 9)}${sf(60, 25, 13)}`
+      : `<path d="M39 50Q37 26 60 25Q83 26 81 50Q83 62 79 69Q71 66 70 60L50 60Q49 66 41 69Q37 62 39 50Z" fill="${HAIR}"/><circle cx="60" cy="25" r="9" fill="${HAIR}"/>
+        <rect x="56" y="64" width="8" height="14" rx="3" fill="#ecc4a6"/><circle cx="60" cy="48" r="21" fill="${SKIN}"/>
+        <path d="M39 49Q39 27 60 27Q81 27 81 49Q75 35 60 36Q46 35 39 49Z" fill="${HAIR}"/>${face(51, 8, true)}${sf(72, 25, 13)}`}</g>
+    <circle cx="54.5" cy="106" r="3.6" fill="${SKIN}"/><circle cx="65.5" cy="106" r="3.6" fill="${SKIN}"/>
+    <g class="bq"><path d="M60 106L55 120M60 106V121M60 106L65 120" stroke="#5f8a3c" stroke-width="1.6" stroke-linecap="round"/>
+      <ellipse cx="49" cy="102" rx="6" ry="2.6" fill="#86ab55" transform="rotate(-30 49 102)"/><ellipse cx="71" cy="102" rx="6" ry="2.6" fill="#86ab55" transform="rotate(30 71 102)"/>
+      ${sf(52.5, 99, 14)}${sf(67.5, 99, 14)}${sf(60, 91, 15)}<path d="M60 108l-5 4M60 108l5 4" stroke="#e6a93a" stroke-width="1.8" stroke-linecap="round"/><circle cx="60" cy="108" r="2" fill="#e09a12"/></g>
+  </g>`;
+  const HEART = `<path d="M12 21s-7-4.4-8.8-8.6C1.9 9.3 3.9 6 7 6c2 0 3.5 1.2 5 3 1.5-1.8 3-3 5-3 3.1 0 5.1 3.3 3.8 6.4C19 16.6 12 21 12 21z"/>`;
+  const hearts = [["8%", "0s", "11px", "#e6a93a", "-8px"], ["82%", "1.7s", "9px", "#f5b417", "8px"], ["16%", "3.3s", "8px", "#e09a12", "4px"]]
+    .map(([x, d, sz, c, dx]) => `<svg class="hrt" viewBox="0 0 24 24" style="--x:${x};--d:${d};--s:${sz};--c:${c};--dx:${dx}">${HEART}</svg>`).join("");
+  const isPria = (m, i) => /^\s*putra/i.test(m.keterangan || "") || (!/^\s*putri/i.test(m.keterangan || "") && i === 1);
+  const chara = (m, i) => { const pria = isPria(m, i); return `<div class="pax-ch ${pria ? "pria" : "wanita"}" role="img" aria-label="Ilustrasi ${pria ? "pengantin pria" : "pengantin wanita"}"><svg class="halo" viewBox="-50 -50 100 100" aria-hidden="true"><g class="fl" style="--d:.2s"><use href="#peony" x="-50" y="-50" width="100" height="100" style="--p1:#fff0bf;--p2:#ffe08a;--p3:#f3c96a;--p4:#fbe7b5"/></g></svg><svg class="who" viewBox="0 0 120 152" aria-hidden="true">${pria ? groom() : bride(!!CONFIG.pengantinBerhijab)}</svg>${hearts}</div>`; };
+  const pax = (m, i) => `<div class="pax st">${role(m.keterangan) ? `<p class="role">${role(m.keterangan)}</p>` : ""}${m.foto ? `<div class="pax-sf photo"><div class="face"><img src="${esc(m.foto)}" alt="${esc(m.lengkap)}" loading="lazy"></div></div>` : CONFIG.karakterMempelai ? chara(m, i) : `<div class="pax-sf"><svg viewBox="-50 -50 100 100" aria-hidden="true"><g class="fl" style="--d:.35s"><use href="#peony" x="-50" y="-50" width="100" height="100" style="${SUN}"/></g></svg></div>`}<h3>${esc(m.panggilan)}</h3><p class="full">${esc(m.lengkap)}</p>${m.sapaan ? `<p class="alias">akrab disapa ${esc(m.sapaan)}</p>` : ""}${parents(m.keterangan)}${m.instagram ? `<a class="ig" href="https://instagram.com/${encodeURIComponent(m.instagram.replace(/^@/, ""))}" target="_blank" rel="noopener">@${esc(m.instagram.replace(/^@/, ""))}</a>` : ""}</div>`;
+  $("#pax").innerHTML = pax(CONFIG.mempelai1, 0) + `<div class="amp st" aria-hidden="true"><i></i><span>&amp;</span><i></i></div>` + pax(CONFIG.mempelai2, 1);
 
   // kalender
   $("#cal-m").textContent = `${BULAN[M - 1]} ${Y}`;
