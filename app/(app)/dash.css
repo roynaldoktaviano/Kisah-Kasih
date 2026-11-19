@@ -557,3 +557,32 @@ body:has(.dash), body:has(.auth) { background: #fff; }
   .gb-when { width: 100%; order: 3; }
 }
 .gb-link + .row-actions { justify-content: flex-start; }
+
+/* ---------- undangan privat ---------- */
+.private-box { display: flex; flex-direction: column; gap: 12px; }
+.private-row { display: flex; align-items: flex-start; gap: 14px; cursor: pointer; }
+.private-row .switch { margin-top: 2px; }
+.private-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.private-text > b { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 1rem; font-weight: 600; }
+.private-text > small { color: var(--text-2); font-size: .88rem; line-height: 1.55; max-width: 72ch; }
+.private-text > small b { font-weight: 600; color: var(--text); }
+.private-saving { color: var(--text-3); font-weight: 400; font-size: .8rem; }
+.tag.private-tag { background: #fdf3d6; color: #8a5a06; }
+
+/* ---------- tambah tamu: baris nama + nomor ---------- */
+.guest-rows { display: flex; flex-direction: column; gap: 8px; }
+.guest-row { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) 32px; gap: 8px; align-items: center; }
+.guest-row-head { font-size: .8rem; font-weight: 500; color: var(--text-2); }
+.guest-row-head em { font-style: normal; color: var(--text-3); font-weight: 400; }
+.guest-row-x { width: 32px; height: 32px; border-radius: 8px; border: 0; background: transparent; color: var(--text-3); font-size: 1.2rem; line-height: 1; cursor: pointer; }
+.guest-row-x:hover { background: var(--hover); color: var(--bad); }
+.guest-rows-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.guest-rows-foot small { color: var(--text-3); font-size: .8rem; line-height: 1.45; flex: 1; min-width: 200px; }
+@media (max-width: 520px) {
+  .guest-row { grid-template-columns: minmax(0, 1fr) 32px; }
+  .guest-row input[name="phone"] { grid-column: 1; }
+  .guest-row .guest-row-x { grid-column: 2; grid-row: 1 / span 2; }
+  .guest-row-head span:nth-child(2) { display: none; }
+  .guest-row { padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+  .guest-row-head { border: 0; padding: 0; }
+}

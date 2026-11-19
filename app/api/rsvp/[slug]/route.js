@@ -18,12 +18,14 @@ export async function POST(req, { params }) {
   const pax = attending ? Math.min(20, Math.max(1, parseInt(body.count, 10) || 1)) : 0;
   if (!key || !name) return Response.json({ ok: false, error: "Nama wajib diisi" }, { status: 400 });
 
-  const inv = await one("SELECT id FROM invitations WHERE slug = $1 AND active", [String(slug).toLowerCase()]);
+  const inv = await one("SELECT id, is_private FROM invitations WHERE slug = $1 AND active", [String(slug).toLowerCase()]);
   if (!inv) return Response.json({ ok: false, error: "Undangan tidak ditemukan" }, { status: 404 });
 
   // dikirim dari link pribadi → RSVP terhubung langsung ke tamu di daftar
   const code = String(body.code || "").trim().toLowerCase().slice(0, 32);
   const guest = code ? await one("SELECT id FROM guests WHERE invitation_id = $1 AND code = $2", [inv.id, code]) : null;
+  // undangan privat: RSVP & ucapan hanya dari link pribadi tamu
+  if (inv.is_private && !guest) return Response.json({ ok: false, error: "Undangan privat" }, { status: 403 });
 
   await one(
     `INSERT INTO rsvps (invitation_id, client_key, guest_name, attending, pax, message, guest_id)

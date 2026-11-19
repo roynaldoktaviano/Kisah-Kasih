@@ -7,6 +7,8 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/[slug]": ["./public/templates/**"],
     "/akun/undangan/[id]": ["./public/templates/**"],
+    // gambar pratinjau link: butuh template (data acara) + font Cormorant
+    "/api/og/[slug]": ["./public/templates/**", "./node_modules/@fontsource/cormorant-garamond/files/*latin-*.woff"],
   },
 };
 export default nextConfig;

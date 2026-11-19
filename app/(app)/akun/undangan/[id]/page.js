@@ -12,8 +12,10 @@ import RsvpBoard from "../../../_components/RsvpBoard";
 import { TabProvider, TabNav, TabPanel, TabLink } from "../../../_components/TabNav";
 import { TabSkeleton } from "../../../_components/Skeletons";
 import LinkSettings from "../../../_components/LinkSettings";
+import GuestRowsForm from "../../../_components/GuestRowsForm";
+import PrivateToggle from "../../../_components/PrivateToggle";
 import { ActionForm, Submit, CopyButton, ConfirmSubmit } from "../../../_components/ui";
-import { saveWaMessage, addGuests, resetScanToken, undoCheckin } from "../../../actions";
+import { saveWaMessage, addGuests, setPrivate, resetScanToken, undoCheckin } from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,8 @@ export default async function InvitationPage({ params, searchParams }) {
   const t = getTemplate(inv.template);
   const base = await inviteBase();
   const url = base.url(inv.slug);
+  // undangan privat: pratinjau lewat domain dashboard (cookie login ikut) — subdomain tidak membawa cookie login
+  const previewUrl = inv.is_private ? `/${inv.slug}` : url;
   // satu query (bukan dua berurutan) — tiap round-trip ke DB terasa saat pindah tab
   const meta = await one(
     `SELECT (SELECT count(*)::int FROM rsvps WHERE invitation_id = $1) AS rsvp_count,
@@ -56,10 +60,11 @@ export default async function InvitationPage({ params, searchParams }) {
           <p className="link-line">
             <a href={url} target="_blank" rel="noreferrer">{base.label(inv.slug)}</a>
             <CopyButton text={url}>Salin link</CopyButton>
+            {inv.is_private && <span className="tag private-tag">🔒 Privat</span>}
             {!inv.active && <span className="tag no">Nonaktif — hubungi admin</span>}
           </p>
         </div>
-        <a href={url} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
+        <a href={previewUrl} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
       </div>
 
       <TabProvider current={tab}>
@@ -134,18 +139,14 @@ async function GuestsTab({ inv, url }) {
 
   return (
     <>
+      <section className="card">
+        <PrivateToggle action={setPrivate} invId={inv.id} initial={!!inv.is_private} guestCount={guests.length} />
+      </section>
+
       <div className="grid-2">
         <section className="card">
           <h2>Tambah tamu</h2>
-          <ActionForm action={addGuests} className="stack" resetOnOk>
-            <input type="hidden" name="id" value={inv.id} />
-            <label className="field">
-              <span>Satu tamu per baris — nama, lalu nomor WA (opsional)</span>
-              <textarea name="guests" rows={7} placeholder={"Budi Santoso, 0812 3456 7890\nKeluarga Bpk. Hendra, 0813 2222 3333\nRina & Partner"} required />
-              <small>Bisa langsung tempel dari Excel / Google Sheets (kolom nama & nomor).</small>
-            </label>
-            <Submit pendingText="Menambahkan…">Tambah ke daftar</Submit>
-          </ActionForm>
+          <GuestRowsForm action={addGuests} invId={inv.id} />
         </section>
 
         <section className="card">

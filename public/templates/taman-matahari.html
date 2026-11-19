@@ -48,14 +48,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .play .fl, .in .fl{ animation:bloom 1s cubic-bezier(.3,1.45,.5,1) var(--d, 0s) both; }
 @keyframes bloom{ to{ transform:none; } }
 .draw{ stroke-dasharray:1; stroke-dashoffset:1; }
+.lite .hero .fl, .lite .corner .fl, .lite .cv-corner .fl, .lite .env-sprig .fl{ animation:none !important; transform:none; }
+.lite .hero .draw{ animation:none !important; stroke-dashoffset:0; }
 .play .draw, .in .draw{ animation:draw var(--dur, 2s) ease-in-out var(--d, 0s) forwards; }
 @keyframes draw{ to{ stroke-dashoffset:0; } }
-@keyframes rise{ from{ opacity:0; transform:translateY(18px); filter:blur(6px); } to{ opacity:1; transform:none; filter:none; } }
+@keyframes rise{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:none; } }
 @keyframes bob{ 50%{ translate:0 -5px; } }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 
 /* ===== tombol musik ===== */
-.snd{ position:absolute; z-index:30; top:calc(env(safe-area-inset-top,0px) + 12px); right:12px; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:rgba(255,253,249,.8); border:1px solid var(--line); box-shadow:0 6px 16px -8px rgba(130,90,20,.4); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+.snd{ position:absolute; z-index:30; top:calc(env(safe-area-inset-top,0px) + 12px); right:12px; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:rgba(255,253,246,.96); border:1px solid var(--line); box-shadow:0 6px 16px -8px rgba(130,90,20,.4);  }
 .snd svg{ width:18px; height:18px; fill:none; stroke:var(--rose); stroke-width:1.8; stroke-linecap:round; }
 .snd .x{ display:none; } .snd.muted .x{ display:inline; } .snd.muted .w{ display:none; }
 
@@ -118,16 +120,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* ===== adegan berlapis (motion art) ===== */
 .hero{ position:relative; height:100vh; height:100dvh; min-height:600px; overflow:hidden;
   background:radial-gradient(60% 40% at 50% 42%, rgba(255,246,206,.98), transparent 70%), linear-gradient(180deg, #fde8a6 0%, #fdf3d2 45%, #f6edc8 78%, #fbf6ea 100%); }
-.ly{ position:absolute; inset:0; translate:0 calc(var(--sy, 0) * var(--k, 0) * 1px); pointer-events:none; }
+.ly{ position:absolute; inset:0; pointer-events:none; will-change:transform; }
 .ly > svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
-.lyi{ position:absolute; inset:0; }
+.lyi{ position:absolute; inset:0; will-change:transform, opacity; }
 .ly-rise .lyi{ transform:translateY(40%); opacity:0; }
 .ly-top .lyi{ transform:translateY(-35%); opacity:0; }
 .ly-l .lyi{ transform:translateX(-45%); opacity:0; } .ly-r .lyi{ transform:translateX(45%); opacity:0; }
 .play .ly .lyi{ animation:lyIn 1.7s cubic-bezier(.2,.8,.2,1) var(--d, 0s) both; }
 @keyframes lyIn{ to{ transform:none; opacity:1; } }
 .lyi > svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
-.strand{ transform-box:fill-box; transform-origin:50% 0; animation:strand 5s ease-in-out var(--sd) infinite alternate; }
+.ly-top .lyi > svg{ transform-origin:50% 0; animation:garland 7s ease-in-out infinite alternate; will-change:transform; }
+@keyframes garland{ from{ transform:rotate(-.5deg) translateY(-2px); } to{ transform:rotate(.5deg) translateY(2px); } }
 @keyframes strand{ from{ transform:rotate(-2.5deg); } to{ transform:rotate(2.5deg); } }
 .hero-text{ position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; pointer-events:none; }
 .ht{ opacity:0; }
@@ -178,8 +181,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* muncul saat discroll */
 [data-r]{ opacity:0; transform:translateY(34px) scale(.98); transition:opacity 1s ease, transform 1.2s var(--ease); }
 [data-r].in{ opacity:1; transform:none; }
-[data-r] .st{ opacity:0; transform:translateY(14px); filter:blur(4px); transition:opacity .8s ease, transform .9s var(--ease), filter .8s ease; transition-delay:calc(var(--i, 0) * 100ms + .3s); }
-[data-r].in .st{ opacity:1; transform:none; filter:none; }
+[data-r] .st{ opacity:0; transform:translateY(14px); transition:opacity .8s ease, transform .9s var(--ease); transition-delay:calc(var(--i, 0) * 100ms + .3s); }
+[data-r].in .st{ opacity:1; transform:none; }
 
 /* ornamen sudut */
 .corner{ position:absolute; z-index:3; width:118px; pointer-events:none; opacity:0; transition:opacity .8s ease .1s, transform 1.4s var(--ease) .1s; }
@@ -207,7 +210,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .pax .role{ margin:0; font-family:var(--serif); font-size:12px; letter-spacing:.34em; text-transform:uppercase; color:var(--sage); }
 /* bunga matahari dengan inisial di tengah cakram (pengganti foto) */
 .pax-sf{ position:relative; width:92px; height:92px; margin:12px auto 4px; }
-.pax-sf svg{ display:block; width:100%; height:100%; overflow:visible; animation:spin 40s linear infinite; filter:drop-shadow(0 8px 12px rgba(150,100,10,.25)); }
+.pax-sf svg{ position:relative; display:block; width:100%; height:100%; overflow:visible; animation:spin 40s linear infinite; will-change:transform; }
+.pax-sf::before{ content:""; position:absolute; inset:14%; border-radius:50%; background:radial-gradient(circle, rgba(200,130,10,.22), rgba(200,130,10,0) 70%); transform:translateY(8px); }
 .pax-sf.photo{ width:150px; height:150px; }
 .pax-sf .face{ position:absolute; inset:0; border-radius:50%; overflow:hidden; box-shadow:inset 0 0 0 4px #fff, 0 10px 24px -12px rgba(130,90,20,.6); }
 .pax-sf .face img{ width:100%; height:100%; object-fit:cover; }
@@ -316,7 +320,7 @@ textarea.inp{ min-height:90px; resize:vertical; line-height:1.5; }
 .foot{ margin:30px 0 0; font-family:var(--serif); font-size:12px; letter-spacing:.24em; color:var(--ink-2); opacity:.7; text-transform:uppercase; }
 
 /* dock navigasi */
-.dock{ position:absolute; z-index:25; left:12px; right:12px; bottom:calc(env(safe-area-inset-bottom,0px) + 12px); display:flex; justify-content:space-around; padding:8px 6px; border-radius:22px; background:rgba(255,253,249,.88); border:1px solid var(--line); box-shadow:0 16px 30px -16px rgba(130,90,20,.5); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); transform:translateY(140%); transition:transform .8s var(--ease); }
+.dock{ position:absolute; z-index:25; left:12px; right:12px; bottom:calc(env(safe-area-inset-bottom,0px) + 12px); display:flex; justify-content:space-around; padding:8px 6px; border-radius:22px; background:rgba(255,253,246,.97); border:1px solid var(--line); box-shadow:0 16px 30px -16px rgba(130,90,20,.5);  transform:translateY(140%); transition:transform .8s var(--ease); }
 .dock.on{ transform:none; }
 .dock button{ display:flex; flex-direction:column; align-items:center; gap:3px; min-width:56px; padding:6px 4px; border-radius:14px; font-size:10.5px; color:var(--ink-2); transition:color .3s, background .3s; }
 .dock svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
@@ -644,6 +648,9 @@ const CONFIG = {
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+// HP / layar sentuh: animasi berat di dalam SVG diganti animasi lapisan yang dikerjakan GPU
+const LITE = matchMedia("(pointer: coarse)").matches || innerWidth < 900;
+if (LITE) document.documentElement.classList.add("lite");
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 const pad = n => String(n).padStart(2, "0");
 const GUEST = (() => {
@@ -740,7 +747,7 @@ const Flora = (() => {
   // cakram biji: lingkaran bertitik berlapis
   const disc = (r, rings) => `<circle r="${r}" style="fill:var(--p4)"/><circle r="${f1(r - .9)}" style="fill:none;stroke:var(--p3);stroke-width:1.8;stroke-dasharray:1.3 1.8"/>${rings.map(k => `<circle r="${f1(r * k)}" style="fill:none;stroke:var(--p3);stroke-width:1.5;stroke-dasharray:1 2.1;opacity:.6"/>`).join("")}<circle r="${f1(r * .24)}" style="fill:var(--p3);opacity:.5"/>`;
   const symbols = () => `
-    <symbol id="peony" viewBox="-50 -50 100 100">${sunPetals(20, 14, 34, 7, "var(--p1)")}${sunPetals(20, 14, 25, 6.4, "var(--p2)", 9)}${disc(18, [.72, .46])}</symbol>
+    <symbol id="peony" viewBox="-50 -50 100 100">${sunPetals(20, 14, 34, 7, "var(--p1)")}${sunPetals(20, 14, 25, 6.4, "var(--p2)", 9)}${disc(18, [.6])}</symbol>
     <symbol id="rose" viewBox="-50 -50 100 100">${sunPetals(15, 12, 32, 8.5, "var(--p1)")}${sunPetals(15, 12, 22, 7.5, "var(--p2)", 12)}${disc(15, [.6])}</symbol>
     <symbol id="daisy" viewBox="-50 -50 100 100">${ring(12, -24, 6, 17, "var(--p1)")}<circle r="10" style="fill:#5a3412"/><circle r="6.5" style="fill:none;stroke:#c98a1a;stroke-width:1.6;stroke-dasharray:1.4 2"/></symbol>
     <symbol id="sunmono" viewBox="-50 -50 100 100">${sunPetals(24, 25, 22, 5.6, "var(--p1)")}${sunPetals(24, 25, 16, 5, "var(--p2)", 7.5)}<circle r="27" style="fill:var(--p4)"/><circle r="26" style="fill:none;stroke:var(--p3);stroke-width:1.8;stroke-dasharray:1.3 1.8"/><circle r="23.4" style="fill:none;stroke:var(--p3);stroke-width:1.4;stroke-dasharray:1 2;opacity:.6"/><circle r="20.5" style="fill:#fffaea"/><circle r="18.6" style="fill:none;stroke:#e9b64a;stroke-width:.6"/></symbol>
@@ -915,7 +922,7 @@ function paintWishes(fresh){
   $("#bn-bflies").innerHTML = flies([["30%", "70%", 200, -260, 20, 1.5, "#f5b417", "#ffe27a"], ["68%", "30%", -180, 160, 24, 3, "#ec8c12", "#ffd23f"]]);
   if (CONFIG.fotoBanner){ $("#bn-photo").innerHTML = `<div class="bn-bg" style="background-image:url('${encodeURI(CONFIG.fotoBanner)}')"></div><div class="bn-shade"></div>`; }
   petals($("#bn-petals"), 22);
-  petals($("#petals"), 12);
+  petals($("#petals"), LITE ? 7 : 12);
 
   // sambutan
   $("#salam .eyebrow").textContent = CONFIG.salamPembuka;
@@ -1010,6 +1017,7 @@ function show(id){
   scroller.scrollTop = 0;
   if (id === "main"){
     placeHeroText();
+    heroH = hero.offsetHeight;
     setTimeout(() => hero.classList.add("play"), reduceMotion ? 0 : 350);
     setTimeout(() => $("#dock").classList.add("on"), reduceMotion ? 0 : 4200);
   }
@@ -1029,11 +1037,11 @@ $("#open").addEventListener("click", openInvite);
 
 /* badai kelopak: menutupi layar, berganti halaman di puncaknya */
 function storm(onPeak){
-  const cv = $("#storm"), c = cv.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+  const cv = $("#storm"), c = cv.getContext("2d"), dpr = Math.min(LITE ? 1.5 : 2, devicePixelRatio || 1);
   const W = innerWidth, H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0);
   cv.classList.add("go"); SFX.whoosh();
   const cols = ["#ffd23f", "#f5b417", "#ffe27a", "#f8c53a", "#fff3c4", "#ec8c12", "#86ab55"];
-  const N = Math.round(Math.min(420, W * H / 2600));
+  const N = Math.round(Math.min(LITE ? 160 : 420, W * H / 2600));
   const P = Array.from({ length:N }, () => {
     const fromLeft = Math.random() < .55;
     return { x:fromLeft ? -60 - Math.random() * W * .4 : Math.random() * W, y:fromLeft ? H * (.2 + Math.random() * .9) : H + 40 + Math.random() * H * .3,
@@ -1052,7 +1060,10 @@ function storm(onPeak){
   })(t0);
 }
 
-/* parallax adegan pembuka */
+/* parallax adegan pembuka — lapisan digeser lewat transform (dikerjakan GPU) */
+const LAYERS = $$("#hero .ly").map(el => [el, parseFloat(el.style.getPropertyValue("--k")) || 0]).filter(([, k]) => k);
+let heroH = hero.offsetHeight;
+addEventListener("resize", () => { heroH = hero.offsetHeight; });
 let sTick = false;
 scroller.addEventListener("scroll", () => {
   if (sTick) return; sTick = true;
@@ -1060,8 +1071,8 @@ scroller.addEventListener("scroll", () => {
     sTick = false;
     if (!$("#main").classList.contains("on")) return;
     const y = scroller.scrollTop;
-    if (!reduceMotion && y < hero.offsetHeight + 80) hero.style.setProperty("--sy", Math.round(y));
     paintDock(y);
+    if (!reduceMotion && y < heroH + 80) for (const [el, k] of LAYERS) el.style.transform = `translate3d(0, ${(y * k).toFixed(1)}px, 0)`;
   });
 }, { passive:true });
 
@@ -1170,7 +1181,7 @@ addEventListener("keydown", e => { if (e.key === "Escape" && !ov.hidden) closeTh
 /* hujan kelopak untuk konfirmasi hadir */
 function petalRain(){
   if (reduceMotion) return;
-  const cv = $("#confetti"), c = cv.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+  const cv = $("#confetti"), c = cv.getContext("2d"), dpr = Math.min(LITE ? 1.5 : 2, devicePixelRatio || 1);
   const W = cv.clientWidth, H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0);
   const cols = ["#ffd23f", "#f5b417", "#ffe27a", "#f8c53a", "#ec8c12", "#a3c46e"];
   const P = Array.from({ length:90 }, () => ({ x:Math.random() * W, y:-20 - Math.random() * H * .6, vy:1.2 + Math.random() * 2.2, s:8 + Math.random() * 12, r:Math.random() * 6, vr:(Math.random() - .5) * .08, ph:Math.random() * 6, c:cols[Math.floor(Math.random() * cols.length)] }));

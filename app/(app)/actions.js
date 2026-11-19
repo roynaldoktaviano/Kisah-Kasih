@@ -179,13 +179,33 @@ export async function saveWaMessage(_prev, fd) {
   return { ok: "Template pesan disimpan." };
 }
 
+// Undangan privat: hanya tamu dengan link pribadi yang bisa membuka (pemilik & admin tetap bisa).
+export async function setPrivate(_prev, fd) {
+  const { inv } = await requireInvitation(fd.get("id"));
+  const on = fd.get("private") === "1";
+  await query("UPDATE invitations SET is_private = $1, updated_at = now() WHERE id = $2", [on, inv.id]);
+  revalidatePath(`/akun/undangan/${inv.id}`);
+  return { ok: on ? "Undangan sekarang privat." : "Undangan sekarang bisa dibuka siapa saja.", private: on };
+}
+
 export async function addGuests(_prev, fd) {
   const { inv } = await requireInvitation(fd.get("id"));
-  const rows = String(fd.get("guests") ?? "")
-    .split(/\r?\n/)
-    .map(parseGuestLine)
-    .filter(Boolean)
-    .slice(0, 1000);
+  let rows;
+  const names = fd.getAll("name");
+  if (names.length) {
+    // form baris: kolom nama + kolom nomor WhatsApp
+    const phones = fd.getAll("phone");
+    rows = names.map((n, i) => ({
+      name: String(n ?? "").trim().slice(0, 80),
+      phone: normalizePhone(String(phones[i] ?? "").trim().slice(0, 30)),
+    }));
+    const orphan = rows.find((r) => !r.name && r.phone);
+    if (orphan) return { error: `Nomor ${orphan.phone} belum ada nama tamunya.` };
+    rows = rows.filter((r) => r.name).slice(0, 1000);
+  } else {
+    // format lama: satu tamu per baris di textarea
+    rows = String(fd.get("guests") ?? "").split(/\r?\n/).map(parseGuestLine).filter(Boolean).slice(0, 1000);
+  }
   if (!rows.length) return { error: "Tulis minimal satu nama tamu." };
   for (const g of rows) {
     await query("INSERT INTO guests (invitation_id, name, phone, code) VALUES ($1, $2, $3, $4)", [inv.id, g.name, g.phone, randomCode()]);
