@@ -4,9 +4,10 @@ import { EVENTS, DESIGN_TABS as TABS, waLinkFor } from "../data";
 
 const eventName = (id) => EVENTS.find((e) => e.id === id)?.name ?? id;
 
-function Phone({ demo, name }) {
+function Phone({ demo, name, isNew }) {
   return (
     <div className="phone is-live">
+      {isNew && <span className="design-new">Baru</span>}
       <div className="phone-notch" />
       <div className="phone-screen">
         <iframe src={demo} title={`Preview ${name}`} loading="lazy" tabIndex={-1} aria-hidden="true" />
@@ -69,8 +70,11 @@ export default function Designs() {
       <div className="design-grid" key={`${type}-${event}`}>
         {list.map((d, i) => (
           <article className="design" key={d.name} style={{ animationDelay: `${i * 90}ms` }}>
-            <Phone demo={d.demo} name={d.name} />
-            <span className="design-event">{eventName(d.event)}</span>
+            <Phone demo={d.demo} name={d.name} isNew={d.isNew} />
+            <span className="design-event">
+              {eventName(d.event)}
+              {d.code && <span className="design-code"> · {d.code}</span>}
+            </span>
             <h3>{d.name}</h3>
             <ul className="tags">
               {d.tags.map((x) => (
@@ -82,7 +86,7 @@ export default function Designs() {
                 Lihat Demo
               </a>
               <a
-                href={waLinkFor(`Halo KISAHKASIH, saya tertarik dengan desain "${d.name}" (${tab.label}).`)}
+                href={waLinkFor(`Halo KISAHKASIH, saya tertarik dengan desain "${d.name}"${d.code ? ` (kode ${d.code})` : ""} (${tab.label}).`)}
                 className="btn btn-outline"
                 target="_blank"
                 rel="noreferrer"

@@ -437,6 +437,12 @@ html[data-intro="done"] .rise { animation: rise 1.1s var(--ease) both; animation
 }
 @keyframes pop { from { opacity: 0; transform: translateY(26px) scale(.96); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
 .design-event { font-size: .8rem; letter-spacing: .26em; text-transform: uppercase; color: var(--gold-deep); margin-top: 10px; }
+.design-code { letter-spacing: .18em; color: var(--muted); font-variant-numeric: lining-nums; }
+.design-new {
+  position: absolute; z-index: 3; top: -10px; right: -14px; padding: 5px 12px; border-radius: 100px;
+  background: var(--green); color: var(--ivory); font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+  box-shadow: 0 8px 18px -8px rgba(43, 37, 27, .55); transform: rotate(6deg);
+}
 .design h3 { font-weight: 400; font-style: italic; font-size: 1.9rem; margin-top: -4px; }
 .tags { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 18px; margin-bottom: 8px; }
 .tags li { font-size: 1rem; color: var(--muted); white-space: nowrap; }

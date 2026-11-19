@@ -47,6 +47,7 @@ export const EVENTS = [
 // =====================================================================
 //  KOLEKSI DESAIN
 //  Tambah desain: taruh file HTML di /public/templates lalu daftarkan di "items".
+//  code: kode desain (sama dengan video Reels, mis. WD005) · isNew: tampilkan badge "Baru".
 // =====================================================================
 export const DESIGN_TABS = [
   {
@@ -54,15 +55,16 @@ export const DESIGN_TABS = [
     label: "Simple Invitation",
     desc: "Satu halaman bersih dan elegan. Cepat dibuat, mudah dibagikan.",
     items: [
-      { name: "Taman Bunga", event: "wedding", demo: "/templates/taman-bunga.html", tags: ["Amplop interaktif", "Kelopak berjatuhan"] },
-      { name: "Boarding Pass", event: "wedding", demo: "/templates/boarding-pass.html", tags: ["Tiket check-in", "Papan keberangkatan"] },
+      // terbaru (kode sama dengan video Reels)
+      { name: "Kayu Manis", code: "WD005", isNew: true, event: "wedding", demo: "/templates/kayu-manis.html", tags: ["Mokka & cokelat", "Kalender berdetak", "Grup tamu"] },
+      { name: "Tinta Gading", code: "WD006", isNew: true, event: "wedding", demo: "/templates/tinta-gading.html", tags: ["Editorial hitam-gading", "Garis waktu", "Total black"] },
+      { name: "Taman Bunga", code: "WD003", event: "wedding", demo: "/templates/taman-bunga.html", tags: ["Amplop interaktif", "Kelopak berjatuhan"] },
+      { name: "Boarding Pass", code: "WD002", event: "wedding", demo: "/templates/boarding-pass.html", tags: ["Tiket check-in", "Papan keberangkatan"] },
       // tema LDR
       { name: "Satu Atap", event: "wedding", demo: "/templates/satu-atap.html", tags: ["Tema LDR", "Klasik ivory & emas", "Live streaming"] },
       { name: "Ikatan Janji", event: "engagement", demo: "/templates/ikatan-janji.html", tags: ["Tema LDR", "Dusty rose", "Live streaming"] },
       // koleksi elegan
-      { name: "Kayu Manis", event: "wedding", demo: "/templates/kayu-manis.html", tags: ["Mokka & cokelat", "Kalender berdetak", "Grup tamu"] },
       { name: "Rumah Bolon", event: "wedding", demo: "/templates/rumah-bolon.html", tags: ["Adat Batak", "Bingkai emas", "Ilustrasi bergerak"] },
-      { name: "Tinta Gading", event: "wedding", demo: "/templates/tinta-gading.html", tags: ["Editorial hitam-gading", "Garis waktu", "Total black"] },
       { name: "Taman Matahari", event: "wedding", demo: "/templates/taman-matahari.html", tags: ["Bunga matahari", "Amplop interaktif", "Tanpa foto pun cantik"] },
       // acara kantor
       { name: "Lembar Putih", event: "company", demo: "/templates/lembar-putih.html", tags: ["Minimalis hitam-putih", "Rapat & raker"] },
@@ -82,11 +84,11 @@ export const DESIGN_TABS = [
     label: "Interactive Invitation",
     desc: "Penuh pengalaman: animasi, musik, galeri, dan interaksi untuk tamu.",
     items: [
-      { name: "Taman Kecil", event: "wedding", demo: "/templates/taman-kecil.html", tags: ["Ilustrasi taman", "QR check-in"] },
-      { name: "Berkas Rahasia", event: "birthday", demo: "/templates/berkas-rahasia.html", tags: ["Tema detektif", "RSVP sidik jari"] },
+      { name: "Layar Perak", code: "WD007", isNew: true, event: "wedding", demo: "/templates/layar-perak.html", tags: ["Sinematik hitam-putih", "Hitung mundur film", "RSVP bertahap"] },
+      { name: "Taman Kecil", code: "WD004", event: "wedding", demo: "/templates/taman-kecil.html", tags: ["Ilustrasi taman", "QR check-in"] },
+      { name: "Berkas Rahasia", code: "BD001", event: "birthday", demo: "/templates/berkas-rahasia.html", tags: ["Tema detektif", "RSVP sidik jari"] },
       { name: "Buku Cerita", event: "wedding", demo: "/templates/buku-cerita.html", tags: ["Halaman dibalik", "Bab kisah cinta"] },
       { name: "Lapisan Senja", event: "wedding", demo: "/templates/lapisan-senja.html", tags: ["Diorama parallax", "Pagi hingga malam"] },
-      { name: "Layar Perak", event: "wedding", demo: "/templates/layar-perak.html", tags: ["Sinematik hitam-putih", "Hitung mundur film", "RSVP bertahap"] },
     ],
   },
 ];
