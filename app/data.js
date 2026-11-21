@@ -66,6 +66,8 @@ export const DESIGN_TABS = [
       // koleksi elegan
       { name: "Rumah Bolon", event: "wedding", demo: "/templates/rumah-bolon.html", tags: ["Adat Batak", "Bingkai emas", "Ilustrasi bergerak"] },
       { name: "Taman Matahari", event: "wedding", demo: "/templates/taman-matahari.html", tags: ["Bunga matahari", "Amplop interaktif", "Tanpa foto pun cantik"] },
+      // ulang tahun
+      { name: "Space Themes", code: "BD002", isNew: true, event: "birthday", demo: "/templates/space-themes.html", tags: ["Ulang tahun anak", "Ilustrasi cat air", "Animasi gulir"] },
       // acara kantor
       { name: "Lembar Putih", event: "company", demo: "/templates/lembar-putih.html", tags: ["Minimalis hitam-putih", "Rapat & raker"] },
       { name: "Navy Eksekutif", event: "company", demo: "/templates/navy-eksekutif.html", tags: ["Sampul terbelah", "Gala & penghargaan"] },
