@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { EVENTS, designCount } from "../data";
+import { srcSet } from "lib/img";
 
 // Section "Jenis Acara"
 // Desktop: daftar di kiri, foto besar di kanan berganti saat hover. Klik baris = lihat desainnya.
@@ -9,6 +10,9 @@ const MOBILE = "(max-width: 899px)";
 
 export default function Events() {
   const [active, setActive] = useState(EVENTS[0].id);
+  // foto di panel akordeon (HP) baru dimuat saat panelnya pernah dibuka
+  const [opened, setOpened] = useState(() => new Set([EVENTS[0].id]));
+  if (active && !opened.has(active)) setOpened(new Set(opened).add(active));
   const cur = EVENTS.find((e) => e.id === active);
   const curIndex = EVENTS.indexOf(cur);
 
@@ -60,7 +64,11 @@ export default function Events() {
                 <div className="evx-panel">
                   <div className="evx-panel-inner">
                     <div className="evx-thumb">
-                      {e.img ? <img src={e.img} alt="" loading="lazy" /> : <span>{e.name}</span>}
+                      {e.img ? (
+                        opened.has(e.id) && <img src={e.img} srcSet={srcSet(e.img)} sizes="90vw" alt={`Undangan digital ${e.name}`} loading="lazy" decoding="async" />
+                      ) : (
+                        <span>{e.name}</span>
+                      )}
                     </div>
                     <p>{e.desc}</p>
                     <a href="#design" className="evx-link" onClick={() => pick(e.id)}>
@@ -79,7 +87,7 @@ export default function Events() {
         <div className="evx-frame">
           {EVENTS.map((e) => (
             <div key={e.id} className={`evx-img ${e.img ? "" : "empty"} ${active === e.id ? "on" : ""}`}>
-              {e.img ? <img src={e.img} alt="" loading="lazy" /> : <span>{e.name}</span>}
+              {e.img ? <img src={e.img} srcSet={srcSet(e.img)} sizes="(max-width: 1200px) 50vw, 600px" alt={`Undangan digital ${e.name}`} loading="lazy" decoding="async" /> : <span>{e.name}</span>}
             </div>
           ))}
           {cur && (

@@ -1,17 +1,49 @@
 "use client";
 import { useEffect, useState } from "react";
-import { EVENTS, DESIGN_TABS as TABS, waLinkFor } from "../data";
+import { EVENTS, DESIGN_TABS as TABS, waLinkFor, demoPath } from "../data";
 
 const eventName = (id) => EVENTS.find((e) => e.id === id)?.name ?? id;
 
-function Phone({ demo, name, isNew }) {
+// Poster statis dulu (public/images/designs, dibuat scripts/design-posters.mjs);
+// undangan live (iframe) baru dimuat saat kartu diarahkan mouse / disentuh.
+// Dulu semua kartu langsung memuat undangan penuh → sangat berat, terutama di HP.
+const posterOf = (demo) => `/images/designs/${demo.split("/").pop().replace(/\.html$/, "")}.webp`;
+
+function Phone({ demo, name, event, isNew, live, onLive }) {
+  const [loaded, setLoaded] = useState(false);
   return (
-    <div className="phone is-live">
+    <div
+      className={`phone ${live ? "is-live" : "is-poster"}`}
+      onClick={onLive}
+      role={live ? undefined : "button"}
+      tabIndex={live ? -1 : 0}
+      aria-label={live ? undefined : `Putar pratinjau live ${name}`}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), onLive())}
+    >
       {isNew && <span className="design-new">Baru</span>}
       <div className="phone-notch" />
       <div className="phone-screen">
-        <iframe src={demo} title={`Preview ${name}`} loading="lazy" tabIndex={-1} aria-hidden="true" />
-        <span className="phone-live">Live</span>
+        <img
+          className="phone-poster"
+          src={posterOf(demo)}
+          alt={`Contoh undangan digital ${event} desain ${name}`}
+          loading="lazy"
+          decoding="async"
+          width={390}
+          height={820}
+          onError={onLive} // poster belum dibuat → langsung live
+        />
+        {live && (
+          <iframe
+            src={demo}
+            title={`Preview ${name}`}
+            tabIndex={-1}
+            aria-hidden="true"
+            className={loaded ? "on" : ""}
+            onLoad={() => setLoaded(true)}
+          />
+        )}
+        <span className="phone-live">{live ? (loaded ? "Live" : "Memuat…") : "▶ Live"}</span>
       </div>
     </div>
   );
@@ -20,6 +52,10 @@ function Phone({ demo, name, isNew }) {
 export default function Designs() {
   const [type, setType] = useState("simple");
   const [event, setEvent] = useState("all");
+  const [live, setLive] = useState(() => new Set()); // desain yang sedang tampil live
+  const goLive = (demo) => setLive((s) => (s.has(demo) ? s : new Set(s).add(demo)));
+  // perangkat dengan mouse: arahkan ke kartu = live. Layar sentuh: ketuk HP-nya.
+  const onHover = (demo) => () => window.matchMedia("(hover: hover) and (pointer: fine)").matches && goLive(demo);
 
   // dipicu dari kartu "Untuk setiap momen": pindah ke tab yang punya desain acara tsb
   useEffect(() => {
@@ -69,8 +105,13 @@ export default function Designs() {
 
       <div className="design-grid" key={`${type}-${event}`}>
         {list.map((d, i) => (
-          <article className="design" key={d.name} style={{ animationDelay: `${i * 90}ms` }}>
-            <Phone demo={d.demo} name={d.name} isNew={d.isNew} />
+          <article
+            className="design"
+            key={d.name}
+            style={{ animationDelay: `${Math.min(i, 6) * 90}ms` }}
+            onMouseEnter={onHover(d.demo)}
+          >
+            <Phone demo={d.demo} name={d.name} event={eventName(d.event)} isNew={d.isNew} live={live.has(d.demo)} onLive={() => goLive(d.demo)} />
             <span className="design-event">
               {eventName(d.event)}
               {d.code && <span className="design-code"> · {d.code}</span>}
@@ -82,14 +123,15 @@ export default function Designs() {
               ))}
             </ul>
             <div className="design-actions">
-              <a href={d.demo} className="btn btn-primary" target="_blank" rel="noreferrer">
+              <a href={demoPath(d.demo)} className="btn btn-primary" target="_blank" rel="noopener" aria-label={`Lihat demo undangan ${d.name}`}>
                 Lihat Demo
               </a>
               <a
                 href={waLinkFor(`Halo KISAHKASIH, saya tertarik dengan desain "${d.name}"${d.code ? ` (kode ${d.code})` : ""} (${tab.label}).`)}
                 className="btn btn-outline"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
+                aria-label={`Pilih desain ${d.name} — chat via WhatsApp`}
               >
                 Pilih Desain Ini
               </a>
@@ -107,7 +149,7 @@ export default function Designs() {
                 href={waLinkFor(`Halo KISAHKASIH, saya ingin desain undangan custom untuk ${eventName(event)}.`)}
                 className="btn btn-primary"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 Konsultasi Custom
               </a>

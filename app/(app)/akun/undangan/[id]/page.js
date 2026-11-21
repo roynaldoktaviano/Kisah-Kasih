@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import { requireInvitation } from "lib/auth";
 import { query, one } from "lib/db";
-import { getTemplate, loadTemplate, mergeConfig, upgradeConfig } from "lib/templates";
+import { getTemplate, loadTemplate, mergeConfig, upgradeConfig, invitationSummary } from "lib/templates";
+import { themeFor, themeVars, fontHref } from "lib/themes";
 import { fillMessage, guestLink, fmtDate } from "lib/util";
 import { waLinkFor } from "../../../../data";
 import { inviteBase, ROOT_DOMAIN } from "lib/site";
@@ -15,7 +16,8 @@ import LinkSettings from "../../../_components/LinkSettings";
 import GuestRowsForm from "../../../_components/GuestRowsForm";
 import PrivateToggle from "../../../_components/PrivateToggle";
 import { ActionForm, Submit, CopyButton, ConfirmSubmit } from "../../../_components/ui";
-import { saveWaMessage, addGuests, setPrivate, resetScanToken, undoCheckin } from "../../../actions";
+import { saveWaMessage, addGuests, setPrivate, resetScanToken, undoCheckin, saveCategorySettings } from "../../../actions";
+import { catLabels, categoryLabel, eventPreview, attendsAkad, attendsResepsi } from "lib/categories";
 
 export const dynamic = "force-dynamic";
 
@@ -38,12 +40,18 @@ export default async function InvitationPage({ params, searchParams }) {
   // undangan privat: pratinjau lewat domain dashboard (cookie login ikut) — subdomain tidak membawa cookie login
   const previewUrl = inv.is_private ? `/${inv.slug}` : url;
   // satu query (bukan dua berurutan) — tiap round-trip ke DB terasa saat pindah tab
-  const meta = await one(
-    `SELECT (SELECT count(*)::int FROM rsvps WHERE invitation_id = $1) AS rsvp_count,
-            (SELECT count(*)::int FROM guests WHERE invitation_id = $1 AND checked_in_at IS NOT NULL) AS hadir_count,
-            (SELECT name FROM users WHERE id = $2) AS owner_name`,
-    [inv.id, inv.user_id]
-  );
+  const [meta, sum] = await Promise.all([
+    one(
+      `SELECT (SELECT count(*)::int FROM rsvps WHERE invitation_id = $1) AS rsvp_count,
+              (SELECT count(*)::int FROM guests WHERE invitation_id = $1 AND checked_in_at IS NOT NULL) AS hadir_count,
+              (SELECT name FROM users WHERE id = $2) AS owner_name`,
+      [inv.id, inv.user_id]
+    ),
+    invitationSummary(inv),
+  ]);
+  // dashboard mengikuti desain undangan yang dipilih (warna, font judul, foto)
+  const theme = themeFor(inv.template);
+  const fonts = fontHref(theme);
   const rsvpCount = meta.rsvp_count;
   const owner = user.role === "admin" ? { id: inv.user_id, name: meta.owner_name } : null;
 
@@ -53,19 +61,33 @@ export default async function InvitationPage({ params, searchParams }) {
 
   return (
     <Shell user={user} crumbs={crumbs}>
-      <div className="page-head">
-        <div>
-          <p className="eyebrow-sm">{t ? `${t.name} · ${t.type}` : inv.template}</p>
-          <h1>{inv.title}</h1>
+      {fonts && <link rel="stylesheet" href={fonts} precedence="default" />}
+      <div className="themed" style={themeVars(theme)}>
+      <section className={`inv-hero${sum.photo ? " has-photo" : ""}`}>
+        {sum.photo && <img className="inv-hero-bg" src={sum.photo} alt="" decoding="async" />}
+        <div className="inv-hero-in">
+          <p className="inv-hero-eyebrow">{sum.eyebrow}</p>
+          <h1 className="inv-hero-names">{sum.names}</h1>
+          {(sum.date || sum.place) && (
+            <p className="inv-hero-meta">
+              {sum.date && <span>{sum.date}</span>}
+              {sum.date && sum.place && <i aria-hidden="true">·</i>}
+              {sum.place && <span>{sum.place}</span>}
+            </p>
+          )}
           <p className="link-line">
             <a href={url} target="_blank" rel="noreferrer">{base.label(inv.slug)}</a>
-            <CopyButton text={url}>Salin link</CopyButton>
+            <CopyButton text={url} className="btn-mini on-dark">Salin link</CopyButton>
             {inv.is_private && <span className="tag private-tag">🔒 Privat</span>}
             {!inv.active && <span className="tag no">Nonaktif — hubungi admin</span>}
           </p>
         </div>
-        <a href={previewUrl} target="_blank" rel="noreferrer" className="btn btn-outline">Buka undangan ↗</a>
-      </div>
+        <div className="inv-hero-side">
+          {sum.daysLeft !== null && <Countdown days={sum.daysLeft} />}
+          <a href={previewUrl} target="_blank" rel="noreferrer" className="btn inv-hero-open">Buka undangan ↗</a>
+          <small>{t ? `Desain ${t.name}` : inv.template}</small>
+        </div>
+      </section>
 
       <TabProvider current={tab}>
         <TabNav tabs={TABS} counts={{ rsvp: rsvpCount, bukutamu: meta.hadir_count }} />
@@ -81,8 +103,21 @@ export default async function InvitationPage({ params, searchParams }) {
           </Suspense>
         </TabPanel>
       </TabProvider>
+      </div>
     </Shell>
   );
+}
+
+// Hitung mundur menuju hari H
+function Countdown({ days }) {
+  if (days > 0)
+    return (
+      <span className="inv-count">
+        <b>{days}</b>
+        <small>hari lagi</small>
+      </span>
+    );
+  return <span className="inv-count today"><small>{days === 0 ? "Hari ini hari H! 🎉" : "Acara sudah berlangsung"}</small></span>;
 }
 
 // ---------------------------------------------------------------- tab: data
@@ -115,8 +150,9 @@ function LinkTab({ inv, base }) {
 async function GuestsTab({ inv, url }) {
   const [guests, rsvps] = await Promise.all([
     query("SELECT * FROM guests WHERE invitation_id = $1 AND NOT walk_in ORDER BY created_at, id", [inv.id]),
-    query("SELECT guest_id, guest_name, attending, pax FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at", [inv.id]),
+    query("SELECT guest_id, guest_name, attending, pax, sesi FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at", [inv.id]),
   ]);
+  const labels = inv.guest_categories ? catLabels(inv) : null;
   // RSVP dari link pribadi terhubung lewat guest_id; RSVP lama/link umum dicocokkan lewat nama
   const byId = new Map(rsvps.filter((r) => r.guest_id).map((r) => [r.guest_id, r]));
   const byName = new Map(rsvps.map((r) => [r.guest_name.trim().toLowerCase(), r]));
@@ -128,6 +164,7 @@ async function GuestsTab({ inv, url }) {
       id: g.id,
       name: g.name,
       phone: g.phone,
+      category: g.category,
       sent_at: g.sent_at ? String(g.sent_at) : null,
       link,
       waUrl: `https://wa.me/${g.phone}?text=${encodeURIComponent(text)}`,
@@ -139,14 +176,18 @@ async function GuestsTab({ inv, url }) {
 
   return (
     <>
-      <section className="card">
-        <PrivateToggle action={setPrivate} invId={inv.id} initial={!!inv.is_private} guestCount={guests.length} />
-      </section>
+      {inv.allow_private && (
+        <section className="card">
+          <PrivateToggle action={setPrivate} invId={inv.id} initial={!!inv.is_private} guestCount={guests.length} />
+        </section>
+      )}
+
+      {labels && <CategoryCard inv={inv} labels={labels} guests={guests} />}
 
       <div className="grid-2">
         <section className="card">
           <h2>Tambah tamu</h2>
-          <GuestRowsForm action={addGuests} invId={inv.id} />
+          <GuestRowsForm action={addGuests} invId={inv.id} labels={labels} />
         </section>
 
         <section className="card">
@@ -171,22 +212,87 @@ async function GuestsTab({ inv, url }) {
           <h2>Daftar tamu ({guests.length})</h2>
           {guests.length > 0 && <a className="btn-mini" href={`/akun/undangan/${inv.id}/export?type=tamu`}>Unduh CSV</a>}
         </div>
-        <GuestTable invId={inv.id} guests={rows} />
+        <GuestTable invId={inv.id} guests={rows} labels={labels} />
       </section>
     </>
+  );
+}
+
+// Kategori tamu (fitur dari admin): nama kedua acara, kategori link umum, & acara yang tampil per kategori.
+async function CategoryCard({ inv, labels, guests }) {
+  const t = await loadTemplate(inv.template);
+  const config = upgradeConfig(mergeConfig(t.defaults, inv.config || {}), t.defaults);
+  const events = eventPreview(config, labels);
+  const count = (c) => guests.filter((g) => (g.category || "all") === c).length;
+  const shown = (cat) => events.filter((e) => e.who === "all" || e.who === cat || cat === "all").map((e) => e.name);
+  const onlyBoth = events.length > 0 && !events.some((e) => e.who !== "all");
+
+  return (
+    <section className="card">
+      <div className="card-head">
+        <div>
+          <h2>Kategori tamu</h2>
+          <p className="muted small">
+            Tetap satu link undangan. Tiap tamu diberi kategori di daftar tamu — link pribadinya hanya menampilkan acara sesuai kategorinya.
+            Tamu <b>{labels.all}</b> bisa memilih di RSVP: hadir keduanya, {labels.akad} saja, atau {labels.resepsi} saja.
+          </p>
+        </div>
+      </div>
+      <div className="grid-2 cat-grid">
+        <ActionForm action={saveCategorySettings} className="stack">
+          <input type="hidden" name="id" value={inv.id} />
+          <div className="cat-names">
+            <label className="field"><span>Nama acara 1</span><input name="label_akad" defaultValue={labels.akad} maxLength={40} placeholder="Akad" /></label>
+            <label className="field"><span>Nama acara 2</span><input name="label_resepsi" defaultValue={labels.resepsi} maxLength={40} placeholder="Resepsi" /></label>
+          </div>
+          <label className="field">
+            <span>Yang membuka link umum (tanpa link pribadi)</span>
+            <select name="public_category" defaultValue={inv.public_category || "all"}>
+              {["all", "akad", "resepsi"].map((c) => <option key={c} value={c}>{categoryLabel(c, labels)}</option>)}
+            </select>
+            <small>{inv.is_private ? "Undangan sedang privat — link umum tidak bisa dibuka, pengaturan ini berlaku saat undangan publik." : "Mis. pilih resepsi saja bila akad hanya untuk keluarga dekat."}</small>
+          </label>
+          <Submit>Simpan pengaturan</Submit>
+        </ActionForm>
+
+        <div className="cat-preview">
+          <p className="field-label">Acara yang tampil per kategori</p>
+          {events.length === 0 ? (
+            <p className="muted small">Template ini tidak punya daftar acara terpisah — semua tamu melihat acara yang sama, kategori dipakai untuk RSVP & rekap.</p>
+          ) : (
+            <ul>
+              {["all", "akad", "resepsi"].map((c) => (
+                <li key={c}>
+                  <b>{categoryLabel(c, labels)}</b> <span className="tag">{count(c)} tamu</span>
+                  <small>{shown(c).join(" · ") || "—"}</small>
+                </li>
+              ))}
+            </ul>
+          )}
+          {onlyBoth && (
+            <p className="note warn">
+              Belum ada acara yang dikenali sebagai &ldquo;{labels.akad}&rdquo; atau &ldquo;{labels.resepsi}&rdquo;. Pastikan nama acara di Data Undangan memuat kata tersebut, mis. &ldquo;{labels.akad} Nikah&rdquo; dan &ldquo;{labels.resepsi}&rdquo;.
+            </p>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
 // ---------------------------------------------------------------- tab: rsvp
 async function RsvpTab({ inv }) {
   const [rows, [{ n: invited }]] = await Promise.all([
-    query("SELECT id, guest_name, attending, pax, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]),
+    query("SELECT id, guest_name, attending, pax, sesi, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]),
     query("SELECT count(*)::int AS n FROM guests WHERE invitation_id = $1 AND NOT walk_in", [inv.id]),
   ]);
   const rsvps = rows.map((r) => ({ ...r, updated_at: new Date(r.updated_at).toISOString() }));
   const hadir = rsvps.filter((r) => r.attending);
   const pax = hadir.reduce((n, r) => n + r.pax, 0);
   const rsvpOff = inv.config?.tampilRsvp === false;
+  const labels = inv.guest_categories ? catLabels(inv) : null;
+  // RSVP lama (sebelum kategori aktif) dihitung hadir di kedua acara
+  const paxAt = (fn) => hadir.filter((r) => fn(r.sesi || "both")).reduce((n, r) => n + r.pax, 0);
 
   return (
     <>
@@ -204,7 +310,14 @@ async function RsvpTab({ inv }) {
           <small>dari {hadir.length} konfirmasi hadir</small>
         </div>
         <div><span>Konfirmasi masuk</span><b>{rsvps.length}</b>{invited > 0 && <small>dari {invited} tamu diundang</small>}</div>
-        <div><span>Hadir</span><b>{hadir.length}</b></div>
+        {labels ? (
+          <>
+            <div><span>Hadir {labels.akad}</span><b>{paxAt(attendsAkad)}</b><small>orang</small></div>
+            <div><span>Hadir {labels.resepsi}</span><b>{paxAt(attendsResepsi)}</b><small>orang</small></div>
+          </>
+        ) : (
+          <div><span>Hadir</span><b>{hadir.length}</b></div>
+        )}
         <div><span>Berhalangan</span><b>{rsvps.length - hadir.length}</b></div>
       </div>
 
@@ -216,7 +329,7 @@ async function RsvpTab({ inv }) {
           </div>
           {rsvps.length > 0 && <a className="btn-mini" href={`/akun/undangan/${inv.id}/export?type=rsvp`}>Unduh CSV</a>}
         </div>
-        <RsvpBoard invId={inv.id} rsvps={rsvps} />
+        <RsvpBoard invId={inv.id} rsvps={rsvps} labels={labels} />
       </section>
     </>
   );

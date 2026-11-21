@@ -1,4 +1,5 @@
 import { one, query } from "lib/db";
+import { catLabels, categoryLabel } from "lib/categories";
 
 // API halaman penerima tamu (/bukutamu/<token>). Tanpa login: token di link = izin akses.
 // Semua aksi aman diulang (idempoten), karena HP penerima tamu mengantre aksi saat
@@ -11,11 +12,16 @@ const fail = (error, status) => Response.json({ ok: false, error }, { status });
 async function invitationFor(token) {
   token = String(token || "");
   if (token.length < 10) return null;
-  return one("SELECT id, title, guestbook, active FROM invitations WHERE scan_token = $1", [token]);
+  return one(
+    "SELECT id, title, guestbook, active, guest_categories, label_akad, label_resepsi FROM invitations WHERE scan_token = $1",
+    [token]
+  );
 }
 
-const guestRow = (g) => ({
+// L: label kategori bila kategori tamu aktif → penerima tamu tahu tamu diundang ke acara mana
+const guestRow = (g, L) => ({
   code: g.code,
+  cat: L && !g.walk_in ? categoryLabel(g.category, L) : "",
   name: g.name,
   // 4 digit terakhir nomor WA — pembeda tamu dengan nama sama
   hint: g.phone ? g.phone.slice(-4) : "",
@@ -26,7 +32,7 @@ const guestRow = (g) => ({
 });
 
 const GUESTS_SQL = `
-  SELECT g.code, g.name, g.phone, g.walk_in, g.checked_in_at, g.checkin_pax,
+  SELECT g.code, g.name, g.phone, g.category, g.walk_in, g.checked_in_at, g.checkin_pax,
          (SELECT r.pax FROM rsvps r
            WHERE r.invitation_id = g.invitation_id AND r.attending
              AND (r.guest_id = g.id OR (r.guest_id IS NULL AND lower(trim(r.guest_name)) = lower(trim(g.name))))
@@ -42,7 +48,7 @@ export async function GET(_req, { params }) {
 
   const guests = await query(`${GUESTS_SQL} ORDER BY g.name`, [inv.id]);
   return Response.json(
-    { ok: true, title: inv.title, guests: guests.map(guestRow), now: new Date().toISOString() },
+    { ok: true, title: inv.title, guests: guests.map((g) => guestRow(g, inv.guest_categories ? catLabels(inv) : null)), now: new Date().toISOString() },
     { headers: { "Cache-Control": "no-store" } }
   );
 }

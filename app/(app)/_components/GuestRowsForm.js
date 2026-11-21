@@ -4,33 +4,38 @@
 // Tempel daftar dari Excel / Google Sheets ke kolom nama → otomatis dipecah jadi beberapa baris.
 // Aksi dipanggil langsung (bukan <form action>) supaya React tidak me-reset isian saat ada error.
 import { useEffect, useRef, useState, useTransition } from "react";
+import { categoryLabel } from "lib/categories";
 
 let seq = 0;
-const blank = () => ({ id: ++seq, name: "", phone: "" });
-const freshRows = () => [blank(), blank(), blank()];
+const blank = (category = "all") => ({ id: ++seq, name: "", phone: "", category });
+const freshRows = (category) => [blank(category), blank(category), blank(category)];
 
 // "Budi Santoso, 0812 3456 7890" · "Budi<TAB>0812…" · "Budi - 0812…" · "Budi"
-function parseLines(text) {
+function parseLines(text, category) {
   return text
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean)
     .map((l) => {
       const m = l.match(/^(.*?)\s*[,;\t|]\s*([+\d][\d\s\-().]{6,})\s*$/) || l.match(/^(.*?)\s+-\s+([+\d][\d\s\-().]{6,})\s*$/);
-      return { id: ++seq, name: (m ? m[1] : l).trim().slice(0, 80), phone: m ? m[2].trim() : "" };
+      return { id: ++seq, name: (m ? m[1] : l).trim().slice(0, 80), phone: m ? m[2].trim() : "", category };
     })
     .filter((r) => r.name);
 }
 
-export default function GuestRowsForm({ action, invId }) {
+// labels: { akad, resepsi, all } bila kategori tamu aktif, null bila tidak
+export default function GuestRowsForm({ action, invId, labels = null }) {
   const [state, setState] = useState(null);
   const [pending, startTransition] = useTransition();
-  const [rows, setRows] = useState(freshRows);
+  // kategori untuk baris baru & hasil tempelan — tiap baris tetap bisa diganti sendiri
+  const [defCat, setDefCat] = useState("all");
+  const [rows, setRows] = useState(() => freshRows("all"));
   const listRef = useRef(null);
   const focusRow = useRef(null); // id baris yang perlu difokus setelah render
 
   useEffect(() => {
-    if (state?.reset) setRows(freshRows());
+    if (state?.reset) setRows(freshRows(defCat));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   useEffect(() => {
@@ -41,23 +46,28 @@ export default function GuestRowsForm({ action, invId }) {
 
   const set = (id, key, value) => setRows((rs) => rs.map((r) => (r.id === id ? { ...r, [key]: value } : r)));
   const addRow = () => {
-    const r = blank();
+    const r = blank(defCat);
     focusRow.current = r.id;
     setRows((rs) => [...rs, r]);
   };
-  const removeRow = (id) => setRows((rs) => (rs.length > 1 ? rs.filter((r) => r.id !== id) : [blank()]));
+  const removeRow = (id) => setRows((rs) => (rs.length > 1 ? rs.filter((r) => r.id !== id) : [blank(defCat)]));
+  // ganti kategori bawaan → baris yang masih kosong ikut berganti
+  const changeDefault = (c) => {
+    setDefCat(c);
+    setRows((rs) => rs.map((r) => (r.name || r.phone ? r : { ...r, category: c })));
+  };
 
   // tempel banyak baris sekaligus → ganti baris ini dengan hasil tempelan
   const onPaste = (id) => (e) => {
     const text = e.clipboardData.getData("text");
     if (!/[\r\n\t]/.test(text.trim())) return;
-    const parsed = parseLines(text);
+    const parsed = parseLines(text, defCat);
     if (!parsed.length) return;
     e.preventDefault();
     setRows((rs) => {
       const i = rs.findIndex((r) => r.id === id);
       const after = rs.slice(i + 1).filter((r) => r.name || r.phone);
-      return [...rs.slice(0, i), ...parsed, ...after, blank()];
+      return [...rs.slice(0, i), ...parsed, ...after, blank(defCat)];
     });
   };
 
@@ -82,10 +92,23 @@ export default function GuestRowsForm({ action, invId }) {
       }}
     >
       <input type="hidden" name="id" value={invId} />
-      <div className="guest-rows" ref={listRef}>
+      {labels && (
+        <div className="cat-default">
+          <span>Kategori tamu baru</span>
+          <div className="chips-sm" role="group" aria-label="Kategori tamu baru">
+            {["all", "akad", "resepsi"].map((c) => (
+              <button key={c} type="button" className={defCat === c ? "on" : ""} aria-pressed={defCat === c} onClick={() => changeDefault(c)}>
+                {categoryLabel(c, labels)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className={`guest-rows${labels ? " with-cat" : ""}`} ref={listRef}>
         <div className="guest-row guest-row-head" aria-hidden="true">
           <span>Nama tamu</span>
           <span>Nomor WhatsApp <em>(opsional)</em></span>
+          {labels && <span>Kategori</span>}
           <span />
         </div>
         {rows.map((r, i) => (
@@ -112,6 +135,14 @@ export default function GuestRowsForm({ action, invId }) {
               maxLength={30}
               autoComplete="off"
             />
+            {labels && (
+              <select name="category" value={r.category} onChange={(e) => set(r.id, "category", e.target.value)} aria-label={`Kategori baris ${i + 1}`}>
+                {/* label pendek supaya muat di kolom sempit */}
+                <option value="all">Keduanya</option>
+                <option value="akad">{labels.akad}</option>
+                <option value="resepsi">{labels.resepsi}</option>
+              </select>
+            )}
             <button type="button" className="guest-row-x" onClick={() => removeRow(r.id)} aria-label={`Hapus baris ${i + 1}`} title="Hapus baris">
               ×
             </button>

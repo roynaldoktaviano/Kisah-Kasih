@@ -98,3 +98,7 @@ export const DESIGN_TABS = [
 // jumlah desain per jenis acara (dipakai di section Jenis Acara)
 export const designCount = (eventId) =>
   DESIGN_TABS.reduce((n, t) => n + t.items.filter((d) => d.event === eventId).length, 0);
+
+// Halaman demo yang ramah SEO (judul, deskripsi, canonical sendiri): /demo/<nama-file>.
+// File mentah /templates/<nama>.html tetap dipakai untuk pratinjau di kartu & dashboard.
+export const demoPath = (demo) => `/demo/${demo.split("/").pop().replace(/\.html$/, "")}`;

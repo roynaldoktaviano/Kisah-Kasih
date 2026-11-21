@@ -49,7 +49,7 @@ export default function Intro() {
         </svg>
         <p className="intro-eyebrow">Undangan Digital</p>
         <div className="intro-logo-wrap">
-          <img src="/logo-gold.png" alt="" className="intro-logo" />
+          <img src="/logo-gold.png" alt="" className="intro-logo" width={912} height={128} />
           <span className="intro-glint" />
         </div>
         <span className="intro-line" />

@@ -168,16 +168,14 @@ export function InvitationPageSkeleton() {
       </header>
       <main className="dash-main">
         <Sk w={220} h={11} style={{ marginBottom: 22 }} />
-        <div className="page-head">
+        {/* bentuk sama dengan banner undangan (nama pasangan + hitung mundur) */}
+        <div className="inv-hero sk-hero" aria-hidden="true">
           <div className="sk-title">
-            <Sk w={120} h={10} />
-            <Sk w="min(320px, 80vw)" h={30} r={8} />
-            <div className="sk-inline">
-              <Sk w={170} h={12} />
-              <Sk w={84} h={30} r={8} />
-            </div>
+            <Sk w={130} h={10} />
+            <Sk w="min(340px, 70vw)" h={38} r={8} />
+            <Sk w={200} h={12} />
           </div>
-          <Sk w={160} h={42} r={10} className="sk-btn" />
+          <Sk w={150} h={42} r={10} />
         </div>
         <div className="tabs-dash sk-tabs">
           {[110, 96, 132, 116, 90].map((w, i) => (

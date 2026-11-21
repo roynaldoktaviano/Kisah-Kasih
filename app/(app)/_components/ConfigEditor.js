@@ -130,7 +130,13 @@ async function shrink(file) {
   canvas.width = Math.round(img.width * scale);
   canvas.height = Math.round(img.height * scale);
   canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-  return new Promise((r) => canvas.toBlob((b) => r(new File([b], "foto.jpg", { type: "image/jpeg" })), "image/jpeg", 0.85));
+  const encode = (type, q) => new Promise((r) => canvas.toBlob(r, type, q));
+  // WebP ±40% lebih kecil dari JPEG dengan mutu setara (undangan lebih cepat terbuka di HP tamu).
+  // Browser yang belum bisa membuat WebP mengembalikan PNG → pakai JPEG.
+  const webp = await encode("image/webp", 0.8);
+  if (webp && webp.type === "image/webp") return new File([webp], "foto.webp", { type: "image/webp" });
+  const jpg = await encode("image/jpeg", 0.82);
+  return new File([jpg], "foto.jpg", { type: "image/jpeg" });
 }
 
 function ImageInput({ value, onChange, invId }) {

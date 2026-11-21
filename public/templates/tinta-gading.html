@@ -631,7 +631,7 @@ $("#marq").innerHTML = marqItem.repeat(6);
 const MAIN = CONFIG.fotoUtama;
 $("#hero-bg").innerHTML = img(MAIN, COUPLE, false);
 $("#hero-bg").classList.add("bw");
-$("#side-bg").innerHTML = img(CONFIG.fotoBanner || MAIN, "", false);
+$("#side-bg").innerHTML = img(CONFIG.fotoBanner || MAIN, "");
 $("#side-bg").classList.add("bw");
 $("#close-bg").innerHTML = img(CONFIG.fotoPenutup || MAIN, COUPLE);
 if (CONFIG.fotoLokasi) { $("#loc-ph").innerHTML = img(CONFIG.fotoLokasi, ""); $("#loc-ph").classList.add("bw"); } else $("#loc-ph").hidden = true;

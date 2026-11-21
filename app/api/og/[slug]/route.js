@@ -10,6 +10,7 @@ import { createElement as h } from "react";
 import { ImageResponse } from "next/og";
 import { one } from "lib/db";
 import { loadTemplate, mergeConfig, upgradeConfig, eventInfo, cardText } from "lib/templates";
+import { catLabels, categoryFor, filterEvents } from "lib/categories";
 
 export const runtime = "nodejs";
 
@@ -133,12 +134,13 @@ export async function GET(req, { params }) {
   if (!inv || !inv.active) return new Response("Not found", { status: 404 });
 
   const code = String(req.nextUrl.searchParams.get("k") || "").trim().toLowerCase().slice(0, 32);
-  const guest = code ? await one("SELECT name FROM guests WHERE invitation_id = $1 AND code = $2", [inv.id, code]) : null;
+  const guest = code ? await one("SELECT name, category FROM guests WHERE invitation_id = $1 AND code = $2", [inv.id, code]) : null;
   // undangan privat: kartu hanya dibuat untuk link pribadi tamu
   if (inv.is_private && !guest) return new Response("Not found", { status: 404 });
 
   const t = await loadTemplate(inv.template);
-  const config = upgradeConfig(mergeConfig(t.defaults, inv.config || {}), t.defaults);
+  // tanggal & tempat di kartu mengikuti acara yang tampil untuk kategori tamu
+  const config = filterEvents(upgradeConfig(mergeConfig(t.defaults, inv.config || {}), t.defaults), categoryFor(inv, guest), catLabels(inv));
   const { eyebrow, main } = cardText(inv, config);
   const { date, place } = eventInfo(config);
   const guestName = guest ? String(guest.name).trim().slice(0, 40) : "";

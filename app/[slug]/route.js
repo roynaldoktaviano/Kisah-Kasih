@@ -1,6 +1,7 @@
 import { one, query } from "lib/db";
 import { renderInvitation } from "lib/templates";
 import { currentUser } from "lib/auth";
+import { inviteBase } from "lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,7 @@ export async function GET(req, { params }) {
         WHERE invitation_id = $1 AND message <> '' ORDER BY updated_at DESC LIMIT 30`,
       [inv.id]
     ),
-    code ? one("SELECT name, code FROM guests WHERE invitation_id = $1 AND code = $2", [inv.id, code]) : null,
+    code ? one("SELECT name, code, category FROM guests WHERE invitation_id = $1 AND code = $2", [inv.id, code]) : null,
   ]);
   // privat: hanya tamu dengan link pribadi yang valid — pemilik & admin yang login tetap bisa melihat
   if (inv.is_private && !guest) {
@@ -55,8 +56,12 @@ export async function GET(req, { params }) {
   if (guest) og.set("k", guest.code);
   const ogImage = `${proto}://${host}/api/og/${encodeURIComponent(inv.slug)}?${og}`;
 
-  const html = await renderInvitation(inv, wishes, guest, { ogImage });
+  // canonical = link umum undangan (tanpa ?k=), supaya link pribadi tidak dianggap halaman lain
+  const canonical = (await inviteBase()).url(inv.slug);
+  const html = await renderInvitation(inv, wishes, guest, { ogImage, canonical });
   const headers = new Headers({ "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+  // link pribadi memuat nama tamu di judul → jangan diindeks mesin pencari
+  if (guest && !inv.is_private) headers.set("X-Robots-Tag", "noindex, follow");
   if (inv.is_private) {
     headers.set("X-Robots-Tag", "noindex, nofollow");
     if (guest && fromUrl) {

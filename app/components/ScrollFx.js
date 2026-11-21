@@ -22,9 +22,19 @@ export default function ScrollFx() {
       }
     };
 
-    // Tanpa smooth scroll untuk pengguna reduce-motion: cukup scroll native
-    if (reduce) {
-      const onScroll = () => update();
+    // Layar sentuh (HP/tablet) & reduce-motion: scroll native — lebih ringan & terasa alami di HP.
+    // Smooth scroll Lenis menjalankan loop animasi tiap frame, jadi hanya dipakai untuk mouse.
+    const touch = !window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (reduce || touch) {
+      let queued = false;
+      const onScroll = () => {
+        if (queued) return; // paling banyak sekali per frame
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          update();
+        });
+      };
       update();
       window.addEventListener("scroll", onScroll, { passive: true });
       return () => window.removeEventListener("scroll", onScroll);

@@ -1,5 +1,6 @@
 import { currentUser } from "lib/auth";
 import { query, one } from "lib/db";
+import { catLabels, categoryLabel, sesiLabel } from "lib/categories";
 
 const cell = (v) => {
   const s = String(v ?? "");
@@ -20,32 +21,53 @@ export async function GET(req, { params }) {
 
   const t = new URL(req.url).searchParams.get("type");
   const type = t === "tamu" || t === "hadir" ? t : "rsvp";
+  // kategori tamu aktif → kolom tambahan Kategori / Acara
+  const L = inv.guest_categories ? catLabels(inv) : null;
+  const withCat = (head, cell) => (L ? [...head, cell] : head);
   let body;
   if (type === "tamu") {
     const rows = await query(
-      "SELECT name, phone, sent_at, created_at, checked_in_at, checkin_pax FROM guests WHERE invitation_id = $1 AND NOT walk_in ORDER BY created_at, id",
+      "SELECT name, phone, category, sent_at, created_at, checked_in_at, checkin_pax FROM guests WHERE invitation_id = $1 AND NOT walk_in ORDER BY created_at, id",
       [inv.id]
     );
     body = csv([
-      ["Nama", "Nomor WA", "Dikirim", "Ditambahkan", "Check-in", "Jumlah orang hadir"],
-      ...rows.map((g) => [g.name, g.phone, date(g.sent_at), date(g.created_at), date(g.checked_in_at), g.checked_in_at ? g.checkin_pax : ""]),
+      withCat(["Nama", "Nomor WA", "Dikirim", "Ditambahkan", "Check-in", "Jumlah orang hadir"], "Kategori"),
+      ...rows.map((g) =>
+        withCat(
+          [g.name, g.phone, date(g.sent_at), date(g.created_at), date(g.checked_in_at), g.checked_in_at ? g.checkin_pax : ""],
+          L && categoryLabel(g.category, L)
+        )
+      ),
     ]);
   } else if (type === "hadir") {
     // buku tamu: semua tamu (terdaftar & tidak), yang hadir di atas
     const rows = await query(
-      "SELECT name, phone, walk_in, checked_in_at, checkin_pax FROM guests WHERE invitation_id = $1 ORDER BY checked_in_at NULLS LAST, name",
+      "SELECT name, phone, category, walk_in, checked_in_at, checkin_pax FROM guests WHERE invitation_id = $1 ORDER BY checked_in_at NULLS LAST, name",
       [inv.id]
     );
     body = csv([
-      ["Nama", "Nomor WA", "Status", "Waktu check-in", "Jumlah orang", "Keterangan"],
-      ...rows.map((g) => [
-        g.name, g.phone, g.checked_in_at ? "Hadir" : "Tidak hadir", date(g.checked_in_at), g.checked_in_at ? g.checkin_pax : "",
-        g.walk_in ? "Tidak terdaftar (ditambahkan di lokasi)" : "",
-      ]),
+      withCat(["Nama", "Nomor WA", "Status", "Waktu check-in", "Jumlah orang", "Keterangan"], "Kategori"),
+      ...rows.map((g) =>
+        withCat(
+          [
+            g.name, g.phone, g.checked_in_at ? "Hadir" : "Tidak hadir", date(g.checked_in_at), g.checked_in_at ? g.checkin_pax : "",
+            g.walk_in ? "Tidak terdaftar (ditambahkan di lokasi)" : "",
+          ],
+          L && (g.walk_in ? "" : categoryLabel(g.category, L))
+        )
+      ),
     ]);
   } else {
-    const rows = await query("SELECT guest_name, attending, pax, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]);
-    body = csv([["Nama", "Kehadiran", "Jumlah orang", "Ucapan", "Waktu"], ...rows.map((r) => [r.guest_name, r.attending ? "Hadir" : "Berhalangan", r.pax, r.message, date(r.updated_at)])]);
+    const rows = await query("SELECT guest_name, attending, pax, sesi, message, updated_at FROM rsvps WHERE invitation_id = $1 ORDER BY updated_at DESC", [inv.id]);
+    body = csv([
+      withCat(["Nama", "Kehadiran", "Jumlah orang", "Ucapan", "Waktu"], "Acara"),
+      ...rows.map((r) =>
+        withCat(
+          [r.guest_name, r.attending ? "Hadir" : "Berhalangan", r.pax, r.message, date(r.updated_at)],
+          L && (r.attending ? sesiLabel(r.sesi || "both", L) : "")
+        )
+      ),
+    ]);
   }
   return new Response(body, {
     headers: {

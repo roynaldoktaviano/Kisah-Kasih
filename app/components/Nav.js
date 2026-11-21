@@ -14,14 +14,14 @@ export default function Nav({ waLink }) {
   return (
     <header className={`nav ${solid ? "solid" : ""}`}>
       <a href="#top" aria-label="KISAHKASIH">
-        <img src={solid ? "/logo-gold.png" : "/logo-cream.png"} alt="KISAHKASIH" className="nav-logo" />
+        <img src={solid ? "/logo-gold.png" : "/logo-cream.png"} alt="KISAHKASIH" className="nav-logo" width={912} height={128} />
       </a>
-      <nav className="nav-menu">
+      <nav className="nav-menu" aria-label="Menu utama">
         <a href="#acara">Acara</a>
         <a href="#design">Desain</a>
         <a href="#cara-kerja">Cara Kerja</a>
       </nav>
-      <a href={waLink} className="nav-cta" target="_blank" rel="noreferrer">
+      <a href={waLink} className="nav-cta" target="_blank" rel="noopener noreferrer">
         Pesan Sekarang
       </a>
     </header>

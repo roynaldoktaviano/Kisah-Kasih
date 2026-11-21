@@ -609,7 +609,7 @@ document.title = `${TEXT.jenis} ${COUPLE}`;
 const MAIN = CONFIG.fotoUtama || CONFIG.fotoSampul;
 $("#cv-bg").innerHTML = img(CONFIG.fotoSampul || MAIN, COUPLE, false);
 $("#hero-bg").innerHTML = img(MAIN, COUPLE, false);
-$("#side-bg").innerHTML = img(CONFIG.fotoBanner || MAIN, "", false);
+$("#side-bg").innerHTML = img(CONFIG.fotoBanner || MAIN, "");
 $("#close-bg").innerHTML = img(CONFIG.fotoPenutup || MAIN, COUPLE);
 const framed = (src, alt) => `<div class="ph bw">${img(src, alt)}</div>`;
 

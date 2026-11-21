@@ -769,7 +769,7 @@ const CONFIG = {
   /* --- musik --- */
   let audio = null, mbtn = null;
   if (C.musik) {
-    audio = new Audio(C.musik); audio.loop = true; audio.volume = 0.5;
+    audio = Object.assign(new Audio(), { preload: "none", src: C.musik }); audio.loop = true; audio.volume = 0.5;
     mbtn = D.createElement("button"); mbtn.className = "music off"; mbtn.type = "button"; mbtn.hidden = true;
     mbtn.setAttribute("aria-label", "Putar atau hentikan musik"); mbtn.innerHTML = "<i></i><i></i><i></i>"; D.body.appendChild(mbtn);
     audio.addEventListener("play", () => mbtn.classList.remove("off")); audio.addEventListener("pause", () => mbtn.classList.add("off"));

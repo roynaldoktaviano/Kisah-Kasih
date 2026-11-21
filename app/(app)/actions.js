@@ -8,6 +8,7 @@ import { hashPassword, verifyPassword } from "lib/password";
 import { getTemplate } from "lib/templates";
 import { cleanSlug, slugError, normalizePhone, parseGuestLine, randomCode, DEFAULT_WA_MESSAGE } from "lib/util";
 import { inviteBase } from "lib/site";
+import { cleanCategory } from "lib/categories";
 
 const str = (fd, k, max = 200) => String(fd.get(k) ?? "").trim().slice(0, max);
 
@@ -130,6 +131,33 @@ export async function toggleGuestbook(fd) {
   }
 }
 
+// Fitur "Undangan privat": customer hanya bisa menjadikan undangan privat bila diizinkan admin.
+// Dimatikan → undangan langsung kembali publik.
+export async function toggleAllowPrivate(fd) {
+  await requireAdmin();
+  const id = Number(fd.get("id"));
+  const inv = await one(
+    `UPDATE invitations SET allow_private = NOT allow_private, is_private = is_private AND NOT allow_private
+      WHERE id = $1 RETURNING user_id`,
+    [id]
+  );
+  if (inv) {
+    revalidatePath(`/admin/akun/${inv.user_id}`);
+    revalidatePath(`/akun/undangan/${id}`);
+  }
+}
+
+// Fitur "Kategori tamu" (akad saja / resepsi saja / keduanya). Kategori tiap tamu tetap tersimpan saat dimatikan.
+export async function toggleGuestCategories(fd) {
+  await requireAdmin();
+  const id = Number(fd.get("id"));
+  const inv = await one("UPDATE invitations SET guest_categories = NOT guest_categories WHERE id = $1 RETURNING user_id", [id]);
+  if (inv) {
+    revalidatePath(`/admin/akun/${inv.user_id}`);
+    revalidatePath(`/akun/undangan/${id}`);
+  }
+}
+
 export async function deleteInvitation(fd) {
   await requireAdmin();
   const inv = await one("DELETE FROM invitations WHERE id = $1 RETURNING user_id", [Number(fd.get("id"))]);
@@ -183,6 +211,7 @@ export async function saveWaMessage(_prev, fd) {
 export async function setPrivate(_prev, fd) {
   const { inv } = await requireInvitation(fd.get("id"));
   const on = fd.get("private") === "1";
+  if (on && !inv.allow_private) return { error: "Fitur undangan privat belum aktif untuk undangan ini. Hubungi admin." };
   await query("UPDATE invitations SET is_private = $1, updated_at = now() WHERE id = $2", [on, inv.id]);
   revalidatePath(`/akun/undangan/${inv.id}`);
   return { ok: on ? "Undangan sekarang privat." : "Undangan sekarang bisa dibuka siapa saja.", private: on };
@@ -195,9 +224,11 @@ export async function addGuests(_prev, fd) {
   if (names.length) {
     // form baris: kolom nama + kolom nomor WhatsApp
     const phones = fd.getAll("phone");
+    const cats = fd.getAll("category");
     rows = names.map((n, i) => ({
       name: String(n ?? "").trim().slice(0, 80),
       phone: normalizePhone(String(phones[i] ?? "").trim().slice(0, 30)),
+      category: cleanCategory(String(cats[i] ?? "")),
     }));
     const orphan = rows.find((r) => !r.name && r.phone);
     if (orphan) return { error: `Nomor ${orphan.phone} belum ada nama tamunya.` };
@@ -208,7 +239,9 @@ export async function addGuests(_prev, fd) {
   }
   if (!rows.length) return { error: "Tulis minimal satu nama tamu." };
   for (const g of rows) {
-    await query("INSERT INTO guests (invitation_id, name, phone, code) VALUES ($1, $2, $3, $4)", [inv.id, g.name, g.phone, randomCode()]);
+    await query("INSERT INTO guests (invitation_id, name, phone, code, category) VALUES ($1, $2, $3, $4, $5)", [
+      inv.id, g.name, g.phone, randomCode(), cleanCategory(g.category || str(fd, "default_category", 20)),
+    ]);
   }
   revalidatePath(`/akun/undangan/${inv.id}`);
   return { ok: `${rows.length} tamu ditambahkan.`, reset: true };
@@ -220,6 +253,30 @@ export async function updateGuest(fd) {
     str(fd, "name", 80) || "Tamu", normalizePhone(str(fd, "phone", 30)), Number(fd.get("id")), inv.id,
   ]);
   revalidatePath(`/akun/undangan/${inv.id}`);
+}
+
+// Kategori tamu: satu tamu (id) atau beberapa sekaligus (ids = "1,2,3").
+export async function setGuestCategory(invId, ids, category) {
+  const { inv } = await requireInvitation(invId);
+  const list = [].concat(ids).map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(0, 2000);
+  if (!list.length) return;
+  await query("UPDATE guests SET category = $1 WHERE invitation_id = $2 AND id = ANY($3::int[])", [cleanCategory(category), inv.id, list]);
+  revalidatePath(`/akun/undangan/${inv.id}`);
+}
+
+// Pengaturan kategori tamu: nama kedua acara & kategori untuk pembuka link umum.
+export async function saveCategorySettings(_prev, fd) {
+  const { inv } = await requireInvitation(fd.get("id"));
+  if (!inv.guest_categories) return { error: "Fitur kategori tamu belum aktif untuk undangan ini. Hubungi admin." };
+  const akad = str(fd, "label_akad", 40) || "Akad";
+  const resepsi = str(fd, "label_resepsi", 40) || "Resepsi";
+  if (akad.toLowerCase() === resepsi.toLowerCase()) return { error: "Nama kedua acara harus berbeda." };
+  await query(
+    "UPDATE invitations SET label_akad = $1, label_resepsi = $2, public_category = $3, updated_at = now() WHERE id = $4",
+    [akad, resepsi, cleanCategory(str(fd, "public_category", 20)), inv.id]
+  );
+  revalidatePath(`/akun/undangan/${inv.id}`);
+  return { ok: "Pengaturan kategori disimpan." };
 }
 
 export async function deleteGuest(fd) {

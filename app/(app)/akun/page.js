@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "lib/auth";
 import { query } from "lib/db";
-import { getTemplate } from "lib/templates";
+import { getTemplate, invitationSummary } from "lib/templates";
+import { themeFor, themeVars, fontHref } from "lib/themes";
 import { inviteBase } from "lib/site";
 import Shell from "../_components/Shell";
 
@@ -23,8 +24,13 @@ export default async function MyInvitations() {
     [user.id]
   );
 
+  // tiap kartu mengikuti desain undangannya: nama pasangan, foto, warna & font
+  const sums = await Promise.all(invitations.map((inv) => invitationSummary(inv)));
+  const fonts = fontHref(invitations.map((inv) => themeFor(inv.template)));
+
   return (
     <Shell user={user}>
+      {fonts && <link rel="stylesheet" href={fonts} precedence="default" />}
       <div className="page-head">
         <div>
           <p className="eyebrow-sm">Halo, {user.name}</p>
@@ -38,11 +44,19 @@ export default async function MyInvitations() {
         </section>
       ) : (
         <div className="inv-cards">
-          {invitations.map((inv) => {
+          {invitations.map((inv, i) => {
             const t = getTemplate(inv.template);
+            const sum = sums[i];
             return (
-              <Link key={inv.id} href={`/akun/undangan/${inv.id}`} className="inv-card">
-                <span className="inv-card-tpl">{t ? `${t.name} · ${t.type}` : inv.template}</span>
+              <Link key={inv.id} href={`/akun/undangan/${inv.id}`} className="inv-card themed" style={themeVars(themeFor(inv.template))}>
+                <span className={`inv-card-cover${sum.photo ? " has-photo" : ""}`}>
+                  {sum.photo && <img src={sum.photo} alt="" loading="lazy" decoding="async" />}
+                  <span className="inv-card-eyebrow">{sum.eyebrow}</span>
+                  <span className="inv-card-names">{sum.names}</span>
+                  {sum.date && <span className="inv-card-date">{sum.date}</span>}
+                  {sum.daysLeft > 0 && <span className="inv-card-count">H-{sum.daysLeft}</span>}
+                </span>
+                <span className="inv-card-tpl">{t ? `Desain ${t.name} · ${t.type}` : inv.template}</span>
                 <b>{inv.title}</b>
                 <small>{base.label(inv.slug)}{!inv.active && " · nonaktif"}</small>
                 <span className="inv-card-stats">

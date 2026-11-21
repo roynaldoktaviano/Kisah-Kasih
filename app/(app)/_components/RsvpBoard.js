@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { deleteRsvp } from "../actions";
 import { ConfirmSubmit } from "./ui";
+import { sesiLabel, attendsAkad, attendsResepsi } from "lib/categories";
 
 const FILTERS = [
   ["all", "Semua"],
@@ -13,14 +14,22 @@ const FILTERS = [
 const fmt = (iso) =>
   new Date(iso).toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
-// rsvps: [{ id, guest_name, attending, pax, message, updated_at }]
-export default function RsvpBoard({ invId, rsvps }) {
+// rsvps: [{ id, guest_name, attending, pax, sesi, message, updated_at }]
+// labels: { akad, resepsi, all } bila kategori tamu aktif → kehadiran per acara
+export default function RsvpBoard({ invId, rsvps, labels = null }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("all");
 
+  // RSVP lama (sebelum kategori aktif) dianggap hadir di kedua acara
+  const at = (r, fn) => r.attending && fn(r.sesi || "both");
+  const filters = labels
+    ? [FILTERS[0], FILTERS[1], ["akad", `Hadir ${labels.akad}`], ["resepsi", `Hadir ${labels.resepsi}`], ...FILTERS.slice(2)]
+    : FILTERS;
   const counts = {
     all: rsvps.length,
     yes: rsvps.filter((r) => r.attending).length,
+    akad: rsvps.filter((r) => at(r, attendsAkad)).length,
+    resepsi: rsvps.filter((r) => at(r, attendsResepsi)).length,
     no: rsvps.filter((r) => !r.attending).length,
     msg: rsvps.filter((r) => r.message).length,
   };
@@ -30,10 +39,13 @@ export default function RsvpBoard({ invId, rsvps }) {
     return rsvps.filter((r) => {
       if (s && !r.guest_name.toLowerCase().includes(s) && !r.message.toLowerCase().includes(s)) return false;
       if (filter === "yes") return r.attending;
+      if (filter === "akad") return at(r, attendsAkad);
+      if (filter === "resepsi") return at(r, attendsResepsi);
       if (filter === "no") return !r.attending;
       if (filter === "msg") return !!r.message;
       return true;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rsvps, q, filter]);
 
   if (!rsvps.length) {
@@ -49,7 +61,7 @@ export default function RsvpBoard({ invId, rsvps }) {
     <>
       <div className="board-tools">
         <div className="seg-tabs" role="tablist">
-          {FILTERS.map(([k, label]) => (
+          {filters.map(([k, label]) => (
             <button key={k} type="button" role="tab" aria-selected={filter === k} className={filter === k ? "on" : ""} onClick={() => setFilter(k)}>
               {label} <i>{counts[k]}</i>
             </button>
@@ -73,7 +85,9 @@ export default function RsvpBoard({ invId, rsvps }) {
               {r.message && <small className="td-msg">“{r.message}”</small>}
             </span>
             <span>
-              <span className={`badge ${r.attending ? "ok" : "no"}`}>{r.attending ? "Hadir" : "Berhalangan"}</span>
+              <span className={`badge ${r.attending ? "ok" : "no"}`}>
+                {r.attending ? (labels ? `Hadir ${sesiLabel(r.sesi || "both", labels)}` : "Hadir") : "Berhalangan"}
+              </span>
             </span>
             <span className="num">{r.attending ? r.pax : "–"}</span>
             <span className="td-time">{fmt(r.updated_at)}</span>

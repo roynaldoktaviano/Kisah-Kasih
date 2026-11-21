@@ -34,7 +34,7 @@ export default function WhatsAppFloat({ href }) {
     <a
       href={href}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       className={`wa-float ${show ? "show" : ""} ${tip ? "tip" : ""}`}
       aria-label="Chat KISAHKASIH via WhatsApp"
       tabIndex={show ? 0 : -1}

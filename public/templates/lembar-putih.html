@@ -445,7 +445,7 @@ const CONFIG = {
         if (v === undefined || v === null || v === "") x.hidden = true; else x.textContent = fill(v);
       });
       $$("[data-n]", n).forEach((x) => (x.textContent = pad(i + 1)));
-      $$("[data-isrc]", n).forEach((x) => { x.src = x.dataset.isrc === "." ? it : it[+x.dataset.isrc]; x.loading = "lazy"; x.decoding = "async"; });
+      $$("[data-isrc]", n).forEach((x) => { x.loading = "lazy"; x.decoding = "async"; x.src = x.dataset.isrc === "." ? it : it[+x.dataset.isrc]; });
       $$("[data-bg]", n).forEach((x) => (x.style.background = it[+x.dataset.bg]));
       $$("[data-wa]", n).forEach((x) => {
         const num = String(it[+x.dataset.wa] || "").replace(/\D/g, "");
@@ -588,7 +588,7 @@ const CONFIG = {
   /* ---- musik ---- */
   let audio = null, mbtn = null;
   if (C.musik) {
-    audio = new Audio(C.musik); audio.loop = true; audio.volume = 0.5;
+    audio = Object.assign(new Audio(), { preload: "none", src: C.musik }); audio.loop = true; audio.volume = 0.5;
     mbtn = D.createElement("button"); mbtn.className = "music off"; mbtn.type = "button"; mbtn.hidden = true;
     mbtn.setAttribute("aria-label", "Putar musik"); mbtn.innerHTML = "<i></i><i></i><i></i>"; D.body.appendChild(mbtn);
     const set = (on) => { mbtn.classList.toggle("off", !on); mbtn.setAttribute("aria-label", on ? "Jeda musik" : "Putar musik"); };

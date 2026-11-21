@@ -443,6 +443,7 @@ function Search({ guests, onPick, onWalkIn }) {
                 <span>
                   <b>{g.name}</b>
                   {g.hint && <small>WA •••{g.hint}</small>}
+                  {g.cat && <small>{g.cat}</small>}
                   {g.walkIn && <small>tidak terdaftar</small>}
                 </span>
                 {g.at ? <i className="tag ok">Hadir {fmtTime(g.at)}</i> : <i className="tag">Belum</i>}
@@ -495,6 +496,7 @@ function GuestSheet({ g, onCheckIn, onClose }) {
       <p className="gb-eyebrow">{g.walkIn ? "Tamu tidak terdaftar" : "Tamu terdaftar"}</p>
       <h2 className="gb-guest">{g.name}</h2>
       {g.hint && <p className="muted small">WA •••{g.hint}</p>}
+      {g.cat && <p className="muted small">Diundang ke: <b>{g.cat}</b></p>}
       {g.at ? (
         <p className="note warn">Sudah check-in pukul <b>{fmtTime(g.at)}</b> · {g.pax} orang.</p>
       ) : (

@@ -1,0 +1,52 @@
+{
+  "/images/bouquet.jpg": [
+    480,
+    640
+  ],
+  "/images/couple-hands.jpg": [
+    480,
+    800,
+    1050
+  ],
+  "/images/hero-balloons.jpg": [
+    480,
+    800,
+    1280,
+    1920
+  ],
+  "/images/hero-company.jpg": [
+    480,
+    800,
+    1280,
+    1920
+  ],
+  "/images/hero-concert.jpg": [
+    480,
+    800,
+    1280,
+    1920
+  ],
+  "/images/hero-couple.jpg": [
+    480,
+    800,
+    1280,
+    1920
+  ],
+  "/images/hero-table.jpg": [
+    480,
+    800,
+    1280,
+    1920
+  ],
+  "/images/hero-toast.jpg": [
+    480,
+    800,
+    1280,
+    1920
+  ],
+  "/images/table-flowers.jpg": [
+    480,
+    800,
+    1050
+  ]
+}

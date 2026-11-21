@@ -7,7 +7,87 @@ import Photo from "../components/Photo";
 import ScrollFx from "../components/ScrollFx";
 import HeroSlider from "../components/HeroSlider";
 import WhatsAppFloat from "../components/WhatsAppFloat";
-import { WA_LINK, WA_DISPLAY, INSTAGRAM, INSTAGRAM_URL, EMAIL, EVENTS, IMAGES, HERO_SLIDES } from "../data";
+import { WA_LINK, WA_NUMBER, WA_DISPLAY, INSTAGRAM, INSTAGRAM_URL, EMAIL, EVENTS, IMAGES, HERO_SLIDES, DESIGN_TABS, demoPath } from "../data";
+import { SITE_URL } from "lib/site";
+
+// ---------------------------------------------------------------- SEO
+// Judul ≤ 60 karakter & deskripsi ≤ 160 karakter supaya tidak terpotong di Google.
+// Gambar pratinjau link: app/opengraph-image.js (dibuat otomatis saat build).
+const TITLE = "Undangan Digital Pernikahan & Acara Online | KISAHKASIH";
+const DESCRIPTION =
+  "Undangan digital elegan untuk pernikahan, lamaran, ulang tahun, ibadah & acara kantor. RSVP online, buku tamu QR, galeri, peta & musik — kirim via WhatsApp.";
+
+// openGraph di halaman menimpa milik layout, jadi gambar dari app/opengraph-image.js disebut ulang di sini
+const OG_IMAGE = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  alt: "KISAHKASIH — Undangan digital untuk pernikahan, ulang tahun, ibadah, dan acara perusahaan",
+};
+
+export const metadata = {
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
+  keywords: [
+    "undangan digital", "undangan pernikahan online", "undangan nikah digital", "undangan website",
+    "undangan ulang tahun digital", "undangan lamaran", "undangan gereja", "undangan acara kantor",
+    "RSVP online", "buku tamu digital", "undangan WhatsApp",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "/",
+    siteName: "KISAHKASIH",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: [OG_IMAGE.url] },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
+};
+
+// Data terstruktur (schema.org) — membantu Google mengenali nama bisnis, kontak, & katalog desain.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "KISAHKASIH",
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon.png`,
+      email: EMAIL,
+      sameAs: [INSTAGRAM_URL],
+      contactPoint: { "@type": "ContactPoint", telephone: `+${WA_NUMBER}`, contactType: "customer service", availableLanguage: ["id"] },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "KISAHKASIH",
+      description: DESCRIPTION,
+      inLanguage: "id-ID",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+    {
+      "@type": "Service",
+      name: "Undangan Digital",
+      serviceType: "Undangan digital (website undangan)",
+      description: DESCRIPTION,
+      areaServed: { "@type": "Country", name: "Indonesia" },
+      provider: { "@id": `${SITE_URL}/#organization` },
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Desain undangan digital",
+        itemListElement: DESIGN_TABS.flatMap((t) => t.items).map((d) => ({
+          "@type": "Offer",
+          itemOffered: { "@type": "CreativeWork", name: `Undangan ${d.name}`, url: `${SITE_URL}${demoPath(d.demo)}` },
+        })),
+      },
+    },
+  ],
+};
 
 const steps = [
   { time: "01", title: "Konsultasi", note: "Ceritakan jenis acara & konsepmu", side: "left" },
@@ -30,6 +110,7 @@ function Kicker({ children, light = false }) {
 export default function Home() {
   return (
     <main id="top">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <ScrollFx />
       <Nav waLink={WA_LINK} />
 
@@ -42,7 +123,8 @@ export default function Home() {
         <div className="hero-content">
           <p className="eyebrow rise" style={{ "--d": "0s" }}>Undangan Digital untuk Setiap Momen</p>
           <h1 className="rise" style={{ "--d": ".12s" }}>
-            <img src="/logo-cream.png" alt="KISAHKASIH" className="hero-logo" />
+            <img src="/logo-cream.png" alt="KISAHKASIH" className="hero-logo" width={912} height={128} />
+            <span className="sr-only"> — Undangan Digital Pernikahan, Ulang Tahun &amp; Acara</span>
           </h1>
           <p className="hero-sub rise" style={{ "--d": ".26s" }}>
             Setiap momen punya <em>kisahnya</em>
@@ -53,7 +135,7 @@ export default function Home() {
             ))}
           </p>
           <div className="hero-actions rise" style={{ "--d": ".5s" }}>
-            <a href={WA_LINK} className="btn btn-primary" target="_blank" rel="noreferrer">
+            <a href={WA_LINK} className="btn btn-primary" target="_blank" rel="noopener noreferrer" aria-label="Buat undangan — chat KISAHKASIH via WhatsApp">
               Buat Undanganmu
             </a>
             <a href="#design" className="btn btn-ghost">
@@ -72,7 +154,7 @@ export default function Home() {
         <div className="story-grid">
           <Reveal from="mask" className="story-photo-wrap">
             <span className="story-frame" aria-hidden="true" />
-            <Photo src={IMAGES.story} alt="Detail dekorasi acara" className="story-photo" />
+            <Photo src={IMAGES.story} alt="Detail dekorasi acara" className="story-photo" sizes="(max-width: 720px) 280px, 380px" />
           </Reveal>
           <div className="story-text">
             <Reveal>
@@ -168,7 +250,7 @@ export default function Home() {
             Siap menulis <em className="gold-text">kisahmu?</em>
           </h2>
           <p className="cta-lead">Ceritakan momenmu, biar kami yang merangkainya jadi undangan yang tak terlupakan.</p>
-          <a href={WA_LINK} className="btn btn-primary" target="_blank" rel="noreferrer">
+          <a href={WA_LINK} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
             Hubungi via WhatsApp
           </a>
         </Reveal>
@@ -179,17 +261,17 @@ export default function Home() {
         <div className="footer-inner">
           <div className="footer-top">
             <a href="#top" className="footer-brand" aria-label="KISAHKASIH — kembali ke atas">
-              <img src="/logo-gold.png" alt="KISAHKASIH" />
+              <img src="/logo-gold.png" alt="KISAHKASIH" width={912} height={128} loading="lazy" />
             </a>
             <nav className="footer-nav" aria-label="Footer">
               <a href="#acara">Acara</a>
               <a href="#design">Desain</a>
               <a href="#cara-kerja">Cara Kerja</a>
-              <a href="/masuk">Masuk Klien</a>
+              <a href="/masuk" rel="nofollow">Masuk Klien</a>
             </nav>
             <ul className="footer-contact">
-              <li><a href={WA_LINK} target="_blank" rel="noreferrer">{WA_DISPLAY}</a></li>
-              <li><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer">{INSTAGRAM}</a></li>
+              <li><a href={WA_LINK} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${WA_DISPLAY}`}>{WA_DISPLAY}</a></li>
+              <li><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer me" aria-label={`Instagram ${INSTAGRAM}`}>{INSTAGRAM}</a></li>
               <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
             </ul>
           </div>

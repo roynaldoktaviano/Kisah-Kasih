@@ -7,7 +7,9 @@ import { fmtDate } from "lib/util";
 import { inviteBase, ROOT_DOMAIN } from "lib/site";
 import Shell from "../../../_components/Shell";
 import { ActionForm, Submit, ConfirmSubmit } from "../../../_components/ui";
-import { createInvitation, updateCustomer, deleteCustomer, toggleInvitation, toggleGuestbook, deleteInvitation } from "../../../actions";
+import {
+  createInvitation, updateCustomer, deleteCustomer, toggleInvitation, toggleGuestbook, toggleAllowPrivate, toggleGuestCategories, deleteInvitation,
+} from "../../../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +57,8 @@ export default async function AccountPage({ params }) {
                     <small>
                       {inv.guests} tamu · {inv.rsvps} RSVP · {inv.active ? "Aktif" : "Nonaktif"}
                       {inv.guestbook && <> · <span className="tag ok">Buku tamu{inv.hadir > 0 ? ` · ${inv.hadir} hadir` : ""}</span></>}
+                      {inv.allow_private && <> · <span className="tag private-tag">{inv.is_private ? "🔒 Privat" : "Link privat diizinkan"}</span></>}
+                      {inv.guest_categories && <> · <span className="tag ok">Kategori tamu</span></>}
                     </small>
                   </div>
                   <div className="row-actions">
@@ -66,6 +70,18 @@ export default async function AccountPage({ params }) {
                     <form action={toggleGuestbook}>
                       <input type="hidden" name="id" value={inv.id} />
                       <button className="btn-mini" type="submit">{inv.guestbook ? "Matikan buku tamu" : "Aktifkan buku tamu"}</button>
+                    </form>
+                    <form action={toggleAllowPrivate}>
+                      <input type="hidden" name="id" value={inv.id} />
+                      <button className="btn-mini" type="submit" title="Izinkan customer membatasi undangan hanya untuk link pribadi tamu">
+                        {inv.allow_private ? "Matikan link privat" : "Aktifkan link privat"}
+                      </button>
+                    </form>
+                    <form action={toggleGuestCategories}>
+                      <input type="hidden" name="id" value={inv.id} />
+                      <button className="btn-mini" type="submit" title="Tamu dibagi: akad saja / resepsi saja / keduanya — tetap satu link">
+                        {inv.guest_categories ? "Matikan kategori tamu" : "Aktifkan kategori tamu"}
+                      </button>
                     </form>
                     <form action={deleteInvitation}>
                       <input type="hidden" name="id" value={inv.id} />

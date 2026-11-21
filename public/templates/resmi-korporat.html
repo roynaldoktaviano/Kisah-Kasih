@@ -779,7 +779,7 @@ $("#cal").addEventListener("click", () => {
 /* ---------- musik ---------- */
 let audio = null;
 if (CONFIG.musik) {
-  audio = new Audio(CONFIG.musik); audio.loop = true; audio.volume = .55;
+  audio = Object.assign(new Audio(), { preload: "none", src: CONFIG.musik }); audio.loop = true; audio.volume = .55;
   const b = $("#music");
   const set = (on) => { b.classList.toggle("off", !on); b.setAttribute("aria-label", on ? "Jeda musik" : "Putar musik"); };
   audio.addEventListener("play", () => set(true)); audio.addEventListener("pause", () => set(false));

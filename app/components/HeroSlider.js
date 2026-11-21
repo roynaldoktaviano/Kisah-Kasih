@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { srcSet } from "lib/img";
 
 const DURATION = 6500; // ms per foto — samakan dengan animasi .hero-dot.on i di globals.css
 
@@ -11,6 +12,16 @@ export default function HeroSlider({ slides }) {
   const ref = useRef(null);
   const total = slides.length;
   const go = (i) => setIndex(((i % total) + total) % total);
+  // foto hanya dimuat saat dibutuhkan: slide aktif + slide berikutnya (diunduh duluan supaya crossfade mulus).
+  // Dulu keenam foto 2000px diunduh sekaligus saat halaman dibuka.
+  const [loaded, setLoaded] = useState(() => new Set([0]));
+  useEffect(() => {
+    if (!ready) return;
+    setLoaded((s) => {
+      const next = (index + 1) % total;
+      return s.has(index) && s.has(next) ? s : new Set(s).add(index).add(next);
+    });
+  }, [index, ready, total]);
 
   // tunggu intro selesai
   useEffect(() => {
@@ -58,14 +69,17 @@ export default function HeroSlider({ slides }) {
       <div className={`hero-slides ${ready ? "ready" : ""}`} ref={ref} aria-hidden="true">
         {slides.map((s, i) => (
           <div key={s.src} className={`hero-slide ${i === index ? "on" : ""}`}>
-            <img
-              src={s.src}
-              alt=""
-              style={{ objectPosition: s.pos || "50% 50%" }}
-              loading={i === 0 ? "eager" : "lazy"}
-              fetchPriority={i === 0 ? "high" : undefined}
-              decoding="async"
-            />
+            {loaded.has(i) && (
+              <img
+                src={s.src}
+                srcSet={srcSet(s.src)}
+                sizes="100vw"
+                alt={`Undangan digital ${s.label} — KISAHKASIH`}
+                style={{ objectPosition: s.pos || "50% 50%" }}
+                fetchPriority={i === 0 ? "high" : "low"}
+                decoding={i === 0 ? "sync" : "async"}
+              />
+            )}
           </div>
         ))}
         <div className="hero-overlay" />
